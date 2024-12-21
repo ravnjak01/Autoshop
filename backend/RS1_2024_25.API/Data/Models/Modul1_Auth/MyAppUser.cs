@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace RS1_2024_25.API.Data.Models.Modul1_Auth;
 
-public class MyAppUser : TenantSpecificTable
+public class MyAppUser
 {
     public string Email { get; set; }
     [JsonIgnore]

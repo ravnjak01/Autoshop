@@ -28,15 +28,12 @@ namespace RS1_2024_25.API.Endpoints.AuthEndpoints
             if (loggedInUser == null || !loggedInUser.VerifyPassword(request.Password))
             {
                 // Sačuvaj promjene samo ako je korisnik postojao i ako su povećani neuspješni pokušaji
-                if (loggedInUser != null)
-                {
-                    db.CurrentTenantId = loggedInUser.TenantId;  //rucno postavljanje CurrentTenantId u dbContext zbog db inserta AuthToken
+                if (loggedInUser != null) 
+                { 
                     await db.SaveChangesAsync(cancellationToken);
                 }
                 return Unauthorized(new { Message = "Incorrect username or password" });
             }
-
-            db.CurrentTenantId = loggedInUser.TenantId; //rucno postavljanje CurrentTenantId u dbContext zbog db inserta AuthToken
             // Generisanje novog autentifikacionog tokena
             MyAuthenticationToken newAuthToken = await authService.GenerateSaveAuthToken(loggedInUser, cancellationToken);
             MyAuthInfo authInfo = authService.GetAuthInfoFromTokenModel(newAuthToken);

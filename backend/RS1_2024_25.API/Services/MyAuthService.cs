@@ -1,12 +1,6 @@
-﻿using System;
-using System.Text.Json.Serialization;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
-using RS1_2024_25.API.Data.Models.SharedTables;
 using RS1_2024_25.API.Helper;
 
 namespace RS1_2024_25.API.Services
@@ -25,7 +19,6 @@ namespace RS1_2024_25.API.Services
                 Value = randomToken,
                 MyAppUser = user,
                 RecordedAt = DateTime.Now,
-                TenantId = user.TenantId,
             };
 
             applicationDbContext.Add(authToken);
@@ -37,7 +30,7 @@ namespace RS1_2024_25.API.Services
         // Uklanjanje tokena iz baze podataka
         public async Task<bool> RevokeAuthToken(string tokenValue, CancellationToken cancellationToken = default)
         {
-            var authToken = await applicationDbContext.MyAuthenticationTokens
+            var authToken = await applicationDbContext.MyAuthenticationTokensAll
                 .FirstOrDefaultAsync(t => t.Value == tokenValue, cancellationToken);
 
             if (authToken == null)
@@ -57,9 +50,8 @@ namespace RS1_2024_25.API.Services
                 return GetAuthInfoFromTokenModel(null);
             }
 
-            MyAuthenticationToken? myAuthToken = applicationDbContext.MyAuthenticationTokens
+            MyAuthenticationToken? myAuthToken = applicationDbContext.MyAuthenticationTokensAll
                 .IgnoreQueryFilters()
-                .Include(x => x.MyAppUser!.Tenant)
                 .SingleOrDefault(x => x.Value == authToken);
 
             return GetAuthInfoFromTokenModel(myAuthToken);
@@ -94,8 +86,6 @@ namespace RS1_2024_25.API.Services
                 IsAdmin = myAuthToken.MyAppUser.IsAdmin,
                 IsDean = myAuthToken.MyAppUser.IsDean,
                 IsLoggedIn = true,
-                Tenant = myAuthToken.MyAppUser.Tenant,
-                TenantId = myAuthToken.MyAppUser.TenantId,
             };
         }
     }
@@ -103,9 +93,6 @@ namespace RS1_2024_25.API.Services
     // DTO to hold authentication information
     public class MyAuthInfo
     {
-        public int TenantId { get; set; }
-        [JsonIgnore]
-        public Tenant? Tenant { get; set; }
         public int UserId { get; set; }
         public string Email { get; set; }
         public string FirstName { get; set; }

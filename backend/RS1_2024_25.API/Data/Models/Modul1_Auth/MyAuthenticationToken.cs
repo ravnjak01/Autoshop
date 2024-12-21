@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RS1_2024_25.API.Data.Models.Modul1_Auth;
 
-public class MyAuthenticationToken : TenantSpecificTable
+public class MyAuthenticationToken
 {
     public required string Value { get; set; } // Token string
 
