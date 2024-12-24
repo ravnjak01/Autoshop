@@ -19,52 +19,52 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
     [HttpPost]
     public override async Task<string> HandleAsync(CancellationToken cancellationToken = default)
     {
-        if (db.MyAppUsersAll.Any())
-        {
-            throw new Exception("Podaci su vec generisani");
-        }
+        //if (db.MyAppUsersAll.Any())
+        //{
+        //    throw new Exception("Podaci su vec generisani");
+        //}
 
-        // Kreiranje korisnika s ulogama
-        var users = new List<MyAppUser>
-        {
-            new MyAppUser
-            {
-                Email = "admin",
-                FirstName = "Admin",
-                LastName = "One",
-                IsAdmin = true,
-                IsDean = false
-            },
-            new MyAppUser
-            {
-                Email = "manager",
-                FirstName = "Manager",
-                LastName = "One",
-                IsAdmin = false,
-                IsDean = true
-            },
-            new MyAppUser
-            {
-                Email = "user1",
-                FirstName = "User",
-                LastName = "One",
-                IsAdmin = false,
-                IsDean = false
-            },
-            new MyAppUser
-            {
-                Email = "user2",
-                FirstName = "User",
-                LastName = "Two",
-                IsAdmin = false,
-                IsDean = false
-            }
-        };
+        //// Kreiranje korisnika s ulogama
+        //var users = new List<MyAppUser>
+        //{
+        //    new MyAppUser
+        //    {
+        //        Email = "admin",
+        //        FirstName = "Admin",
+        //        LastName = "One",
+        //        IsAdmin = true,
+        //        IsDean = false
+        //    },
+        //    new MyAppUser
+        //    {
+        //        Email = "manager",
+        //        FirstName = "Manager",
+        //        LastName = "One",
+        //        IsAdmin = false,
+        //        IsDean = true
+        //    },
+        //    new MyAppUser
+        //    {
+        //        Email = "user1",
+        //        FirstName = "User",
+        //        LastName = "One",
+        //        IsAdmin = false,
+        //        IsDean = false
+        //    },
+        //    new MyAppUser
+        //    {
+        //        Email = "user2",
+        //        FirstName = "User",
+        //        LastName = "Two",
+        //        IsAdmin = false,
+        //        IsDean = false
+        //    }
+        //};
 
-        foreach (var x in users)
-        {
-            x.SetPassword("test");
-        }
+        //foreach (var x in users)
+        //{
+        //    x.SetPassword("test");
+        //}
 
         
 

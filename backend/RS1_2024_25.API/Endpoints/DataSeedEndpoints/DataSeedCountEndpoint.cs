@@ -20,7 +20,6 @@
             {
                 Dictionary<string, int> dataCounts = new ()
                 {
-                    { "MyAppUser", db.MyAppUsersAll.Count() }
                 };
 
                 return dataCounts;

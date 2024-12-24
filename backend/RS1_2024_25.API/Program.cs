@@ -49,6 +49,6 @@ app.UseCors(
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<MySignalrHub>("/mysginalr-hub-path");
+//app.MapHub<MySignalrHub>("/mysginalr-hub-path");
 
 app.Run();
