@@ -1,0 +1,73 @@
+<div class="header-container">
+  <h2 class="page-title">Blog Management</h2>
+
+  <!-- Button to create a new blog post aligned to the right -->
+  <div class="button-container">
+    <button color="primary" mat-raised-button routerLink="./new">New Blog Post</button>
+  </div>
+</div>
+
+<!-- Search bar for filtering blogs -->
+<div class="search-container">
+  <mat-form-field appearance="outline">
+    <mat-label>Search</mat-label>
+    <input (keyup)="applyFilter($event)" matInput placeholder="Search blogs">
+  </mat-form-field>
+</div>
+
+<!-- Show message when no data is available -->
+<div *ngIf="dataSource.data.length === 0" class="no-data">
+  <p>No blogs to display.</p>
+</div>
+
+<!-- Table for displaying blog posts -->
+<table mat-table [dataSource]="dataSource!" class="mat-elevation-z8" matSort>
+
+  <!-- Title Column -->
+  <ng-container matColumnDef="title">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
+    <mat-cell *matCellDef="let blog">{{ blog.title }}</mat-cell>
+  </ng-container>
+
+  <!-- Author Name Column -->
+  <ng-container matColumnDef="authorName">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Author</mat-header-cell>
+    <mat-cell *matCellDef="let blog">{{ blog.authorName }}</mat-cell>
+  </ng-container>
+
+  <!-- Published Time Column -->
+  <ng-container matColumnDef="publishedTime">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Published Time</mat-header-cell>
+    <mat-cell *matCellDef="let blog">{{ blog.publishedTime | date:'short' }}</mat-cell>
+  </ng-container>
+
+  <!-- Published Status Column -->
+  <ng-container matColumnDef="isPublished">
+    <mat-header-cell *matHeaderCellDef mat-sort-header>Published</mat-header-cell>
+    <mat-cell *matCellDef="let blog">{{ blog.isPublished ? 'Yes' : 'No' }}</mat-cell>
+  </ng-container>
+
+  <!-- Actions Column -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+    <mat-cell *matCellDef="let blog">
+      <!-- Using flexbox to align buttons in the same row -->
+      <div class="action-buttons">
+        <button color="primary" mat-button>
+          Edit
+        </button>
+        <button color="warn" mat-button>
+          Delete
+        </button>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <!-- Table Header and Rows -->
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+</table>
+
+<!-- Pagination for the table -->
+<mat-paginator [length]="dataSource.data.length" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
+               showFirstLastButtons></mat-paginator>

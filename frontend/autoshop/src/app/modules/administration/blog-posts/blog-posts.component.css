@@ -1,0 +1,130 @@
+/* Container to hold title and button in the same row */
+.header-container {
+  display: flex;
+  justify-content: space-between; /* Distribute space between title and button */
+  align-items: center; /* Vertically align items */
+  padding: 20px;
+}
+
+/* Title Styling */
+.page-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 0; /* Remove default margin */
+  color: #333; /* Dark color for the title */
+}
+
+/* Button Styling */
+button{
+  text-transform: uppercase;
+  padding: 8px 5px;
+  border-radius: 5%;
+  font-size: 12px;
+  border: 1px solid transparent; /* Remove border, or make it transparent */
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+button.mat-raised-button{
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Custom styling for primary button */
+button[color="primary"] {
+  background-color: #007bff; /* Blue background */
+  color: white;
+}
+
+button[color="primary"]:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  border-color: #0056b3; /* Change border to match the hover color */
+}
+
+/* Optional custom styling for warn button (if applicable) */
+button[color="warn"] {
+  background-color: #f44336; /* Red background */
+  color: white;
+  margin-left: 5px;
+}
+
+button[color="warn"]:hover {
+  background-color: #d32f2f; /* Darker red on hover */
+  border-color: #d32f2f; /* Change border to match the hover color */
+}
+
+/* Styling for the search bar */
+.search-container {
+  display: flex;
+  justify-content: start;
+  margin-bottom: 20px;
+  margin-left: 20px;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 95%;
+}
+
+mat-label {
+  font-size: 1rem;
+  color: #333;
+}
+
+input {
+  font-size: 1rem;
+  padding: 10px;
+  background-color: #f9f9f9; /* Light gray background */
+  border-radius: 4px;
+  border: 1px solid #ccc; /* Gray border */
+}
+
+input:focus {
+  border-color: #007bff; /* Blue border on focus */
+  outline: none;
+}
+
+/* No data message */
+.no-data {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #999; /* Light gray text */
+  padding: 20px;
+}
+
+/* Table styling */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: transparent;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+mat-header-row, mat-row {
+  text-align: left;
+  font-size: 1rem;
+  color: #333;
+}
+
+/* Header cell styles */
+mat-header-row {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* Row styles */
+mat-row:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+mat-row:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Pagination styling */
+mat-paginator {
+  background-color: #f1f1f1; /* Light gray background for paginator */
+  border-top: 1px solid #ccc; /* Border at the top of paginator */
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
