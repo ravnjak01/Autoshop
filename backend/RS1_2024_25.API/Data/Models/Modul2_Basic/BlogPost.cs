@@ -9,5 +9,6 @@
         public DateTime? PublishedDate { get; set; }  
         public string? Author { get; set; }  //zamijeniti sa id zaposlenika
         public bool IsPublished { get; set; }  
+        public bool Active { get; set; }
     }
 }

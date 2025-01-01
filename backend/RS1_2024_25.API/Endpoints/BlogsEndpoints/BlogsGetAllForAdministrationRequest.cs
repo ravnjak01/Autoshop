@@ -35,6 +35,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 AuthorName = blog.Author,
                 PublishedTime = blog.PublishedDate,
                 IsPublished = blog.IsPublished,
+                Active = blog.Active,
             });
 
             // Kreiranje paginiranog odgovora sa filterom
@@ -55,6 +56,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public required string AuthorName { get; set; }
             public DateTime? PublishedTime { get; set; }
             public bool IsPublished { get; set; }
+            public bool Active { get; set; }
         }
     }
 }

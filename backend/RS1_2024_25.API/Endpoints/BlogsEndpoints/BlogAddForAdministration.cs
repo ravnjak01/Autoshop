@@ -17,11 +17,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpPost]
         public override async Task<ActionResult<BlogPostUpdateOrInsertResponse>> HandleAsync([FromForm] BlogPostUpdateOrInsertRequest request, CancellationToken cancellationToken = default)
         {
-            var title = request.Title;
-            var content = request.Content;
-            var author = request.Author;
-            var isPublished = request.IsPublished;
-
             byte[]? image = null;
             if (request.Image != null)
             {
@@ -34,11 +29,12 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             // Kreiranje ili ažuriranje blog posta
             var blogPost = new BlogPost
             {
-                Title = title,
-                Content = content,
-                Author = author,
-                IsPublished = isPublished,
-                Image = image
+                Title = request.Title,
+                Content = request.Content,
+                Author = request.Author,
+                IsPublished = request.IsPublished,
+                Image = image,
+                Active = request.Acitve
             };
 
             // Dodavanje ili ažuriranje u bazi podataka
@@ -68,6 +64,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public IFormFile? Image { get; set; }
             public required string Author { get; set; }//promijeniti u id
             public required bool IsPublished { get; set; }
+            public required bool Acitve { get; set; }
         }
 
         public class BlogPostUpdateOrInsertResponse
