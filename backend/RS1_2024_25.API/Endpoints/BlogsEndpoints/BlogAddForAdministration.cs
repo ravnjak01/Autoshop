@@ -12,11 +12,14 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
     [Route("blog-post")]
     public class BlogAddForAdministration(ApplicationDbContext db, MyAuthService myAuthService): MyEndpointBaseAsync
         .WithRequest<BlogPostUpdateOrInsertRequest>
-        .WithActionResult<BlogPostUpdateOrInsertResponse>
+        .WithoutResult
     {
         [HttpPost]
-        public override async Task<ActionResult<BlogPostUpdateOrInsertResponse>> HandleAsync([FromForm] BlogPostUpdateOrInsertRequest request, CancellationToken cancellationToken = default)
+        public override async Task HandleAsync([FromForm] BlogPostUpdateOrInsertRequest request, CancellationToken cancellationToken = default)
         {
+
+            var blog = await db.BlogPosts.SingleOrDefaultAsync(x => x.Id == request.ID, cancellationToken);
+
             byte[]? image = null;
             if (request.Image != null)
             {
@@ -27,33 +30,39 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 // Sačuvaj sliku u bazu ili na server
             }
             // Kreiranje ili ažuriranje blog posta
-            var blogPost = new BlogPost
+            if (blog == null)
             {
-                Title = request.Title,
-                Content = request.Content,
-                Author = request.Author,
-                IsPublished = request.IsPublished,
-                Image = image,
-                Active = request.Active
-            };
-
-            // Dodavanje ili ažuriranje u bazi podataka
-            db.BlogPosts.Add(blogPost);
+                blog = new BlogPost
+                {
+                    Title = request.Title,
+                    Content = request.Content,
+                    Author = request.Author,
+                    IsPublished = request.IsPublished,
+                    PublishedDate = request.IsPublished ? DateTime.Now : null,
+                    Image = image,
+                    Active = request.Active
+                };
+                db.BlogPosts.Add(blog);
+            }
+            else
+            {
+                if(blog.IsPublished && !request.IsPublished)
+                {
+                    blog.PublishedDate = null;
+                }
+                else if(!blog.IsPublished && request.IsPublished)
+                {
+                    blog.PublishedDate = DateTime.Now;
+                }
+                blog.Title = request.Title;
+                blog.Content = request.Content;
+                blog.Author = request.Author;
+                blog.IsPublished = request.IsPublished;
+                blog.Image = image ?? blog.Image; 
+                blog.Active = request.Active;
+                db.BlogPosts.Update(blog); 
+            }
             await db.SaveChangesAsync(cancellationToken);
-
-            // Kreiranje odgovora
-            var response = new BlogPostUpdateOrInsertResponse
-            {
-                ID = blogPost.Id,
-                Title = blogPost.Title,
-                Content = blogPost.Content,
-                AuthorName = blogPost.Author,
-                PublishedTime = blogPost.PublishedDate,
-                IsPublished = blogPost.IsPublished, 
-                Active = blogPost.Active
-            };
-
-            return response;
         }
 
         public class BlogPostUpdateOrInsertRequest
