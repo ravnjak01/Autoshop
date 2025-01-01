@@ -22,12 +22,15 @@ import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts
 import {BlogEditComponent} from './modules/administration/blog-posts/blog-posts-editing/blog-posts-editing.component';
 import {MatCard} from '@angular/material/card';
 import {MatCheckbox} from '@angular/material/checkbox';
+import {BlogPostComponent} from './modules/administration/blog-posts/blog-post/blog-post.component';
+import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
 
 @NgModule({
   declarations: [
     AppComponent,
     BlogPostsComponent,
-    BlogEditComponent
+    BlogEditComponent,
+    BlogPostComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -47,6 +50,8 @@ import {MatCheckbox} from '@angular/material/checkbox';
     MatSortModule,
     MatCard,
     MatCheckbox,
+    MatDialogContent,
+    MatDialogActions,
   ],
   providers: [
     {

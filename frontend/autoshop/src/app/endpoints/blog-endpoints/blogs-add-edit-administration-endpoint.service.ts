@@ -13,25 +13,16 @@ export interface BlogPostUpdateOrInsertRequest {
   active: boolean;
 }
 
-export interface BlogUpdateOrInsertResponse {
-  id: number;  // Required integer for ID
-  title: string;  // Required string for Title
-  content: string;  // Required string for Content
-  authorName: string;  // Required string for AuthorName
-  publishedTime?: Date;  // Optional Date (nullable)
-  isPublished: boolean;
-}
-
 @Injectable({
   providedIn: 'root'
 })
-export class BlogUpdateOrInsertEndpointService implements MyBaseEndpointAsync<FormData, BlogUpdateOrInsertResponse> {
+export class BlogUpdateOrInsertEndpointService implements MyBaseEndpointAsync<FormData, void> {
   private apiUrl = `${MyConfig.api_address}/blog-post`;
 
   constructor(private httpClient: HttpClient) {
   }
 
   handleAsync(request: FormData) {
-    return this.httpClient.post<BlogUpdateOrInsertResponse>(`${this.apiUrl}`, request);
+    return this.httpClient.post<void>(`${this.apiUrl}`, request);
   }
 }

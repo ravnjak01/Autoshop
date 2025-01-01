@@ -15,6 +15,7 @@ import {BlogDeleteEndpointService} from '../../../endpoints/blog-endpoints/blogs
 import {BlogDeactivateEndpointService} from '../../../endpoints/blog-endpoints/blog-deactivate-endpoint.service';
 import {MyDialogSimpleComponent} from '../../shared/dialogs/my-dialog-simple/my-dialog-simple.component';
 import {BlogPublishEndpointService} from '../../../endpoints/blog-endpoints/blog-publish-endpoint.service';
+import {BlogPostComponent} from './blog-post/blog-post.component';
 @Component({
   selector: 'app-blog-posts',
   templateUrl: './blog-posts.component.html',
@@ -89,7 +90,8 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     this.searchSubject.next(filterValue); // Prosljeđuje vrijednost Subject-u
   }
 
-  openBlogPostForm(blogId?: number): void {
+  openBlogPostForm(event: MouseEvent, blogId?: number): void {
+    event.stopPropagation();
     const dialogRef = this.dialog.open(BlogEditComponent, {
       width: '600px',
       data: { blogId: blogId || 0 }, // Pass blogId if editing, 0 for new blog
@@ -102,12 +104,9 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  // editCity(id: number): void {
-  //   this.router.navigate(['/admin/cities3/edit', id]);
-  // }
-  //
 
-  deactivate(id: number): void {
+  deactivate(id: number, event: MouseEvent): void {
+    event.stopPropagation();
     this.blogDeactivateService.handleAsync(id).subscribe({
       next: () => {
         //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
@@ -117,7 +116,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  deleteCity(id: number): void {
+  deleteBlog(id: number): void {
 
     this.blogDeleteService.handleAsync(id).subscribe({
       next: () => {
@@ -144,7 +143,9 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       }
     });
   }
-  openMyConfirmDialog(id: number) {
+
+  openMyConfirmDialog(id: number, event: MouseEvent) {
+    event.stopPropagation();
     const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
       width: '350px',
       data: {
@@ -157,7 +158,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       if (result) {
         console.log('Korisnik je potvrdio brisanje');
         // Pozovite servis ili izvršite logiku za brisanje
-        this.deleteCity(id);
+        this.deleteBlog(id);
         this.ngOnInit();
       } else {
         console.log('Korisnik je otkazao brisanje');
@@ -165,13 +166,28 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  publish(id: number) {
+  publish(id: number, event: MouseEvent) {
+    event.stopPropagation();
     this.blogPublishService.handleAsync(id).subscribe({
       next: () => {
         //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
         this.openMySimpleDialog("Uspješno ste izvršili akciju");
       },
       error: (err) => console.error('Error deactivate blog:', err)
+    });
+  }
+
+  openBlogModal(id: number) {
+    const dialogRef = this.dialog.open(BlogPostComponent, {
+      width: '600px',
+      data: { blogId: id}, // Pass blogId if editing, 0 for new blog
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'saved') {
+        // If the modal is saved, reload or do something (like redirect)
+        this.ngOnInit();
+      }
     });
   }
 }

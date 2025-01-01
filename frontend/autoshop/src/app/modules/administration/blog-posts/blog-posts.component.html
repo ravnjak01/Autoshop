@@ -3,7 +3,7 @@
 
   <!-- Button to create a new blog post aligned to the right -->
   <div class="button-container">
-    <button color="primary" mat-raised-button (click)="openBlogPostForm()">New Blog Post</button>
+    <button color="primary" mat-raised-button (click)="openBlogPostForm($event, undefined)">New Blog Post</button>
   </div>
 </div>
 
@@ -59,16 +59,16 @@
     <mat-cell *matCellDef="let blog">
       <!-- Using flexbox to align buttons in the same row -->
       <div class="action-buttons">
-        <button color="success" mat-button (click)="publish(blog.id)">
+        <button color="success" mat-button (click)="publish(blog.id, $event)">
           {{ blog.isPublished ? 'Unpublish' : 'Publish' }}
         </button>
-        <button color="primary" mat-button>
+        <button color="primary" mat-button (click)="openBlogPostForm($event, blog.id)">
           Edit
         </button>
-        <button color="warning" mat-button (click)="deactivate(blog.id)">
+        <button color="warning" mat-button (click)="deactivate(blog.id, $event)">
           {{ blog.active ? 'Deactivate' : 'Activate' }}
         </button>
-        <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id)">
+        <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id, $event)">
           Delete
         </button>
       </div>
@@ -77,7 +77,7 @@
 
   <!-- Table Header and Rows -->
   <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-  <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openBlogModal(row.id)"></mat-row>
 </table>
 
 <!-- Pagination for the table -->

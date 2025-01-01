@@ -152,6 +152,19 @@ mat-row:nth-child(even) {
   max-width: 250px; /* Adjust the value as needed */
 }
 
+mat-row {
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+mat-row:hover {
+  background-color: #e0e0e0;;
+}
+
+mat-cell button {
+  cursor: pointer;
+}
+
 /* Pagination styling */
 mat-paginator {
   background-color: #f1f1f1; /* Light gray background for paginator */

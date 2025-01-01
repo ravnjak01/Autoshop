@@ -28,6 +28,10 @@
       />
     </div>
 
+    <div *ngIf="imageUrl">
+      <img [src]="imageUrl" alt="Blog image" />
+    </div>
+
     <!-- Published Checkbox -->
     <mat-checkbox formControlName="isPublished">Published</mat-checkbox>
 
