@@ -11,6 +11,7 @@ import {BlogEditComponent} from './blog-posts-editing/blog-posts-editing.compone
 import {MatDialog} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
+import {BlogDeleteEndpointService} from '../../../endpoints/blog-endpoints/blogs-delete-endpoint.service';
 @Component({
   selector: 'app-blog-posts',
   templateUrl: './blog-posts.component.html',
@@ -28,7 +29,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
 
   constructor(
     private blogGetService: BlogsGetAllForAdministrationService,
-    //private blogDeleteService: CityDeleteEndpointService,
+    private blogDeleteService: BlogDeleteEndpointService,
     private router: Router,
     private dialog: MatDialog
   ) {
@@ -84,26 +85,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     this.searchSubject.next(filterValue); // Prosljeđuje vrijednost Subject-u
   }
 
-  // // Fetch blogs with paging and filter
-  // fetchBlogs(filter: string = '', page: number = 1, pageSize: number = 5): void {
-  //   // @ts-ignore
-  //   this.blogGetService.handleAsync(
-  //     {
-  //       q: filter,
-  //       pageNumber: page,
-  //       pageSize: pageSize
-  //     },
-  //     true,
-  //   ).subscribe({
-  //     next: (data: any) => {
-  //       this.dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>(data.dataItems);
-  //       this.paginator.length = data.totalCount; // Postavljanje ukupnog broja stavki
-  //     },
-  //     error: (err: any) => {
-  //       console.error('Error fetching cities:', err);
-  //     },
-  //   });
-  // }
   openBlogPostForm(blogId?: number): void {
     const dialogRef = this.dialog.open(BlogEditComponent, {
       width: '600px',
@@ -121,34 +102,39 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   //   this.router.navigate(['/admin/cities3/edit', id]);
   // }
   //
-  // deleteCity(id: number): void {
-  //
-  //   this.cityDeleteService.handleAsync(id).subscribe({
-  //     next: () => {
-  //       console.log(`City with ID ${id} deleted successfully`);
-  //       this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
-  //     },
-  //     error: (err) => console.error('Error deleting city:', err)
-  //   });
-  // }
-  //
-  // openMyConfirmDialog(id: number) {
-  //   const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
-  //     width: '350px',
-  //     data: {
-  //       title: 'Potvrda brisanja',
-  //       message: 'Da li ste sigurni da želite obrisati ovu stavku?'
-  //     }
-  //   });
-  //
-  //   dialogRef.afterClosed().subscribe(result => {
-  //     if (result) {
-  //       console.log('Korisnik je potvrdio brisanje');
-  //       // Pozovite servis ili izvršite logiku za brisanje
-  //       this.deleteCity(id);
-  //     } else {
-  //       console.log('Korisnik je otkazao brisanje');
-  //     }
-  //   });
-  // }
+
+  deactivate(id: number): void {
+
+  }
+
+  deleteCity(id: number): void {
+
+    this.blogDeleteService.handleAsync(id).subscribe({
+      next: () => {
+        //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
+      },
+      error: (err) => console.error('Error deleting city:', err)
+    });
+  }
+
+  openMyConfirmDialog(id: number) {
+    const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
+      width: '350px',
+      data: {
+        title: 'Potvrda brisanja',
+        message: 'Da li ste sigurni da želite obrisati ovu stavku?'
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        console.log('Korisnik je potvrdio brisanje');
+        // Pozovite servis ili izvršite logiku za brisanje
+        this.deleteCity(id);
+        this.ngOnInit();
+      } else {
+        console.log('Korisnik je otkazao brisanje');
+      }
+    });
+  }
 }

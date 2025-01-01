@@ -32,6 +32,7 @@ export class BlogEditComponent implements OnInit {
       title: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(30)]],
       content: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(1000)]],
       isPublished: [false, [Validators.required]],
+      active: [true, [Validators.required]],
     });
   }
 
@@ -70,6 +71,7 @@ export class BlogEditComponent implements OnInit {
     formData.append('content', blogPostData.content);
     formData.append('author', blogPostData.author);
     formData.append('isPublished', blogPostData.isPublished.toString());
+    formData.append('active', blogPostData.active.toString());
 
     // Dodaj fajl ako je odabran
     if (this.selectedFile) {

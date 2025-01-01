@@ -56,7 +56,10 @@
         <button color="primary" mat-button>
           Edit
         </button>
-        <button color="warn" mat-button>
+        <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id)">
+          Deactivate
+        </button>
+        <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id)">
           Delete
         </button>
       </div>
