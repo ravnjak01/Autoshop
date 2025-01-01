@@ -12,6 +12,8 @@ import {MatDialog} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
 import {MatSort} from '@angular/material/sort';
 import {BlogDeleteEndpointService} from '../../../endpoints/blog-endpoints/blogs-delete-endpoint.service';
+import {BlogDeactivateEndpointService} from '../../../endpoints/blog-endpoints/blog-deactivate-endpoint.service';
+import {MyDialogSimpleComponent} from '../../shared/dialogs/my-dialog-simple/my-dialog-simple.component';
 @Component({
   selector: 'app-blog-posts',
   templateUrl: './blog-posts.component.html',
@@ -20,7 +22,7 @@ import {BlogDeleteEndpointService} from '../../../endpoints/blog-endpoints/blogs
 })
 export class BlogPostsComponent implements OnInit, AfterViewInit {
 
-  displayedColumns: string[] = ['title', 'authorName', 'publishedTime', 'isPublished', 'actions'];
+  displayedColumns: string[] = ['title', 'authorName', 'publishedTime', 'isPublished', 'active', 'actions'];
   dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>();
   totalBlogs = 0;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -30,7 +32,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   constructor(
     private blogGetService: BlogsGetAllForAdministrationService,
     private blogDeleteService: BlogDeleteEndpointService,
-    private router: Router,
+    private blogDeactivateService: BlogDeactivateEndpointService,
     private dialog: MatDialog
   ) {
   }
@@ -104,7 +106,13 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   //
 
   deactivate(id: number): void {
-
+    this.blogDeactivateService.handleAsync(id).subscribe({
+      next: () => {
+        //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
+        this.openMySimpleDialog("Uspješno ste izvršili akciju");
+      },
+      error: (err) => console.error('Error deactivate blog:', err)
+    });
   }
 
   deleteCity(id: number): void {
@@ -112,11 +120,28 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     this.blogDeleteService.handleAsync(id).subscribe({
       next: () => {
         //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
+
       },
-      error: (err) => console.error('Error deleting city:', err)
+      error: (err) => console.error('Error deleting blog:', err)
     });
   }
 
+  openMySimpleDialog(text: string) {
+    const dialogRef = this.dialog.open(MyDialogSimpleComponent, {
+      width: '350px',
+      data: {
+        title: 'Uspjeh',
+        message: text
+      }
+    });
+    dialogRef.afterClosed().subscribe(result => {
+      console.log(result);
+      if (result) {
+        console.log("uslo")
+        this.ngOnInit();
+      }
+    });
+  }
   openMyConfirmDialog(id: number) {
     const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
       width: '350px',

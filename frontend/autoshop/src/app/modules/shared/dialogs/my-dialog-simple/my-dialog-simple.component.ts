@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material/dialog';
 
 @Component({
   selector: 'app-my-dialog-simple',
@@ -9,7 +9,12 @@ import {MAT_DIALOG_DATA} from '@angular/material/dialog';
   styleUrl: './my-dialog-simple.component.css'
 })
 export class MyDialogSimpleComponent {
-  constructor(@Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }) {
+  constructor(
+    public dialogRef: MatDialogRef<MyDialogSimpleComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string }) {
+  }
 
+  onConfirm(): void {
+    this.dialogRef.close(true); // Vraća true kada korisnik potvrdi
   }
 }

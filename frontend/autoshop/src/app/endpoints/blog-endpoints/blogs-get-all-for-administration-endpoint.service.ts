@@ -19,6 +19,7 @@ export interface BlogsGetAllForAdministrationResponse {
   authorName: string;
   publishedTime: Date | null;
   isPublished: boolean;
+  active:boolean;
 }
 
 @Injectable({
