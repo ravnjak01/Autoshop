@@ -34,7 +34,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 Author = request.Author,
                 IsPublished = request.IsPublished,
                 Image = image,
-                Active = request.Acitve
+                Active = request.Active
             };
 
             // Dodavanje ili ažuriranje u bazi podataka
@@ -49,7 +49,8 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 Content = blogPost.Content,
                 AuthorName = blogPost.Author,
                 PublishedTime = blogPost.PublishedDate,
-                IsPublished = blogPost.IsPublished
+                IsPublished = blogPost.IsPublished, 
+                Active = blogPost.Active
             };
 
             return response;
@@ -60,11 +61,11 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public int? ID { get; set; } // Nullable to allow null for insert operations
             public required string Title { get; set; }
             public required string Content { get; set; }
-            //public string? Image { get; set; }
+            //public string? Image { get; set;
             public IFormFile? Image { get; set; }
             public required string Author { get; set; }//promijeniti u id
             public required bool IsPublished { get; set; }
-            public required bool Acitve { get; set; }
+            public required bool Active { get; set; }
         }
 
         public class BlogPostUpdateOrInsertResponse
@@ -75,6 +76,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public required string AuthorName { get; set; }
             public DateTime? PublishedTime { get; set; }
             public bool IsPublished { get; set; }
+            public bool Active { get; set; }
         }
     }
 }
