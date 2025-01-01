@@ -1,16 +1,16 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {Router} from '@angular/router';
 import {MyDialogConfirmComponent} from '../../shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
-import {MatDialog} from '@angular/material/dialog';
-import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
 import {
   BlogsGetAllForAdministrationService,
   BlogsGetAllForAdministrationResponse
 } from '../../../endpoints/blog-endpoints/blogs-get-all-for-administration-endpoint.service';
 import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
 import { MatTableDataSource } from '@angular/material/table';
-
+import {BlogEditComponent} from './blog-posts-editing/blog-posts-editing.component';
+import {MatDialog} from '@angular/material/dialog';
+import {MatPaginator} from '@angular/material/paginator';
+import {MatSort} from '@angular/material/sort';
 @Component({
   selector: 'app-blog-posts',
   templateUrl: './blog-posts.component.html',
@@ -49,21 +49,17 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort;
+    this.dataSource.sort = this.sort; // Bind sorting to the table
+    this.dataSource.paginator = this.paginator; // Bind paginator to the table
+
+    // Listen for paginator changes
     this.paginator.page.subscribe(() => {
       const filterValue = this.dataSource.filter || '';
       this.fetchBlogs(filterValue, this.paginator.pageIndex + 1, this.paginator.pageSize);
     });
   }
 
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.searchSubject.next(filterValue); // Prosljeđuje vrijednost Subject-u
-  }
-
-  // Fetch blogs with paging and filter
   fetchBlogs(filter: string = '', page: number = 1, pageSize: number = 5): void {
-    // @ts-ignore
     this.blogGetService.handleAsync(
       {
         q: filter,
@@ -73,16 +69,54 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       true,
     ).subscribe({
       next: (data: any) => {
-        console.log(data);
+        // Update data source and paginator
         this.dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>(data.dataItems);
-        this.paginator.length = data.totalCount; // Postavljanje ukupnog broja stavki
+        this.paginator.length = data.totalCount; // Set total item count
       },
       error: (err: any) => {
-        console.error('Error fetching cities:', err);
+        console.error('Error fetching blogs:', err);
       },
     });
   }
 
+  applyFilter(event: Event): void {
+    const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.searchSubject.next(filterValue); // Prosljeđuje vrijednost Subject-u
+  }
+
+  // // Fetch blogs with paging and filter
+  // fetchBlogs(filter: string = '', page: number = 1, pageSize: number = 5): void {
+  //   // @ts-ignore
+  //   this.blogGetService.handleAsync(
+  //     {
+  //       q: filter,
+  //       pageNumber: page,
+  //       pageSize: pageSize
+  //     },
+  //     true,
+  //   ).subscribe({
+  //     next: (data: any) => {
+  //       this.dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>(data.dataItems);
+  //       this.paginator.length = data.totalCount; // Postavljanje ukupnog broja stavki
+  //     },
+  //     error: (err: any) => {
+  //       console.error('Error fetching cities:', err);
+  //     },
+  //   });
+  // }
+  openBlogPostForm(blogId?: number): void {
+    const dialogRef = this.dialog.open(BlogEditComponent, {
+      width: '600px',
+      data: { blogId: blogId || 0 }, // Pass blogId if editing, 0 for new blog
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'saved') {
+        // If the modal is saved, reload or do something (like redirect)
+        this.ngOnInit();
+      }
+    });
+  }
   // editCity(id: number): void {
   //   this.router.navigate(['/admin/cities3/edit', id]);
   // }

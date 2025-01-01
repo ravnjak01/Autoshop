@@ -19,11 +19,15 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';
+import {BlogEditComponent} from './modules/administration/blog-posts/blog-posts-editing/blog-posts-editing.component';
+import {MatCard} from '@angular/material/card';
+import {MatCheckbox} from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
     AppComponent,
     BlogPostsComponent,
+    BlogEditComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -41,6 +45,8 @@ import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts
     MatIconModule,
     MatPaginatorModule,
     MatSortModule,
+    MatCard,
+    MatCheckbox,
   ],
   providers: [
     {
