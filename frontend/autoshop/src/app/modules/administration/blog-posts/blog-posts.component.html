@@ -59,10 +59,13 @@
     <mat-cell *matCellDef="let blog">
       <!-- Using flexbox to align buttons in the same row -->
       <div class="action-buttons">
+        <button color="success" mat-button (click)="publish(blog.id)">
+          {{ blog.isPublished ? 'Unpublish' : 'Publish' }}
+        </button>
         <button color="primary" mat-button>
           Edit
         </button>
-        <button color="orange" mat-button (click)="deactivate(blog.id)">
+        <button color="warning" mat-button (click)="deactivate(blog.id)">
           {{ blog.active ? 'Deactivate' : 'Activate' }}
         </button>
         <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id)">

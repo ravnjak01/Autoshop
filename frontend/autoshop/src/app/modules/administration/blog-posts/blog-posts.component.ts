@@ -14,6 +14,7 @@ import {MatSort} from '@angular/material/sort';
 import {BlogDeleteEndpointService} from '../../../endpoints/blog-endpoints/blogs-delete-endpoint.service';
 import {BlogDeactivateEndpointService} from '../../../endpoints/blog-endpoints/blog-deactivate-endpoint.service';
 import {MyDialogSimpleComponent} from '../../shared/dialogs/my-dialog-simple/my-dialog-simple.component';
+import {BlogPublishEndpointService} from '../../../endpoints/blog-endpoints/blog-publish-endpoint.service';
 @Component({
   selector: 'app-blog-posts',
   templateUrl: './blog-posts.component.html',
@@ -33,6 +34,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     private blogGetService: BlogsGetAllForAdministrationService,
     private blogDeleteService: BlogDeleteEndpointService,
     private blogDeactivateService: BlogDeactivateEndpointService,
+    private blogPublishService: BlogPublishEndpointService,
     private dialog: MatDialog
   ) {
   }
@@ -160,6 +162,16 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       } else {
         console.log('Korisnik je otkazao brisanje');
       }
+    });
+  }
+
+  publish(id: number) {
+    this.blogPublishService.handleAsync(id).subscribe({
+      next: () => {
+        //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
+        this.openMySimpleDialog("Uspješno ste izvršili akciju");
+      },
+      error: (err) => console.error('Error deactivate blog:', err)
     });
   }
 }

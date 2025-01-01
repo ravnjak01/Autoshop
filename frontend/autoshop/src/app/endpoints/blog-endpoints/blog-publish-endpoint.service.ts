@@ -6,8 +6,8 @@ import {MyBaseEndpointAsync} from '../../helper/my-base-endpoint-async.interface
 @Injectable({
   providedIn: 'root'
 })
-export class BlogDeactivateEndpointService implements MyBaseEndpointAsync<number, void> {
-  private apiUrl = `${MyConfig.api_address}/deactivate-blog`;
+export class BlogPublishEndpointService implements MyBaseEndpointAsync<number, void> {
+  private apiUrl = `${MyConfig.api_address}/publish-blog`;
 
   constructor(private httpClient: HttpClient) {
   }

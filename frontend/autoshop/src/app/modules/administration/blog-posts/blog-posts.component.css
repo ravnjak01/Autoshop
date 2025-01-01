@@ -33,6 +33,7 @@ button.mat-raised-button{
 button[color="primary"] {
   background-color: #007bff; /* Blue background */
   color: white;
+  margin-left: 5px;
 }
 
 button[color="primary"]:hover {
@@ -51,7 +52,30 @@ button[color="warn"]:hover {
   background-color: #d32f2f; /* Darker red on hover */
   border-color: #d32f2f; /* Change border to match the hover color */
 }
+/* Warning button (Orange) */
+button[color="warning"] {
+  background-color: #ff9800; /* Orange background */
+  color: white;
+  margin-left: 5px;
+}
 
+button[color="warning"]:hover {
+  background-color: #f57c00; /* Darker orange on hover */
+  border-color: #f57c00; /* Change border to match the hover color */
+  margin-left: 5px;
+}
+
+/* Success button (Green) */
+button[color="success"] {
+  background-color: #4caf50; /* Green background */
+  color: white;
+  margin-left: 5px;
+}
+
+button[color="success"]:hover {
+  background-color: #388e3c; /* Darker green on hover */
+  border-color: #388e3c; /* Change border to match the hover color */
+}
 /* Styling for the search bar */
 .search-container {
   display: flex;
@@ -118,6 +142,14 @@ mat-row:nth-child(odd) {
 
 mat-row:nth-child(even) {
   background-color: #f2f2f2;
+}
+
+.mat-column-active, .mat-column-isPublished {
+  max-width: 150px; /* Adjust the value as needed */
+}
+
+.mat-column-publishedTime, .mat-column-authorName {
+  max-width: 250px; /* Adjust the value as needed */
 }
 
 /* Pagination styling */
