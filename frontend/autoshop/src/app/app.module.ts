@@ -29,6 +29,7 @@ import {AdministrationComponent} from './modules/administration/administration.c
 import {HomePageComponent} from './modules/administration/home-page/home-page.component';
 import {BlogListComponent} from './modules/blogs/blog-posts.component';
 import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
+import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +39,8 @@ import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
     BlogPostsComponent,
     BlogEditComponent,
     BlogPostComponent,
-    BlogListComponent
+    BlogListComponent,
+    BlogDetailsComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije

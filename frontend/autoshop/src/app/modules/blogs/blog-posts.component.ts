@@ -4,6 +4,7 @@ import {
   BlogPost,
   BlogsGetAllService
 } from '../../endpoints/blog-endpoints/blog-get-all-endpoint.service';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-blog-list',
@@ -19,9 +20,12 @@ export class BlogListComponent implements OnInit {
 
   scrollDistance = 2; // Trigger the event a little later
   scrollUpDistance = 3; // Same for upward scrolling
-// How much distance from the bottom to trigger the scroll event
 
-  constructor(private blogService: BlogsGetAllService) { }
+
+  constructor(
+    private blogService: BlogsGetAllService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.loadBlogs();
@@ -49,5 +53,9 @@ export class BlogListComponent implements OnInit {
       this.currentPage++;
       this.loadBlogs();
     }
+  }
+
+  openBlog(id: number) {
+    this.router.navigate(['/blog', id]);
   }
 }

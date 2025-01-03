@@ -1,5 +1,5 @@
 <div class="card-container" infiniteScroll [infiniteScrollDistance]="scrollDistance" [infiniteScrollUpDistance]="scrollUpDistance" (scrolled)="onScroll()">
-  <div class="card" *ngFor="let blog of blogs">
+  <div class="card" *ngFor="let blog of blogs" (click)="openBlog(blog.id)">
     <div class="card-image-container">
       <img [src]="blog.image" alt="Blog Image" class="card-image">
     </div>
