@@ -10,7 +10,6 @@ import { MatTableDataSource } from '@angular/material/table';
 import {BlogEditComponent} from './blog-posts-editing/blog-posts-editing.component';
 import {MatDialog} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
-import {MatSort} from '@angular/material/sort';
 import {BlogDeleteEndpointService} from '../../../endpoints/blog-endpoints/blogs-delete-endpoint.service';
 import {BlogDeactivateEndpointService} from '../../../endpoints/blog-endpoints/blog-deactivate-endpoint.service';
 import {MyDialogSimpleComponent} from '../../shared/dialogs/my-dialog-simple/my-dialog-simple.component';
@@ -28,7 +27,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>();
   totalBlogs = 0;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
-  @ViewChild(MatSort) sort!: MatSort;
   private searchSubject: Subject<string> = new Subject();
 
   constructor(
@@ -54,8 +52,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit(): void {
-    this.dataSource.sort = this.sort; // Bind sorting to the table
+  ngAfterViewInit(): void { // Bind sorting to the table
     this.dataSource.paginator = this.paginator; // Bind paginator to the table
 
     // Listen for paginator changes
@@ -76,8 +73,12 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     ).subscribe({
       next: (data: any) => {
         // Update data source and paginator
+        console.log(data);
         this.dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>(data.dataItems);
-        this.paginator.length = data.totalCount; // Set total item count
+        this.dataSource.paginator = data.paginator;
+        this.paginator.pageIndex = data.currentPage - 1; // Backend page is 1-based, paginator is 0-based
+        this.paginator.pageSize = data.pageSize;
+        this.paginator.length = data.totalCount;
       },
       error: (err: any) => {
         console.error('Error fetching blogs:', err);
@@ -87,7 +88,8 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.searchSubject.next(filterValue); // Prosljeđuje vrijednost Subject-u
+    this.paginator.pageIndex = 0; // Reset to the first page
+    this.searchSubject.next(filterValue); // Send the new filter value
   }
 
   openBlogPostForm(event: MouseEvent, blogId?: number): void {
@@ -100,7 +102,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'saved') {
         // If the modal is saved, reload or do something (like redirect)
-        this.ngOnInit();
+        this.refreshPage();
       }
     });
   }
@@ -138,8 +140,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe(result => {
       console.log(result);
       if (result) {
-        console.log("uslo")
-        this.ngOnInit();
+        this.refreshPage();
       }
     });
   }
@@ -159,7 +160,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
         console.log('Korisnik je potvrdio brisanje');
         // Pozovite servis ili izvršite logiku za brisanje
         this.deleteBlog(id);
-        this.ngOnInit();
+        this.refreshPage();
       } else {
         console.log('Korisnik je otkazao brisanje');
       }
@@ -186,8 +187,12 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'saved') {
         // If the modal is saved, reload or do something (like redirect)
-        this.ngOnInit();
+        this.refreshPage();
       }
     });
+  }
+
+  refreshPage(): void {
+    window.location.reload();
   }
 }

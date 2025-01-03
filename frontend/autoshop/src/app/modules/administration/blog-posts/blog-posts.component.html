@@ -21,35 +21,35 @@
 </div>
 
 <!-- Table for displaying blog posts -->
-<table mat-table [dataSource]="dataSource!" class="mat-elevation-z8" matSort>
+<table mat-table [dataSource]="dataSource!" class="mat-elevation-z8">
 
   <!-- Title Column -->
   <ng-container matColumnDef="title">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>Title</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef >Title</mat-header-cell>
     <mat-cell *matCellDef="let blog">{{ blog.title }}</mat-cell>
   </ng-container>
 
   <!-- Author Name Column -->
   <ng-container matColumnDef="authorName">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>Author</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>Author</mat-header-cell>
     <mat-cell *matCellDef="let blog">{{ blog.authorName }}</mat-cell>
   </ng-container>
 
   <!-- Published Time Column -->
   <ng-container matColumnDef="publishedTime">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>Published Time</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>Published Time</mat-header-cell>
     <mat-cell *matCellDef="let blog">{{ blog.publishedTime | date:'short' }}</mat-cell>
   </ng-container>
 
   <!-- Published Status Column -->
   <ng-container matColumnDef="isPublished">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>Published</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>Published</mat-header-cell>
     <mat-cell *matCellDef="let blog">{{ blog.isPublished ? 'Yes' : 'No' }}</mat-cell>
   </ng-container>
 
   <!-- Active Status Column -->
   <ng-container matColumnDef="active">
-    <mat-header-cell *matHeaderCellDef mat-sort-header>Active</mat-header-cell>
+    <mat-header-cell *matHeaderCellDef>Active</mat-header-cell>
     <mat-cell *matCellDef="let blog">{{ blog.active ? 'Yes' : 'No' }}</mat-cell>
   </ng-container>
 
@@ -81,5 +81,4 @@
 </table>
 
 <!-- Pagination for the table -->
-<mat-paginator [length]="dataSource.data.length" [pageSizeOptions]="[5, 10, 20]" [pageSize]="5"
-               showFirstLastButtons></mat-paginator>
+<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
