@@ -1,1 +1,19 @@
-<h1>Auto shop</h1>
+<nav class="navbar">
+  <ul class="main-menu">
+    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
+    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/blogs">Blogs</a></li>
+  </ul>
+
+  <div *ngIf="isAdminPage" class="admin-menu">
+    <ul class="admin-submenu">
+      <li class="submenu-item"><a routerLink="/administration/admin/blog-posts">Blogs</a></li>
+      <!-- dodajte ostale opcije administracije -->
+    </ul>
+  </div>
+</nav>
+
+<div >
+  <router-outlet>
+
+  </router-outlet>
+</div>
