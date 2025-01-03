@@ -1,10 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';// Importujte komponentu
+import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';
+import {BlogPostComponent} from './modules/administration/blog-posts/blog-post/blog-post.component';
+import {AdministrationComponent} from './modules/administration/administration.component';
+import {HomePageComponent} from './modules/administration/home-page/home-page.component';
+// Importujte komponentu
 
 const routes: Routes = [
-  { path: 'admin/blog-posts', component: BlogPostsComponent },  // Definišite rutu za komponentu
-  { path: '', redirectTo: '/admin/blog-posts', pathMatch: 'full' }, // Možete postaviti početnu stranicu
+  { path: 'administration', component: AdministrationComponent, children: [
+      { path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
+      { path: 'admin/blog-posts', component: BlogPostsComponent },
+      { path: 'admin/home-page', component: HomePageComponent },
+    ],
+  },
+  //{ path: 'blogs', component: BlogsComponent },  // Definišite rutu za komponentu
+  //{ path: '', redirectTo: '/admin/blog-posts', pathMatch: 'full' }, // Možete postaviti početnu stranicu
 ];
 
 @NgModule({

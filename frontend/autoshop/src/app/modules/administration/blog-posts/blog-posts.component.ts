@@ -95,7 +95,8 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   openBlogPostForm(event: MouseEvent, blogId?: number): void {
     event.stopPropagation();
     const dialogRef = this.dialog.open(BlogEditComponent, {
-      width: '600px',
+      width: '800px', // Povećana širina dijaloga
+      maxHeight: '80vh', // Maksimalna visina dijaloga
       data: { blogId: blogId || 0 }, // Pass blogId if editing, 0 for new blog
     });
 

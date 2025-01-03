@@ -1,4 +1,15 @@
-<app-my-page-progressbar></app-my-page-progressbar>
+<nav class="navbar">
+  <ul class="main-menu">
+    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
+  </ul>
+
+  <div *ngIf="isAdminPage" class="admin-menu">
+    <ul class="admin-submenu">
+      <li class="submenu-item"><a routerLink="/administration/admin/blog-posts">Blogs</a></li>
+      <!-- dodajte ostale opcije administracije -->
+    </ul>
+  </div>
+</nav>
 
 <div style="border: 1px solid blue; position: absolute; top:60px; bottom: 0; left: 0px; right: 0">
   <router-outlet>

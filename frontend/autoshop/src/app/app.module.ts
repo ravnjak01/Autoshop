@@ -24,10 +24,15 @@ import {MatCard} from '@angular/material/card';
 import {MatCheckbox} from '@angular/material/checkbox';
 import {BlogPostComponent} from './modules/administration/blog-posts/blog-post/blog-post.component';
 import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
+import {MatToolbar} from '@angular/material/toolbar';
+import {AdministrationComponent} from './modules/administration/administration.component';
+import {HomePageComponent} from './modules/administration/home-page/home-page.component';
 
 @NgModule({
   declarations: [
     AppComponent,
+    AdministrationComponent,
+    HomePageComponent,
     BlogPostsComponent,
     BlogEditComponent,
     BlogPostComponent
@@ -52,6 +57,7 @@ import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
     MatCheckbox,
     MatDialogContent,
     MatDialogActions,
+    MatToolbar,
   ],
   providers: [
     {
