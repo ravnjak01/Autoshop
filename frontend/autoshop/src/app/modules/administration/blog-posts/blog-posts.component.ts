@@ -1,5 +1,4 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {Router} from '@angular/router';
 import {MyDialogConfirmComponent} from '../../shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
 import {
   BlogsGetAllForAdministrationService,
@@ -73,7 +72,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     ).subscribe({
       next: (data: any) => {
         // Update data source and paginator
-        console.log(data);
         this.dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>(data.dataItems);
         this.dataSource.paginator = data.paginator;
         this.paginator.pageIndex = data.currentPage - 1; // Backend page is 1-based, paginator is 0-based
@@ -139,7 +137,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       }
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
       if (result) {
         this.refreshPage();
       }
