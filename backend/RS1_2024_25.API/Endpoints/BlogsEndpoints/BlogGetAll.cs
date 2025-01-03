@@ -27,7 +27,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                     Id = b.Id,
                     Title = b.Title,
                     Author = b.Author,
-                    Content = b.Content,
                     PublishedDate = b.PublishedDate,
                     Image = b.Image
                 })
