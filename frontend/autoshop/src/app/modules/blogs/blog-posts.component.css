@@ -1,0 +1,50 @@
+.card-container {
+  display: flex;
+  flex-direction: column; /* Postavljamo kartice u vertikalni raspored, po jednoj kartici u redu */
+  gap: 16px; /* Razmak između kartica */
+}
+
+.card {
+  display: flex;
+  width: 90%;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin: 0 auto; /* Centriranje kartica unutar kontejnera */
+}
+
+.card-image-container {
+  flex: 0 0 120px; /* Slika će zauzeti 120px širine */
+  padding: 10px;
+}
+
+.card-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+.card-body {
+  flex: 1;
+  padding: 10px;
+}
+
+.card-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.card-author, .card-date {
+  font-size: 0.9rem;
+  color: #777;
+}
+
+.card-author {
+  margin-top: 5px;
+}
+
+.card-date {
+  margin-top: 5px;
+  font-style: italic;
+}

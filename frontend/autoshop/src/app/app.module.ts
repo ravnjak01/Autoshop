@@ -27,6 +27,8 @@ import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
 import {MatToolbar} from '@angular/material/toolbar';
 import {AdministrationComponent} from './modules/administration/administration.component';
 import {HomePageComponent} from './modules/administration/home-page/home-page.component';
+import {BlogListComponent} from './modules/blogs/blog-posts.component';
+import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
 
 @NgModule({
   declarations: [
@@ -35,7 +37,8 @@ import {HomePageComponent} from './modules/administration/home-page/home-page.co
     HomePageComponent,
     BlogPostsComponent,
     BlogEditComponent,
-    BlogPostComponent
+    BlogPostComponent,
+    BlogListComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -58,6 +61,7 @@ import {HomePageComponent} from './modules/administration/home-page/home-page.co
     MatDialogContent,
     MatDialogActions,
     MatToolbar,
+    InfiniteScrollDirective,
   ],
   providers: [
     {

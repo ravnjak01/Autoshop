@@ -1,6 +1,7 @@
 <nav class="navbar">
   <ul class="main-menu">
     <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
+    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/blogs">Blogs</a></li>
   </ul>
 
   <div *ngIf="isAdminPage" class="admin-menu">
@@ -11,7 +12,7 @@
   </div>
 </nav>
 
-<div style="border: 1px solid blue; position: absolute; top:60px; bottom: 0; left: 0px; right: 0">
+<div >
   <router-outlet>
 
   </router-outlet>
