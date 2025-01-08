@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Models\SharedTables\" />
+    <Folder Include="Data\NewFolder\" />
   </ItemGroup>
 
 </Project>
