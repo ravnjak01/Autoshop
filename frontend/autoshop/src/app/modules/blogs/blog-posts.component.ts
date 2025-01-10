@@ -20,7 +20,7 @@ export class BlogListComponent implements OnInit {
 
   scrollDistance = 2; // Trigger the event a little later
   scrollUpDistance = 3; // Same for upward scrolling
-
+  searchQuery = '';
 
   constructor(
     private blogService: BlogsGetAllService,
@@ -34,7 +34,8 @@ export class BlogListComponent implements OnInit {
   loadBlogs(): void {
     var request: BlogGetAllRequest = {
       pageNumber: this.currentPage,
-      pageSize: this.pageSize
+      pageSize: this.pageSize,
+      searchQuery: this.searchQuery
     }
     this.blogService.handleAsync(request).subscribe(response => {
       this.totalCount = response.totalCount;
@@ -57,5 +58,12 @@ export class BlogListComponent implements OnInit {
 
   openBlog(id: number) {
     this.router.navigate(['/blog', id]);
+  }
+
+  applyFilter($event: KeyboardEvent) {
+    this.searchQuery = ($event.target as HTMLInputElement).value; // Capture the search input
+    this.currentPage = 1; // Reset the page number for new search
+    this.blogs = []; // Clear the previous blogs
+    this.loadBlogs();
   }
 }

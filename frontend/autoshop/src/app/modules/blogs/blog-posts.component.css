@@ -50,3 +50,17 @@
   margin-top: 5px;
   font-style: italic;
 }
+
+/* Styling for the search bar */
+.search-container {
+  display: flex;
+  justify-content: start;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+mat-form-field {
+  width: 90%;
+  margin: 0 auto;
+  margin-top: 10px;
+}
