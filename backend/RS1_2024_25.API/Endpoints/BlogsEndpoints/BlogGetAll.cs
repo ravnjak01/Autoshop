@@ -1,6 +1,5 @@
 ﻿using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
-using RS1_2024_25.API.Helper;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetAll;
 using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
@@ -17,11 +16,20 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpGet("filter")]
         public override async Task<BlogGetAllResponse> HandleAsync([FromQuery] BlogGetAllRequest request, CancellationToken cancellationToken = default)
         {
-            var blogs = await db.BlogPosts
-                .Where(b => b.Active && b.IsPublished)
-                .OrderBy(b => b.PublishedDate) // Možete menjati kriterijum sortiranja
-                .Skip((request.PageNumber - 1) * request.PageSize) // Skip za paginaciju
-                .Take(request.PageSize) // Limitiramo broj rezultata
+            var query = db.BlogPosts
+                .Where(b => b.Active && b.IsPublished); // Base filter for active and published blogs
+
+            // If a search query is provided, filter the blogs by title and content (adjust as necessary)
+            if (!string.IsNullOrEmpty(request.SearchQuery))
+            {
+                query = query.Where(b => b.Title.Contains(request.SearchQuery) || b.Content.Contains(request.SearchQuery) || b.Author.Contains(request.SearchQuery));
+            }
+
+            // Apply pagination
+            var blogs = await query
+                .OrderBy(b => b.PublishedDate) // Sorting by published date, adjust as needed
+                .Skip((request.PageNumber - 1) * request.PageSize) // Pagination
+                .Take(request.PageSize) // Limit the number of results
                 .Select(b => new BlogPost
                 {
                     Id = b.Id,
@@ -30,9 +38,10 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                     PublishedDate = b.PublishedDate,
                     Image = b.Image
                 })
-                .ToListAsync();
-            var totalCount = db.BlogPosts.Where(b => b.Active && b.IsPublished).ToArray().Length;
+                .ToListAsync(cancellationToken);
 
+            // Calculate the total count (including the filter for search query)
+            var totalCount = await query.CountAsync(cancellationToken);
 
             return new BlogGetAllResponse()
             {
@@ -40,10 +49,12 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 Blogs = blogs
             };
         }
+
         public class BlogGetAllRequest
         {
             public required int PageNumber { get; set; }
             public int PageSize { get; set; }
+            public string? SearchQuery { get; set; }
         }
         public class BlogGetAllResponse
         {
