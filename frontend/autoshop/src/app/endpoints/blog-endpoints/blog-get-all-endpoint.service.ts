@@ -10,6 +10,7 @@ import {tap} from 'rxjs/operators';
 export interface BlogGetAllRequest {
   pageNumber: number;
   pageSize: number;
+  searchQuery: string | null;
 }
 export interface BlogPost{
   id: number;
