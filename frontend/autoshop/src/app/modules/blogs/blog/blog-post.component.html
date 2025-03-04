@@ -14,3 +14,6 @@
     <p><strong>Published on:</strong> {{ blog.publishedTime | date: 'short' }}</p>
   </div>
 </div>
+
+<app-blog-comments [blogPostId]="blogId"></app-blog-comments>
+
