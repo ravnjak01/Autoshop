@@ -1,0 +1,25 @@
+<div class="blog-comments">
+  <!-- Dodavanje novog komentara -->
+  <div *ngIf="!isAddingComment" class="add-comment-button">
+    <button (click)="isAddingComment = true">Dodaj komentar</button>
+  </div>
+
+  <!-- Formular za unos komentara -->
+  <div *ngIf="isAddingComment" class="comment-input">
+    <textarea [(ngModel)]="newCommentContent" placeholder="Unesite vaš komentar..."></textarea>
+
+    <button (click)="addComment()">Pošaljite komentar</button>
+    <button (click)="isAddingComment = false">Otkaži</button>
+  </div>
+
+  <!-- Lista komentara -->
+  <div *ngFor="let comment of comments" class="comment">
+    <div class="comment-header">
+      <span class="comment-user">{{ comment.anonymousName || 'Anonimus' }}</span>
+      <span class="comment-time">{{ comment.createdAtAgo }}</span>
+    </div>
+    <div class="comment-content">
+      <p>{{ comment.content }}</p>
+    </div>
+  </div>
+</div>

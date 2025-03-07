@@ -1,9 +1,14 @@
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {
   BlogGetByIdForAdministrationService
 } from '../../../endpoints/blog-endpoints/blog-get-id-for-administration.service';
 import {ActivatedRoute, Router} from '@angular/router';
+import {BlogRatingGetByBlogIdService} from '../../../endpoints/blog-endpoints/blog-rating-get-endpoint.service';
+import {
+  BlogRatingAddEndpointService,
+  BlogRatingRequest
+} from '../../../endpoints/blog-endpoints/blog-rating-add-endpoint.service';
 
 @Component({
   selector: 'app-blog-post-details',
@@ -15,11 +20,16 @@ export class BlogDetailsComponent implements OnInit {
   blog: any = {};
   blogId: number ;
   imageUrl: string | null = null; // URL for the image
+  averageRating: number | null = null;
+  stars: boolean[] = [false, false, false, false, false];
+  currentRating: number = 0;
 
   constructor(
     private route: ActivatedRoute,
     public router: Router,
     private blogGetByIdService: BlogGetByIdForAdministrationService,
+    private blogRatingService: BlogRatingGetByBlogIdService,
+    private ratingAddService: BlogRatingAddEndpointService,
   ) {
     this.blogId = 0;
   }
@@ -41,5 +51,36 @@ export class BlogDetailsComponent implements OnInit {
       },
       error: (error) => console.error('Error loading blog data', error),
     });
+
+    this.loadRating() ;
+  }
+
+  loadRating(){
+    this.blogRatingService.handleAsync(this.blogId).subscribe(response => {
+      this.averageRating = response.averageRating;
+    });
+  }
+  addRating() {
+    const request: BlogRatingRequest = {
+      blogPostId: this.blogId,
+      rating: this.currentRating
+    };
+
+    const formData = new FormData();
+    formData.append('blogPostId', request.blogPostId.toString());
+    formData.append('rating', request.rating.toString());
+
+    this.ratingAddService.handleAsync(formData).subscribe(
+      () => {
+        this.loadRating()
+      },
+      (error) => {
+        console.error('Error adding comment', error);
+      }
+    );
+  }
+  ratePost(rating: number): void {
+    this.currentRating = rating;
+    this.addRating();
   }
 }
