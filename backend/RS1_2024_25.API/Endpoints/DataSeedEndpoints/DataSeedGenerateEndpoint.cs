@@ -55,6 +55,27 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
             db.AddRange(blogs);
             db.SaveChanges();
         }
+
+        if (!db.BlogComments.Any())
+        {
+            db.BlogComments.AddRange(
+                    new BlogComment { BlogPostId = 1, Content = "Odličan post!", CreatedAt = DateTime.Now },
+                    new BlogComment { BlogPostId = 1, Content = "Zanimljiv tekst, hvala!", CreatedAt = DateTime.Now},
+                    new BlogComment { BlogPostId = 2, Content = "Slažem se sa prethodnim komentarima.", CreatedAt = DateTime.Now }
+                );
+            db.SaveChanges();
+        }
+
+        if (!db.BlogRatings.Any())
+        {
+            db.BlogRatings.AddRange(
+                    new BlogRating { BlogPostId = 1, Rating = 5, CreatedAt = DateTime.Now },
+                    new BlogRating { BlogPostId = 1, Rating = 4, CreatedAt = DateTime.Now },
+                    new BlogRating { BlogPostId = 2, Rating = 3, CreatedAt = DateTime.Now }
+                );
+            db.SaveChanges();
+        }
+        
         return "Data generation completed successfully.";
     }
 }
