@@ -5,7 +5,6 @@ import {HttpClient} from '@angular/common/http';
 
 export interface BlogCommentRequest {
   blogPostId: number;
-  userId?: number;
   content: string;
 }
 

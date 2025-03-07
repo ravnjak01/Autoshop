@@ -1,4 +1,7 @@
 <div *ngIf="blog" class="blog-detail">
+  <div class="rating">
+    <span *ngIf="averageRating !== null">⭐ {{ averageRating.toFixed(1) }}</span>
+  </div>
   <h2>{{ blog.title }}</h2>
 
   <div class="image-container">
@@ -12,6 +15,12 @@
   <div class="author-info">
     <p><strong>Author:</strong> {{ blog.authorName }}</p>
     <p><strong>Published on:</strong> {{ blog.publishedTime | date: 'short' }}</p>
+  </div>
+
+  <div class="star-rating">
+      <span *ngFor="let star of stars; let i = index" (click)="ratePost(i + 1)" [class.filled]="i < currentRating">
+        &#9733;
+      </span>
   </div>
 </div>
 

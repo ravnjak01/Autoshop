@@ -3,22 +3,21 @@ import {MyBaseEndpointAsync} from '../../helper/my-base-endpoint-async.interface
 import {MyConfig} from '../../my-config';
 import {HttpClient} from '@angular/common/http';
 
-export interface BlogRatingRequest {
-  blogPostId: number;
-  rating: number;
+export interface BlogRatingByBlogIdResponse  {
+  averageRating: number;
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class BlogRatingAddEndpointService implements MyBaseEndpointAsync<FormData, void> {
+export class BlogRatingGetByBlogIdService implements MyBaseEndpointAsync<number, BlogRatingByBlogIdResponse>{
   private apiUrl = `${MyConfig.api_address}/blog-rating`;
 
   constructor(private httpClient: HttpClient) {
   }
 
-  handleAsync(request: FormData) {
-    return this.httpClient.post<void>(`${this.apiUrl}`, request);
+  handleAsync(id: number) {
+    // Use the helper function here
+    return this.httpClient.get<BlogRatingByBlogIdResponse>(`${this.apiUrl}/${id}`);
   }
 }
-

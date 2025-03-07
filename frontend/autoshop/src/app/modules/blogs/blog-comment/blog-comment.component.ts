@@ -22,7 +22,7 @@ export class BlogCommentsComponent implements OnInit {
 
   constructor(
     private commentGetService: BlogCommentGetByBlogIdService,
-    private commentAddService: BlogCommentAddEndpointService
+    private commentAddService: BlogCommentAddEndpointService,
   ) {}
 
   ngOnInit() {
@@ -60,5 +60,6 @@ export class BlogCommentsComponent implements OnInit {
         console.error('Error adding comment', error);
       }
     );
+
   }
 }
