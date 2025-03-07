@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogCommentGetByBlogId;
@@ -13,9 +14,9 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpGet("{id}")]
         public override async Task<BlogCommentsByBlogIdResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
         {
-            var comments = db.BlogComments
+            var comments = await db.BlogComments
                 .Where(c => c.BlogPostId == id)
-                .ToList();  
+                .ToListAsync();  
 
             List<BlogCommentDto> response = new List<BlogCommentDto>();
             foreach (var c in comments)

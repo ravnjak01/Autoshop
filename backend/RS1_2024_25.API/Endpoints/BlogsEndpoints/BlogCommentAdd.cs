@@ -18,7 +18,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             var comment = new BlogComment
             {
                 BlogPostId = request.BlogPostId,
-                UserId = request.UserId,
                 Content = request.Content,
                 CreatedAt = DateTime.Now,
             };
@@ -30,7 +29,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         public class BlogCommentRequest
         {
             public int BlogPostId { get; set; }
-            public int? UserId { get; set; } 
             public string Content { get; set; }
         }
     }
