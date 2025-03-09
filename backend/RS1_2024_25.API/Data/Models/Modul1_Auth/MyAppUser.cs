@@ -1,12 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using RS1_2024_25.API.Helper.BaseClasses;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
 namespace RS1_2024_25.API.Data.Models.Modul1_Auth;
 
 public class MyAppUser
 {
+    public int Id { get; set; } //za migracionu
     public string Email { get; set; }
     [JsonIgnore]
     public string PasswordHash { get; set; }

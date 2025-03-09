@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using RS1_2024_25.API.Helper;
 using RS1_2024_25.API.Helper.BaseClasses;
@@ -12,6 +13,7 @@ namespace RS1_2024_25.API.Data
     {
         public DbSet<MyAppUser> MyAppUsersAll { get; set; }
         public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
+        public DbSet<User> Users { get; set; }
 
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)
