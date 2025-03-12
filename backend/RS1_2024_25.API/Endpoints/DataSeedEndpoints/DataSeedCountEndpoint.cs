@@ -20,7 +20,7 @@
             {
                 Dictionary<string, int> dataCounts = new ()
                 {
-                    { "MyAppUser", db.MyAppUsersAll.Count() }
+                     { "BlogPosts", db.BlogPosts.Count() }
                 };
 
                 return dataCounts;

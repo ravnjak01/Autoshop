@@ -1,12 +1,20 @@
-import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import {Component} from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.css',
+  standalone: false
 })
 export class AppComponent {
-  title = 'autoshop';
+  title = 'Auto-shop ';
+
+  isAdminPage = false;
+
+  constructor(private router: Router) {
+    this.router.events.subscribe(() => {
+      this.isAdminPage = this.router.url.includes('/admin');
+    });
+  }
 }

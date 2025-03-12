@@ -28,42 +28,42 @@ namespace RS1_2024_25.API.Services
         }
 
         // Uklanjanje tokena iz baze podataka
-        public async Task<bool> RevokeAuthToken(string tokenValue, CancellationToken cancellationToken = default)
-        {
-            var authToken = await applicationDbContext.MyAuthenticationTokensAll
-                .FirstOrDefaultAsync(t => t.Value == tokenValue, cancellationToken);
+        //public async Task<bool> RevokeAuthToken(string tokenValue, CancellationToken cancellationToken = default)
+        //{
+        //    var authToken = await applicationDbContext.MyAuthenticationTokensAll
+        //        .FirstOrDefaultAsync(t => t.Value == tokenValue, cancellationToken);
 
-            if (authToken == null)
-                return false;
+        //    if (authToken == null)
+        //        return false;
 
-            applicationDbContext.Remove(authToken);
-            await applicationDbContext.SaveChangesAsync(cancellationToken);
+        //    applicationDbContext.Remove(authToken);
+        //    await applicationDbContext.SaveChangesAsync(cancellationToken);
 
-            return true;
-        }
+        //    return true;
+        //}
+
+        //// Dohvatanje informacija o autentifikaciji korisnika
+        //public MyAuthInfo GetAuthInfoFromTokenString(string? authToken)
+        //{
+        //    if (string.IsNullOrEmpty(authToken))
+        //    {
+        //        return GetAuthInfoFromTokenModel(null);
+        //    }
+
+        //    MyAuthenticationToken? myAuthToken = applicationDbContext.MyAuthenticationTokensAll
+        //        .IgnoreQueryFilters()
+        //        .SingleOrDefault(x => x.Value == authToken);
+
+        //    return GetAuthInfoFromTokenModel(myAuthToken);
+        //}
+
 
         // Dohvatanje informacija o autentifikaciji korisnika
-        public MyAuthInfo GetAuthInfoFromTokenString(string? authToken)
-        {
-            if (string.IsNullOrEmpty(authToken))
-            {
-                return GetAuthInfoFromTokenModel(null);
-            }
-
-            MyAuthenticationToken? myAuthToken = applicationDbContext.MyAuthenticationTokensAll
-                .IgnoreQueryFilters()
-                .SingleOrDefault(x => x.Value == authToken);
-
-            return GetAuthInfoFromTokenModel(myAuthToken);
-        }
-
-
-        // Dohvatanje informacija o autentifikaciji korisnika
-        public MyAuthInfo GetAuthInfoFromRequest()
-        {
-            string? authToken = httpContextAccessor.HttpContext?.Request.Headers["my-auth-token"];
-            return GetAuthInfoFromTokenString(authToken);
-        }
+        //public MyAuthInfo GetAuthInfoFromRequest()
+        //{
+        //    string? authToken = httpContextAccessor.HttpContext?.Request.Headers["my-auth-token"];
+        //    return GetAuthInfoFromTokenString(authToken);
+        //}
 
         public MyAuthInfo GetAuthInfoFromTokenModel(MyAuthenticationToken? myAuthToken)
         {
