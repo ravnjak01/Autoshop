@@ -5,7 +5,9 @@ namespace RS1_2024_25.API.Data.Models.Modul1_Auth;
 
 public class MyAppUser
 {
-    public int Id { get; set; } //za migracionu
+
+    [Key]
+    public int Id { get; set; }
     public string Email { get; set; }
     [JsonIgnore]
     public string PasswordHash { get; set; }

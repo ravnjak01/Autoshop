@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
@@ -11,7 +12,8 @@ using System.Linq.Expressions;
 
 namespace RS1_2024_25.API.Data
 {
-    public class ApplicationDbContext(DbContextOptions options, IServiceProvider serviceProvider) : DbContext(options)
+    //public class ApplicationDbContext(DbContextOptions options, IServiceProvider serviceProvider) : DbContext(options)
+    public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
@@ -26,6 +28,7 @@ namespace RS1_2024_25.API.Data
         public DbSet<BlogRating> BlogRatings { get; set; }
 
 
+
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -37,6 +40,15 @@ namespace RS1_2024_25.API.Data
             {
                 relationship.DeleteBehavior = DeleteBehavior.NoAction;
             }
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity.HasKey(e => e.Id); // Postavite primarni ključ
+                entity.Property(e => e.Email)
+                      .IsRequired()
+                      .HasMaxLength(100); // Maksimalna dužina emaila
+            });
+            modelBuilder.Entity<MyAuthenticationToken>().HasNoKey();
             // opcija kod nasljeđivanja
             // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
         }
