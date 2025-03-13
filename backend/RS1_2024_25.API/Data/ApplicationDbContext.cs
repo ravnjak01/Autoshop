@@ -13,13 +13,18 @@ namespace RS1_2024_25.API.Data
 {
     public class ApplicationDbContext(DbContextOptions options, IServiceProvider serviceProvider) : DbContext(options)
     {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
+
+        public DbSet<MyAppUser> MyAppUsersAll { get; set; }
+        public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
+        public DbSet<User> Users { get; set; }  
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
         public DbSet<BlogRating> BlogRatings { get; set; }
-        public DbSet<MyAppUser> MyAppUsersAll { get; set; }
-        public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
-        public DbSet<User> Users { get; set; }
+
 
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)
