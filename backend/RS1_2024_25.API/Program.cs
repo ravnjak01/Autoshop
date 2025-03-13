@@ -94,7 +94,10 @@ using Microsoft.Extensions.DependencyInjection;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul1_Auth.Services;
+<<<<<<< Updated upstream
 using RS1_2024_25.API.Data.Middleware;
+=======
+>>>>>>> Stashed changes
 using RS1_2024_25.API.Helper;
 using RS1_2024_25.API.Helper.Auth;
 using RS1_2024_25.API.Services;
@@ -160,12 +163,19 @@ public partial class Program
         app.UseAuthentication(); // **Obavezno za ASP.NET Identity**
         app.UseAuthorization();
 
+<<<<<<< Updated upstream
 app.UseMiddleware<AuditLogMiddleware>();
 
         // **Dodaj rute**
         app.MapControllers();
         app.MapHub<MySignalrHub>("/mysignalr-hub-path");
 
+=======
+        // **Dodaj rute**
+        app.MapControllers();
+        app.MapHub<MySignalrHub>("/mysignalr-hub-path");
+
+>>>>>>> Stashed changes
         app.Run();
     }
 }
