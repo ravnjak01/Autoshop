@@ -22,24 +22,20 @@ namespace RS1_2024_25.API.Data
         public DbSet<MyAppUser> MyAppUsersAll { get; set; }
         public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
         public DbSet<User> Users { get; set; }  
-<<<<<<< Updated upstream
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
         public DbSet<BlogRating> BlogRatings { get; set; }
-=======
->>>>>>> Stashed changes
+
+
 
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-<<<<<<< Updated upstream
             modelBuilder.Entity<AuditLog>().ToTable("AuditLogs");
 
-=======
->>>>>>> Stashed changes
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
                 relationship.DeleteBehavior = DeleteBehavior.NoAction;
