@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
@@ -14,6 +15,12 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpGet("{id}")]
         public override async Task<BlogRatingByBlogIdResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
         {
+            var blogPost = await db.BlogPosts.FindAsync(id);
+            if (blogPost == null)
+            {
+                throw new KeyNotFoundException("Blog not found");
+            }
+
             var ratings = await db.BlogRatings
                                     .Where(r => r.BlogPostId == id)
                                     .ToListAsync();

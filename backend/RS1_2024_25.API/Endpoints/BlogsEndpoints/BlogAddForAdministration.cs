@@ -27,7 +27,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 await request.Image.CopyToAsync(memoryStream);
                 image = memoryStream.ToArray();
 
-                // Sačuvaj sliku u bazu ili na server
             }
             // Kreiranje ili ažuriranje blog posta
             if (blog == null)
