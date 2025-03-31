@@ -1,10 +1,62 @@
 .navbar {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
 }
 
-.main-menu, .admin-submenu {
+.main-menu {
+  display: flex;
+  gap: 20px;
   list-style-type: none;
-  padding: 0;
-  margin: 0;
+}
+
+.menu-item a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.menu-item a:hover {
+  background-color: #555;
+}
+
+/* Stil za Home link */
+.home-item a {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffcc00; /* Promijenite boju Home linka */
+  padding: 10px 20px;
+}
+
+.home-item a:hover {
+  background-color: #666; /* Dodajte hover efekt ako želite */
+}
+
+.admin-menu {
+  display: flex;
+}
+
+.admin-submenu {
+  list-style-type: none;
+  display: flex;
+  gap: 10px;
+}
+
+.admin-submenu .submenu-item a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-submenu .submenu-item a:hover {
+  background-color: #555;
+}
+
+mat-icon {
+  font-size: 16px; /* Postavite željenu veličinu ikone */
 }

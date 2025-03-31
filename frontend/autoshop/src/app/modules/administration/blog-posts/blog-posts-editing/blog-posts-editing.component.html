@@ -1,6 +1,6 @@
 <mat-card class="blog-form-card">
-  <h2 *ngIf="blogId != 0">Edit Blog Post</h2>
-  <h2 *ngIf="blogId == 0">Add New Blog Post</h2>
+  <h2 *ngIf="blogId != 0" class="form-title">Edit Blog Post</h2>
+  <h2 *ngIf="blogId == 0" class="form-title">Add New Blog Post</h2>
 
   <form (ngSubmit)="save()" [formGroup]="blogForm" enctype="multipart/form-data">
     <!-- Title Input -->
@@ -19,12 +19,13 @@
 
     <!-- Photo Upload -->
     <div class="photo-upload">
-      <label for="photoUpload">Upload Photo</label>
+      <label for="photoUpload" class="upload-label">Upload Photo</label>
       <input
         id="photoUpload"
         type="file"
         accept="image/*"
         (change)="onFileSelected($event)"
+        class="file-input"
       />
     </div>
 
@@ -33,13 +34,16 @@
     </div>
 
     <!-- Published Checkbox -->
-    <mat-checkbox formControlName="isPublished">Published</mat-checkbox>
+    <mat-checkbox formControlName="isPublished" class="checkbox">Published</mat-checkbox>
 
     <!-- Active Checkbox -->
-    <mat-checkbox formControlName="active">Active</mat-checkbox>
+    <mat-checkbox formControlName="active" class="checkbox">Active</mat-checkbox>
 
     <div class="form-buttons">
-      <button [disabled]="blogForm.invalid" color="primary" mat-raised-button type="submit">
+      <button [disabled]="blogForm.invalid"
+              color="primary"
+              mat-raised-button
+              type="submit">
         Save
       </button>
       <button color="warn" mat-raised-button (click)="close()" type="button">

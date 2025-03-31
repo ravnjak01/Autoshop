@@ -29,7 +29,7 @@ export class BlogDetailsComponent implements OnInit {
     public router: Router,
     private blogGetByIdService: BlogGetByIdForAdministrationService,
     private blogRatingService: BlogRatingGetByBlogIdService,
-    private ratingAddService: BlogRatingAddEndpointService,
+    private ratingAddService: BlogRatingAddEndpointService
   ) {
     this.blogId = 0;
   }
@@ -61,6 +61,12 @@ export class BlogDetailsComponent implements OnInit {
     });
   }
   addRating() {
+
+    if (this.currentRating < 1 || this.currentRating > 5) {
+      console.error('Rating must be between 1 and 5');
+      return;
+    }
+
     const request: BlogRatingRequest = {
       blogPostId: this.blogId,
       rating: this.currentRating
