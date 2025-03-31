@@ -3,7 +3,7 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppRoutingModule} from "./app-routing.module";
 import {AppComponent} from './app.component';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {MyAuthInterceptor} from './services/auth-services/my-auth-interceptor.service';
 import {MyAuthService} from './services/auth-services/my-auth.service';
 import {SharedModule} from './modules/shared/shared.module';
@@ -18,6 +18,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';
 import {BlogEditComponent} from './modules/administration/blog-posts/blog-posts-editing/blog-posts-editing.component';
 import {MatCard} from '@angular/material/card';
@@ -31,6 +32,7 @@ import {BlogListComponent} from './modules/blogs/blog-posts.component';
 import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
 import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment.component';
+import {MatButton} from '@angular/material/button';
 
 @NgModule({
   declarations: [
@@ -65,7 +67,9 @@ import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment
     MatDialogContent,
     MatDialogActions,
     MatToolbar,
+    MatTooltipModule,
     InfiniteScrollDirective,
+    MatButton,
   ],
   providers: [
     {

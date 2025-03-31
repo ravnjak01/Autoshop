@@ -1,9 +1,14 @@
 <nav class="navbar">
   <ul class="main-menu">
+    <!-- Stavke na lijevoj strani -->
+    <li class="menu-item home-item"><a routerLink="/home">Home</a></li>
+    <li *ngIf="!isAdminPage"  class="menu-item"><a routerLink="/blogs">Blogs</a></li> <!-- Ovdje nema uslova, uvijek je prisutno -->
+
+    <!-- Administracija na desnoj strani, prikazuje se samo kad niste na administrativnoj stranici -->
     <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
-    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/blogs">Blogs</a></li>
   </ul>
 
+  <!-- Administrativni meni koji je prikazan kad ste na administrativnoj stranici -->
   <div *ngIf="isAdminPage" class="admin-menu">
     <ul class="admin-submenu">
       <li class="submenu-item"><a routerLink="/administration/admin/blog-posts">Blogs</a></li>
@@ -12,8 +17,6 @@
   </div>
 </nav>
 
-<div >
-  <router-outlet>
-
-  </router-outlet>
+<div>
+  <router-outlet></router-outlet>
 </div>

@@ -1,18 +1,13 @@
 <div class="blog-comments">
-  <!-- Dodavanje novog komentara -->
-  <div *ngIf="!isAddingComment" class="add-comment-button">
-    <button (click)="isAddingComment = true">Dodaj komentar</button>
+  <!-- Comment Input Form -->
+  <div class="comment-input">
+    <textarea [(ngModel)]="newCommentContent" placeholder="Input your comment..."></textarea>
+
+    <button class="save-btn" (click)="addComment()">Save</button>
+    <button class="cancel-btn" (click)="clearComment()">Cancel</button>
   </div>
 
-  <!-- Formular za unos komentara -->
-  <div *ngIf="isAddingComment" class="comment-input">
-    <textarea [(ngModel)]="newCommentContent" placeholder="Unesite vaš komentar..."></textarea>
-
-    <button (click)="addComment()">Pošaljite komentar</button>
-    <button (click)="isAddingComment = false">Otkaži</button>
-  </div>
-
-  <!-- Lista komentara -->
+  <!-- Comment List -->
   <div *ngFor="let comment of comments" class="comment">
     <div class="comment-header">
       <span class="comment-user">{{ comment.anonymousName || 'Anonimus' }}</span>

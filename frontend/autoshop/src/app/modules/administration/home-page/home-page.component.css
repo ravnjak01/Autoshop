@@ -21,7 +21,7 @@
 }
 
 .btn {
-  background-color: #4CAF50;
+  background-color: #007bff;
   color: white;
   padding: 10px 20px;
   border: none;
@@ -31,7 +31,7 @@
 }
 
 .btn:hover {
-  background-color: #45a049;
+  background-color: #0056b3;
 }
 
 .card-body .btn-add {

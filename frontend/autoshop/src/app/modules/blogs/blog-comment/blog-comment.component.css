@@ -4,11 +4,6 @@
   margin: 0 auto;
 }
 
-.add-comment-button {
-  text-align: right;
-  margin-bottom: 20px;
-}
-
 .comment-input {
   margin-bottom: 20px;
 }
@@ -19,19 +14,35 @@ textarea {
   margin-bottom: 10px;
 }
 
-button {
-  padding: 10px;
-  background-color: #007bff;
+.save-btn {
+  background-color: #28a745; /* Green */
   color: white;
+  border: none;
+  padding: 8px 16px;
   border-radius: 5px;
-  border:1px solid #007bff;
   cursor: pointer;
-  margin-right: 10px;
+  transition: background 0.3s ease;
 }
 
-button:hover {
-  background-color: #0056b3;
+.save-btn:hover {
+  background-color: #218838;
 }
+
+.cancel-btn {
+  background-color: #dc3545; /* Red */
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-left: 10px;
+}
+
+.cancel-btn:hover {
+  background-color: #c82333;
+}
+
 
 .comment {
   border-bottom: 1px solid #ddd;

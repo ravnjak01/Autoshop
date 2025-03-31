@@ -148,8 +148,8 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
       width: '350px',
       data: {
-        title: 'Potvrda brisanja',
-        message: 'Da li ste sigurni da želite obrisati ovu stavku?'
+        title: 'Confirm deleting',
+        message: 'Are you sure you want to delete this'
       }
     });
 

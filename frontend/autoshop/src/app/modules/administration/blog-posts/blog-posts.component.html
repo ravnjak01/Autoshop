@@ -3,7 +3,9 @@
 
   <!-- Button to create a new blog post aligned to the right -->
   <div class="button-container">
-    <button color="primary" mat-raised-button (click)="openBlogPostForm($event, undefined)">New Blog Post</button>
+    <button class = "add" color="primary" mat-raised-button (click)="openBlogPostForm($event, undefined)" matTooltip="New Blog Post">
+      <mat-icon>add</mat-icon>
+    </button>
   </div>
 </div>
 
@@ -59,17 +61,17 @@
     <mat-cell *matCellDef="let blog">
       <!-- Using flexbox to align buttons in the same row -->
       <div class="action-buttons">
-        <button color="success" mat-button (click)="publish(blog.id, $event)">
-          {{ blog.isPublished ? 'Unpublish' : 'Publish' }}
+        <button color="success" mat-button (click)="publish(blog.id, $event)" matTooltip="{{ blog.isPublished ? 'Unpublish' : 'Publish' }}" >
+          <mat-icon>{{ blog.isPublished ? 'publish' : 'pause_circle_filled' }}</mat-icon>
         </button>
-        <button color="primary" mat-button (click)="openBlogPostForm($event, blog.id)">
-          Edit
+        <button color="primary" mat-button (click)="openBlogPostForm($event, blog.id)" matTooltip="Edit">
+          <mat-icon>edit</mat-icon>
         </button>
-        <button color="warning" mat-button (click)="deactivate(blog.id, $event)">
-          {{ blog.active ? 'Deactivate' : 'Activate' }}
+        <button color="warning" mat-button (click)="deactivate(blog.id, $event)" matTooltip="{{ blog.active ? 'Deactivate' : 'Activate' }}">
+          <mat-icon>{{ blog.active ? 'block' : 'check_circle' }}</mat-icon>
         </button>
-        <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id, $event)">
-          Delete
+        <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id, $event)" matTooltip="Delete">
+          <mat-icon>delete</mat-icon>
         </button>
       </div>
     </mat-cell>

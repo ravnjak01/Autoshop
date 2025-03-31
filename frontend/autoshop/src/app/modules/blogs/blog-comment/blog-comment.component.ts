@@ -18,7 +18,6 @@ export class BlogCommentsComponent implements OnInit {
   @Input() blogPostId!: number;
   comments: BlogCommentDto[] = [];
   newCommentContent: string = '';
-  isAddingComment: boolean = false;
 
   constructor(
     private commentGetService: BlogCommentGetByBlogIdService,
@@ -41,6 +40,11 @@ export class BlogCommentsComponent implements OnInit {
   }
 
   addComment() {
+    if (!this.newCommentContent.trim()) {
+      console.error('Comment cannot be empty');
+      return; // Exit the method if the comment is empty
+    }
+
     const request: BlogCommentRequest = {
       blogPostId: this.blogPostId,
       content: this.newCommentContent
@@ -54,12 +58,14 @@ export class BlogCommentsComponent implements OnInit {
       () => {
         this.loadComments();
         this.newCommentContent = '';
-        this.isAddingComment = false;
       },
       (error) => {
         console.error('Error adding comment', error);
       }
     );
 
+  }
+  clearComment(){
+    this.newCommentContent = '';
   }
 }
