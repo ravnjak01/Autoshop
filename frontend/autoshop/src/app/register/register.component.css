@@ -1,0 +1,73 @@
+/* General body styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Styling the registration form container */
+.form-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Form title */
+.form-container h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Individual form groups */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* Labels for inputs */
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Input fields styling */
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Input field focus effect */
+.form-group input:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* Styling the Submit button */
+.form-group button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+/* Hover effect for the button */
+.form-group button:hover {
+  background-color: #0056b3;
+}

@@ -42,4 +42,8 @@ export class MyAuthService {
       return null;
     }
   }
+
+  register(userData: any) {
+    return this.httpClient.post('http://localhost:7000/api/auth/register', userData);
+  }
 }

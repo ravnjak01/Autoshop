@@ -31,7 +31,7 @@ namespace RS1_2024_25.API.Helper.Api
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var success = await _authService.RegisterUser(model.Username, model.Email, model.Password);
+            var success = await _authService.RegisterUser(model.Username, model.Email, model.Password, model.Fullname);
             if (!success) return BadRequest("Email already in use.");
 
             return Ok("Registration successful");
@@ -60,5 +60,12 @@ namespace RS1_2024_25.API.Helper.Api
 
             return Ok(new { message = "Login successful" });
         }
+    }
+    public class RegisterModel
+    {
+        public string Username { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Fullname { get; set; } // Added Fullname property
     }
 }
