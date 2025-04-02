@@ -21,7 +21,7 @@ namespace RS1_2024_25.API.Data
 
         public DbSet<MyAppUser> MyAppUsersAll { get; set; }
         public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
-        public DbSet<User> Users { get; set; }  
+      
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
@@ -35,6 +35,7 @@ namespace RS1_2024_25.API.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<AuditLog>().ToTable("AuditLogs");
+      
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {

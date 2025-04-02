@@ -13,11 +13,15 @@ namespace RS1_2024_25.API.Data.Models.Modul1_Auth.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<bool> RegisterUser(string username, string email, string password)
+        public async Task<bool> RegisterUser(string username, string email, string password,string fullname)
         {
             if (_context.Users.Any(u => u.Email == email)) return false;
 
-            var user = new User { Username = username, Email = email };
+            var user = new User { UserName = username, 
+                Email = email 
+            ,FullName=fullname,
+                CreatedAt = DateTime.Now
+            };
             user.PasswordHash = _passwordHasher.HashPassword(user, password);
 
             _context.Users.Add(user);
