@@ -2,7 +2,6 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
-using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using System;
@@ -10,7 +9,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 [Route("data-seed")]
 public class DataSeedGenerateEndpoint(ApplicationDbContext db)
@@ -75,7 +73,85 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 );
             db.SaveChanges();
         }
-        
+
+        if (!db.Products.Any())
+        {
+            db.Products.AddRange(
+                new Product
+                {
+                    Name = "Engine Oil",
+                    Code = "ENG001",
+                    Description = "High-quality synthetic engine oil.",
+                    Price = 50.00m
+                },
+                new Product
+                {
+                    Name = "Brake Pads",
+                    Code = "BRK002",
+                    Description = "Durable brake pads for all car models.",
+                    Price = 75.00m,
+                },
+                new Product
+                {
+                    Name = "Car Battery",
+                    Code = "BAT003",
+                    Description = "Long-lasting car battery with high performance.",
+                    Price = 120.00m,
+                },
+                new Product
+                {
+                    Name = "Tire",
+                    Code = "TIR004",
+                    Description = "All-season tire with excellent grip.",
+                    Price = 100.00m,
+                },
+                new Product
+                {
+                    Name = "Spark Plugs",
+                    Code = "SPK005",
+                    Description = "High-performance spark plugs for better ignition.",
+                    Price = 30.00m,
+                },
+                new Product
+                {
+                    Name = "Air Filter",
+                    Code = "AIR006",
+                    Description = "High-efficiency air filter for cleaner air intake.",
+                    Price = 25.00m,
+                },
+                new Product
+                {
+                    Name = "Wiper Blades",
+                    Code = "WIP007",
+                    Description = "Durable wiper blades for clear visibility.",
+                    Price = 20.00m,
+                },
+                new Product
+                {
+                    Name = "Headlight Bulbs",
+                    Code = "HLB008",
+                    Description = "Bright headlight bulbs for better night driving.",
+                    Price = 40.00m,
+                },
+                new Product
+                {
+                    Name = "Car Wax",
+                    Code = "WAX009",
+                    Description = "Premium car wax for a shiny finish.",
+                    Price = 15.00m,
+                },
+                new Product
+                {
+                    Name = "Car Cover",
+                    Code = "COV010",
+                    Description = "Protective car cover for all weather conditions.",
+                    Price = 60.00m,
+                }
+            );
+            db.SaveChanges();
+        }
+
+
         return "Data generation completed successfully.";
     }
 }
