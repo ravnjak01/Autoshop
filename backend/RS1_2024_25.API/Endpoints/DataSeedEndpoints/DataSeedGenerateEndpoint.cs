@@ -74,78 +74,104 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
             db.SaveChanges();
         }
 
+        if (!db.Categories.Any())
+        {
+            var categories = new List<Category>
+            {
+                new Category { Name = "Gume", Code = "CAT001" },
+                new Category { Name = "Akumulatori", Code = "CAT002" },
+                new Category { Name = "Oprema/Kozmetika", Code = "CAT003" },
+                new Category { Name = "Autopatosnice", Code = "CAT004" },
+                new Category { Name = "Podmetači za gepek", Code = "CAT005" },
+                new Category { Name = "Alu felge", Code = "CAT006" }
+            };
+
+            db.Categories.AddRange(categories);
+            db.SaveChanges();
+        }
+
         if (!db.Products.Any())
         {
             db.Products.AddRange(
                 new Product
                 {
-                    Name = "Engine Oil",
+                    Name = "Motorno ulje",
                     Code = "ENG001",
-                    Description = "High-quality synthetic engine oil.",
-                    Price = 50.00m
+                    Description = "Visokokvalitetno sintetičko motorno ulje.",
+                    Price = 50.00m,
+                    CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Brake Pads",
+                    Name = "Kočione pločice",
                     Code = "BRK002",
-                    Description = "Durable brake pads for all car models.",
+                    Description = "Izdržljive kočione pločice za sve modele automobila.",
                     Price = 75.00m,
+                    CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Car Battery",
+                    Name = "Akumulator",
                     Code = "BAT003",
-                    Description = "Long-lasting car battery with high performance.",
+                    Description = "Dugotrajni akumulator visokih performansi.",
                     Price = 120.00m,
+                    CategoryId = 2
                 },
                 new Product
                 {
-                    Name = "Tire",
+                    Name = "Guma",
                     Code = "TIR004",
-                    Description = "All-season tire with excellent grip.",
+                    Description = "Cjelogodišnja guma s odličnim prianjanjem.",
                     Price = 100.00m,
+                    CategoryId = 1
                 },
                 new Product
                 {
-                    Name = "Spark Plugs",
+                    Name = "Svjećice",
                     Code = "SPK005",
-                    Description = "High-performance spark plugs for better ignition.",
+                    Description = "Svjećice visokih performansi za bolju paljenje.",
                     Price = 30.00m,
+                    CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Air Filter",
+                    Name = "Filter zraka",
                     Code = "AIR006",
-                    Description = "High-efficiency air filter for cleaner air intake.",
+                    Description = "Filter zraka visoke učinkovitosti za čišći unos zraka.",
                     Price = 25.00m,
+                    CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Wiper Blades",
+                    Name = "Metlice brisača",
                     Code = "WIP007",
-                    Description = "Durable wiper blades for clear visibility.",
+                    Description = "Izdržljive metlice brisača za jasnu vidljivost.",
                     Price = 20.00m,
+                    CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Headlight Bulbs",
+                    Name = "Žarulje za farove",
                     Code = "HLB008",
-                    Description = "Bright headlight bulbs for better night driving.",
+                    Description = "Svijetle žarulje za farove za bolju vožnju noću.",
                     Price = 40.00m,
+                    CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Car Wax",
+                    Name = "Vosak za auto",
                     Code = "WAX009",
-                    Description = "Premium car wax for a shiny finish.",
+                    Description = "Premium vosak za auto za sjajnu završnicu.",
                     Price = 15.00m,
+                    CategoryId = 3
                 },
                 new Product
                 {
-                    Name = "Car Cover",
+                    Name = "Navlaka za auto",
                     Code = "COV010",
-                    Description = "Protective car cover for all weather conditions.",
+                    Description = "Zaštitna navlaka za auto za sve vremenske uvjete.",
                     Price = 60.00m,
+                    CategoryId = 3
                 }
             );
             db.SaveChanges();

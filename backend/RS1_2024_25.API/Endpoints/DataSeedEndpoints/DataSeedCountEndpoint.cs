@@ -23,7 +23,8 @@
                      { "BlogPosts", db.BlogPosts.Count() },
                      { "BlogComments", db.BlogComments.Count() },
                      {"BlogRating", db.BlogRatings.Count() },
-                     {"Products", db.Products.Count() }
+                     {"Products", db.Products.Count() },
+                     { "Categories", db.Categories.Count() }
                 };
 
                 return dataCounts;
