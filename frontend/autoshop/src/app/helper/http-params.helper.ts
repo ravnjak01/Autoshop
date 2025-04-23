@@ -5,7 +5,13 @@ export function buildHttpParams<T extends Record<string, any>>(requestObject: T)
 
   Object.entries(requestObject).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
-      params = params.set(key, value.toString());
+      if (Array.isArray(value)) {
+        value.forEach((item) => {
+          params = params.append(key, item.toString());
+        });
+      } else {
+        params = params.set(key, value.toString());
+      }
     }
   });
 

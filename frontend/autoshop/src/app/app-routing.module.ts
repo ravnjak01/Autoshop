@@ -6,6 +6,7 @@ import {HomePageComponent} from './modules/administration/home-page/home-page.co
 import {BlogListComponent} from './modules/blogs/blog-posts.component';
 import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 import {RegisterComponent} from './register/register.component';
+import {ProductListComponent} from './modules/products/products.component';
 // Importujte komponentu
 
 const routes: Routes = [
@@ -17,6 +18,7 @@ const routes: Routes = [
   },
   { path: 'blogs', component: BlogListComponent },  // Definišite rutu za komponentu
   { path: 'blog/:id', component: BlogDetailsComponent},
+  {path: 'products', component: ProductListComponent},
   {path:'register', component: RegisterComponent},
   //{ path: '', redirectTo: '/admin/blog-posts', pathMatch: 'full' }, // Možete postaviti početnu stranicu
 ];
