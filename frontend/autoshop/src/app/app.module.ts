@@ -34,6 +34,8 @@ import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment.component';
 import {MatButton} from '@angular/material/button';
 import { RegisterComponent } from './register/register.component';
+import {ProductListComponent} from './modules/products/products.component';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
 @NgModule({
   declarations: [
     AppComponent,
@@ -45,7 +47,8 @@ import { RegisterComponent } from './register/register.component';
     BlogListComponent,
     BlogDetailsComponent,
     BlogCommentsComponent,
-    RegisterComponent
+    RegisterComponent,
+    ProductListComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -70,7 +73,8 @@ import { RegisterComponent } from './register/register.component';
     MatToolbar,
     InfiniteScrollDirective,
     MatButton,
-    MatTooltipModule
+    MatTooltipModule,
+    NgxSliderModule
   ],
   providers: [
     {

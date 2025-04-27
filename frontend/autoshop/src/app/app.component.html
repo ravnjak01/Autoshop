@@ -3,7 +3,7 @@
     <!-- Stavke na lijevoj strani -->
     <li class="menu-item home-item"><a routerLink="/home">Home</a></li>
     <li *ngIf="!isAdminPage"  class="menu-item"><a routerLink="/blogs">Blogs</a></li> <!-- Ovdje nema uslova, uvijek je prisutno -->
-
+<li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/products">Products</a></li>
     <!-- Administracija na desnoj strani, prikazuje se samo kad niste na administrativnoj stranici -->
     <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
   </ul>
