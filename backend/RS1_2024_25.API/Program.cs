@@ -48,13 +48,14 @@ public partial class Program
         {
             options.AddPolicy("AllowAll", policy =>
             {
-                policy.WithOrigins("http://localhost:7000") // Prilagodi po potrebi
-                //policy.AllowAnyOrigin()
+               policy.WithOrigins("http://localhost:4200") // Prilagodi po potrebi
+               //policy.AllowAnyOrigin()
                       .AllowAnyMethod()
                       .AllowAnyHeader()
                       .AllowCredentials(); // Ako koristi� cookies za autentifikaciju
             });
         });
+
 
         // **Dodaj servise**
         builder.Services.AddScoped<AuthService>();
@@ -76,8 +77,9 @@ public partial class Program
         app.UseAuthorization();
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseCors("AllowAll");
 
-      //  app.UseCors("AllowAll"); // **Primeni CORS politiku**
+        //  app.UseCors("AllowAll"); // **Primeni CORS politiku**
         app.UseIdentityServer();
         app.UseAuthentication(); // **Obavezno za ASP.NET Identity**
      

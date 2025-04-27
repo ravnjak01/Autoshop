@@ -26,7 +26,8 @@ namespace RS1_2024_25.API.Data
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
         public DbSet<BlogRating> BlogRatings { get; set; }
-
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
 
         #region METHODS
