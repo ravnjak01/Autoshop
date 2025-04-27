@@ -35,6 +35,7 @@ import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment
 import {MatButton} from '@angular/material/button';
 import { RegisterComponent } from './register/register.component';
 import {ProductListComponent} from './modules/products/products.component';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
 @NgModule({
   declarations: [
     AppComponent,
@@ -72,7 +73,8 @@ import {ProductListComponent} from './modules/products/products.component';
     MatToolbar,
     InfiniteScrollDirective,
     MatButton,
-    MatTooltipModule
+    MatTooltipModule,
+    NgxSliderModule
   ],
   providers: [
     {

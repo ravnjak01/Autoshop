@@ -12,7 +12,7 @@
   font-family: Arial, sans-serif;
 }
 
-.sidebar h5 {
+.sidebar h4 {
   color: #ffc107; /* Žuta */
   font-weight: bold;
   border-bottom: 2px solid #ffc107;
@@ -70,3 +70,26 @@
   padding: 5px;
 }
 
+.ngx-slider .ngx-slider-bar {
+  background: #ffe082 !important;
+}
+
+.ngx-slider .ngx-slider-selection {
+  background: #ffc107 !important;
+}
+
+.ngx-slider .ngx-slider-pointer {
+  background-color: #ffc107 !important;
+  border: 2px solid #ffa000 !important;
+}
+
+.ngx-slider .ngx-slider-pointer:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 193, 7, 0.3) !important;
+}
+
+.ngx-slider .ngx-slider-tooltip {
+  background-color: #ffc107 !important;
+  color: #000 !important;
+  border: 1px solid #ffa000 !important;
+}

@@ -17,7 +17,6 @@ export interface ProductGetAllRequest {
   minPrice?: number;
   maxPrice?: number;
   sortBy?: string; // "price" or "createdDate"
-  sortDescending?: boolean;
 }
 export interface Product {
   id: number;
@@ -25,7 +24,7 @@ export interface Product {
   code: string;
   description: string;
   price: number;
-  createdAt: string; // Date is typically represented as a string in Angular
+  createdAt: string;
   categoryId?: number;
   category: Category;
 }
@@ -47,8 +46,6 @@ export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllR
 
     const params = buildHttpParams(request);  // Use the helper function here
     return this.httpClient.get<ProductGetAllResponse>(`${this.apiUrl}`, {params}).pipe(
-      tap((data) => {
-
-      }));
+      tap(function () {}));
   }
 }

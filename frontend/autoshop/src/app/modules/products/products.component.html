@@ -1,7 +1,17 @@
 <div class="container">
   <!-- Sidebar (Kategorije) -->
   <div class="sidebar">
-    <h5>Kategorije</h5>
+    <div class="price-filter mb-3">
+      <label><strong>Cijena ({{ minPrice }} - {{ maxPrice }})</strong></label>
+      <ngx-slider
+        [(value)]="minPrice"
+        [(highValue)]="maxPrice"
+        [options]="sliderOptions"
+        (userChangeEnd)="onFilterSubmit()">
+      </ngx-slider>
+    </div>
+
+    <h4>Kategorije</h4>
     <form (ngSubmit)="onFilterSubmit()">
       <div *ngFor="let category of categories" class="form-check">
         <input
@@ -30,13 +40,11 @@
         (ngModelChange)="onSearchChange()"
       />
 
-      <select
-        class="form-control sort-select"
-        [(ngModel)]="sortBy"
-        (change)="onSortChange()"
-      >
-        <option value="price">Sortiraj po: Cijeni</option>
-        <option value="createdDate">Sortiraj po: Datumu</option>
+      <select class="form-control sort-select" [(ngModel)]="sortBy" (change)="onSortChange()">
+        <option value="createdDateDesc">Najnovije prvo</option>
+        <option value="createdDateAsc">Najstarije prvo</option>
+        <option value="priceAsc">Najjeftiniji prvo</option>
+        <option value="priceDesc">Najskuplji prvo</option>
       </select>
     </div>
 
