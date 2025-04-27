@@ -41,18 +41,28 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             // Sorting
             if (!string.IsNullOrEmpty(request.SortBy))
             {
-                var isDescending = request.SortDescending;
-
-                query = request.SortBy.ToLower() switch
+                switch (request.SortBy)
                 {
-                    "price" => isDescending ? query.OrderByDescending(p => p.Price) : query.OrderBy(p => p.Price),
-                    "createddate" => isDescending ? query.OrderByDescending(p => p.CreatedAt) : query.OrderBy(p => p.CreatedAt),
-                    _ => query.OrderBy(p => p.Name) // default sort
-                };
+                    case "priceAsc":
+                        query = query.OrderBy(p => p.Price);
+                        break;
+                    case "priceDesc":
+                        query = query.OrderByDescending(p => p.Price); 
+                        break;
+                    case "createdDateAsc":
+                        query = query.OrderBy(p => p.CreatedAt); 
+                        break;
+                    case "createdDateDesc":
+                        query = query.OrderByDescending(p => p.CreatedAt); 
+                        break;
+                    default:
+                        query = query.OrderBy(p => p.CreatedAt); 
+                        break;
+                }
             }
             else
             {
-                query = query.OrderBy(p => p.Name); // default
+                query = query.OrderBy(p => p.CreatedAt);
             }
 
             var products = await query.ToListAsync(cancellationToken);
@@ -70,7 +80,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
         public string? SortBy { get; set; } // "price", "createdDate"
-        public bool SortDescending { get; set; } = false;
     }
     public class ProductGetAllResponse
     {
