@@ -177,6 +177,44 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
             db.SaveChanges();
         }
 
+        if (!db.Discounts.Any())
+        {
+            db.Discounts.Add(new Discount
+            {
+                Name = "Proljetna Akcija",
+                DiscountPercentage = 10,
+                StartDate = new DateTime(2025, 4, 1),
+                EndDate = new DateTime(2025, 6, 1)
+            });
+            db.SaveChanges();
+        }
+
+        if (!db.DiscountProducts.Any())
+        {
+            db.DiscountProducts.AddRange(
+                new DiscountProduct { DiscountId = 1, ProductId = 1002 },
+                new DiscountProduct { DiscountId = 1, ProductId = 1003 }
+                );
+            db.SaveChanges();
+        }
+
+        if (!db.DiscountCategories.Any())
+        {
+            db.DiscountCategories.AddRange(
+                new DiscountCategory { DiscountId = 1, CategoryId = 1 },
+                new DiscountCategory { DiscountId = 1, CategoryId = 2 }
+                );
+            db.SaveChanges();
+        }
+
+        if (!db.DiscountCodes.Any())
+        {
+            db.DiscountCodes.AddRange(
+                new DiscountCode { DiscountId = 1, Code = "PROLJECE5" },
+                new DiscountCode { DiscountId = 1, Code = "AUTO10" }
+                );
+            db.SaveChanges();
+        }
 
         return "Data generation completed successfully.";
     }

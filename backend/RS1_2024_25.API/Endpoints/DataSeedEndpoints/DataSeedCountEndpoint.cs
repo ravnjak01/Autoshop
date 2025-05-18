@@ -22,9 +22,14 @@
                 {
                      { "BlogPosts", db.BlogPosts.Count() },
                      { "BlogComments", db.BlogComments.Count() },
-                     {"BlogRating", db.BlogRatings.Count() },
-                     {"Products", db.Products.Count() },
-                     { "Categories", db.Categories.Count() }
+                     { "BlogRating", db.BlogRatings.Count() },
+                     { "Products", db.Products.Count() },
+                     { "Categories", db.Categories.Count() },
+                     { "Discounts", db.Discounts.Count() },
+                     { "DiscountProducts", db.DiscountProducts.Count() },
+                     { "DiscountCodes", db.DiscountCodes.Count() },
+                     { "DiscountCategories", db.DiscountCategories.Count() },
+
                 };
 
                 return dataCounts;
