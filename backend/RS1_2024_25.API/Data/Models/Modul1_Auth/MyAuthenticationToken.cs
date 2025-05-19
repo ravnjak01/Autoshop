@@ -15,7 +15,10 @@ public class MyAuthenticationToken
 
     // Foreign key to link the token to a specific user
     [ForeignKey(nameof(MyAppUser))]
-    public int MyAppUserId { get; set; }
+    public string MyAppUserId { get; set; }
 
     public MyAppUser? MyAppUser { get; set; } // Navigation property to the user
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 }

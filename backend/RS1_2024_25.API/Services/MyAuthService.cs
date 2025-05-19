@@ -67,7 +67,7 @@ namespace RS1_2024_25.API.Services
 
         public MyAuthInfo GetAuthInfoFromTokenModel(MyAuthenticationToken? myAuthToken)
         {
-            if (myAuthToken == null)
+            if (myAuthToken == null || myAuthToken.ExpiresAt < DateTime.UtcNow)
             {
                 return new MyAuthInfo
                 {
@@ -79,7 +79,7 @@ namespace RS1_2024_25.API.Services
 
             return new MyAuthInfo
             {
-                UserId = myAuthToken.MyAppUserId,
+                UserId = int.TryParse(myAuthToken.MyAppUserId ?? string.Empty, out var userId) ? userId : 0,
                 Email = myAuthToken.MyAppUser!.Email,
                 FirstName = myAuthToken.MyAppUser.FirstName,
                 LastName = myAuthToken.MyAppUser.LastName,

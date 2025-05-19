@@ -31,28 +31,41 @@ public partial class Program
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
+
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+            options.LoginPath = "/api/auth/login"; // frontend šalje POST
+            options.AccessDeniedPath = "/api/auth/access-denied";
+            options.SlidingExpiration = true;
+        });
+
         // **Dodaj IdentityServer**
         builder.Services.AddIdentityServer(options =>
         {
             options.KeyManagement.Enabled = false;
         })
+
+
 .AddDeveloperSigningCredential()
 .AddAspNetIdentity<User>();
 
         //builder.Services.AddIdentityServer()
         //    .AddDeveloperSigningCredential()
         //    .AddAspNetIdentity<MyAppUser>();
-      
+
+       
         // **Dodaj CORS konfiguraciju**
+
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll", policy =>
+            options.AddPolicy("AllowFrontend", policy =>
             {
-                policy.WithOrigins("http://localhost:7000") // Prilagodi po potrebi
-                //policy.AllowAnyOrigin()
+               policy.WithOrigins("http://localhost:4200") // Prilagodi po potrebi
                       .AllowAnyMethod()
                       .AllowAnyHeader()
-                      .AllowCredentials(); // Ako koristi� cookies za autentifikaciju
+                     .AllowCredentials(); // Ako koristi� cookies za autentifikaciju
             });
         });
 
@@ -62,31 +75,62 @@ public partial class Program
         builder.Services.AddTransient<MyAuthService>();
         builder.Services.AddTransient<MyTokenGenerator>();
         builder.Services.AddSignalR();
-
+        builder.Services.AddAuthorization();
         // **Dodaj kontrolere i Swagger**
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(x => x.OperationFilter<MyAuthorizationSwaggerHeader>());
         builder.Services.AddHttpContextAccessor();
 
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.Cookie.HttpOnly = true;
+            options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // trajanje sesije
+            options.LoginPath = "/api/auth/login"; // gdje preusmjeriti ako nije autorizovan
+            options.AccessDeniedPath = "/api/auth/access-denied";
+            options.SlidingExpiration = true; // produži trajanje ako korisnik ostaje aktivan
+        });
+
 
 
         // **Dodaj middleware**
-        var app = builder.Build();
-        app.UseAuthorization();
-        app.UseSwagger();
-        app.UseSwaggerUI();
 
-      //  app.UseCors("AllowAll"); // **Primeni CORS politiku**
-        app.UseIdentityServer();
+
+
+        var app =builder.Build();
+
+
+        app.UseCors("AllowFrontend"); // **Primeni CORS politiku**
+
+        app.UseRouting(); // **Obavezno za ASP.NET Core**
         app.UseAuthentication(); // **Obavezno za ASP.NET Identity**
+
+        app.Use(async (context, next) =>
+        {
+            Console.WriteLine($"🧪 Request: {context.Request.Method} {context.Request.Path}");
+            await next();
+        });
+
+        app.UseAuthorization(); 
+        app.UseIdentityServer(); // **Obavezno za IdentityServer**
+       
+
+     // app.UseCors("AllowAll"); // **Primeni CORS politiku**
+      
      
 
-app.UseMiddleware<AuditLogMiddleware>();
-
+        app.UseMiddleware<AuditLogMiddleware>();
+     
         // **Dodaj rute**
         app.MapControllers();
         app.MapHub<MySignalrHub>("/mysignalr-hub-path");
+
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1");
+            c.RoutePrefix = "swagger"; // This line changes the Swagger UI path
+        });
         app.Run();
     }
 }
