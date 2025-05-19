@@ -1,5 +1,6 @@
+
 import {Component} from '@angular/core';
-import {Router} from '@angular/router';
+import {Router,NavigationEnd} from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -8,13 +9,24 @@ import {Router} from '@angular/router';
   standalone: false
 })
 export class AppComponent {
+  isLoginVisible = false;
   title = 'Auto-shop ';
 
   isAdminPage = false;
 
   constructor(private router: Router) {
-    this.router.events.subscribe(() => {
+    this.router.events.subscribe((event) => {
+      if(event instanceof NavigationEnd) {
+        const url=event.urlAfterRedirects;
+
+        if(url.includes('/register') || url.includes('/forgot-password') ) {
+          this.isLoginVisible = false;
+        }
       this.isAdminPage = this.router.url.includes('/admin');
+      }
     });
+  }
+  toggleLoginForm() {
+    this.isLoginVisible = !this.isLoginVisible;
   }
 }
