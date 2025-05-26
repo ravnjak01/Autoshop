@@ -11,7 +11,7 @@ namespace RS1_2024_25.API.Data.Models
         public string Token { get; set; }
 
         [Required]
-        [MinLength(6)]
+        [MinLength(8)]
         public string NewPassword { get; set; }
     }
 }

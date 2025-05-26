@@ -6,6 +6,7 @@ using RS1_2024_25.API.Data.Models.Modul1_Auth.Services;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+using RS1_2024_25.API.Services;
 
 namespace RS1_2024_25.API.Helper.Api
 {
@@ -16,12 +17,13 @@ namespace RS1_2024_25.API.Helper.Api
         private readonly AuthService _authService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-
-        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly IEmailService _emailService;
+        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager, IEmailService emailService)
         {
             _authService = authService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _emailService = emailService;
         }
 
         [AllowAnonymous]
@@ -90,10 +92,10 @@ namespace RS1_2024_25.API.Helper.Api
         [HttpGet("check-auth")]
         public IActionResult CheckAuth()
         {
-           // if (User.Identity != null && User.Identity.IsAuthenticated)
+            if (User.Identity != null && User.Identity.IsAuthenticated)
                 return Ok(new { user = User.Identity.Name });
 
-            //return Unauthorized();
+            return Unauthorized();
         }
 
         [AllowAnonymous]
@@ -103,20 +105,29 @@ namespace RS1_2024_25.API.Helper.Api
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                // Ne otkrivaj da korisnik ne postoji (security reason)
-                return Ok(new { message = "If an account with that email exists, a reset link has been sent." });
+                
+                return Ok(new { message = "Ako račun postoji,link je poslan." });
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"http://localhost:4200/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
 
-            // Ovdje pošalji email sa linkom za reset (ili samo pošalji token ako testiraš)
-            // Za sada ćemo samo vratiti token u odgovoru (testni scenarij)
-            return Ok(new
+            try
             {
-                message = "Reset token generated.",
-                resetToken = token,
-                email = user.Email
-            });
+
+           await _emailService.SendResetPasswordEmail(user.Email, resetLink);
+        return Ok(new
+        {
+            message = "Reset token generated and email sent.",
+            resetToken = token,
+            email = user.Email
+        });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"Greška pri slanju email-a: {ex.Message}");
+            }
+
         }
 
         [AllowAnonymous]
@@ -126,19 +137,19 @@ namespace RS1_2024_25.API.Helper.Api
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return BadRequest(new { message = "Invalid request." });
+                return BadRequest(new { message = "Nevalidan zahtjev." });
             }
 
             var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
             if (!result.Succeeded)
             {
-                return BadRequest(new { message = "Reset failed", errors = result.Errors });
+                return BadRequest(new { message = "Reset nije uspio", errors = result.Errors });
             }
 
-            return Ok(new { message = "Password reset successful." });
+            return Ok(new { message = "Resetovanje lozinke uspjesno." });
         }
 
-
+     
         public class RegisterModel
         {
             [Required]

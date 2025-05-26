@@ -76,6 +76,8 @@ public partial class Program
         builder.Services.AddTransient<MyTokenGenerator>();
         builder.Services.AddSignalR();
         builder.Services.AddAuthorization();
+        builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+        builder.Services.AddScoped<IEmailService, EmailService>();
         // **Dodaj kontrolere i Swagger**
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
