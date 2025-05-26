@@ -1,5 +1,6 @@
+<!-- This is the HTML template for the registration component. It includes a form for user registration with fields for full name, username, email, and password. The form uses Angular's reactive forms for validation and data binding. -->
 <div class="blog-comments">
-  <!-- Comment Input Form -->
+  - Comment Input Form 
   <div class="comment-input">
     <textarea [(ngModel)]="newCommentContent" placeholder="Input your comment..."></textarea>
 
@@ -7,7 +8,7 @@
     <button class="cancel-btn" (click)="clearComment()">Cancel</button>
   </div>
 
-  <!-- Comment List -->
+ Comment List
   <div *ngFor="let comment of comments" class="comment">
     <div class="comment-header">
       <span class="comment-user">{{ comment.anonymousName || 'Anonimus' }}</span>

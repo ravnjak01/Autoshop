@@ -1,5 +1,6 @@
-<div *ngIf="blog" class="blog-detail">
-  <h2 class="blog-title">{{ blog.title }}</h2>
+<!-- This is the HTML template for the registration component. It includes a form for user registration with fields for full name, username, email, and password. The form uses Angular's reactive forms for validation and data binding. 
+--> 
+<h2 class="blog-title">{{ blog.title }}</h2>
 
   <div class="image-container">
     <img *ngIf="blog.image" [src]="'data:image/jpeg;base64,' + blog.image" alt="Blog Image" class="blog-image">
@@ -27,5 +28,4 @@
     </div>
   </div>
 
-  <app-blog-comments [blogPostId]="blogId"></app-blog-comments>
-</div>
+<app-blog-comments [blogPostId]="blogId"></app-blog-comments>

@@ -23,9 +23,12 @@ export class MyAuthService {
 
     forgotPassword(email: string) {
   return this.httpClient.post<{ message: string, resetToken?: string }>(
-    '/api/auth/forgot-password',
+    `${this.apiUrl}/forgot-password`,
     { email }
   );
+}
+resetPassword(data: { email: string, token: string, newPassword: string }) {
+  return this.httpClient.post('http://localhost:7000/api/auth/reset-password', data);
 }
 
   register(data: { email: string, username:string,password: string }): Observable<any> {
@@ -63,8 +66,7 @@ export class MyAuthService {
       return null;
     }
   }
-/*
-  register(userData: any) {
-    return this.httpClient.post('http://localhost:7000/api/auth/register', userData);
-  }*/
+ 
+
+
 }

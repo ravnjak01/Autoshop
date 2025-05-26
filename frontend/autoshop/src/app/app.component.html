@@ -3,10 +3,10 @@
     <li class="menu-item home-item"><a routerLink="/home">Home</a></li>
     <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/blogs">Blogs</a></li>
     <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
-    <li class="menu-item login-button-item">
-      <button (click)="toggleLoginForm()">Login</button>
+   <li class="menu-item login-button-item">
+  <button (click)="goToLogin()">Login</button>
+</li>
 
-    </li>
   </ul>
 
   <div *ngIf="isAdminPage" class="admin-menu">
@@ -20,8 +20,14 @@
 <!-- Prikaz aktivne komponente kroz rute -->
 <div>
   <router-outlet></router-outlet>
+  <!--
   <div *ngIf="isLoginVisible" class="login-popup">
     <app-login></app-login>
   </div>
+  -->
+ <li class="menu-item login-button-item" *ngIf="!isLoginPage()">
+  <a routerLink="/login">Login</a>
+</li>
+
   
 </div>

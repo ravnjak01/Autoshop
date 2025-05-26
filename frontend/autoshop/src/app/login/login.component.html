@@ -32,8 +32,9 @@
         <div *ngIf="f['password'].errors['required']">Password je obavezan</div>
       </div>
     <div class="forgot-password-link">
-  <a (click)="navigateToForgotPassword()" style="cursor: pointer;">Zaboravili ste lozinku?</a>
-</div>
+      <a (click)="navigateToForgotPassword()">Zaboravili ste lozinku?</a>
+    </div>
+      
 
       <button type="submit" [disabled]="loading">
         <span *ngIf="loading" class="spinner"></span>

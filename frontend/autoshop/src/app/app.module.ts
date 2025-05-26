@@ -17,17 +17,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
-//import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';
-//import {BlogEditComponent} from './modules/administration/blog-posts/blog-posts-editing/blog-posts-editing.component';
-//import {MatCard} from '@angular/material/card';
+import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';
+import {BlogEditComponent} from './modules/administration/blog-posts/blog-posts-editing/blog-posts-editing.component';
+import {MatCard} from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import {MatCheckbox} from '@angular/material/checkbox';
-//import {BlogPostComponent} from './modules/administration/blog-posts/blog-post/blog-post.component';
+import {BlogPostComponent} from './modules/administration/blog-posts/blog-post/blog-post.component';
 import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
 import {MatToolbar} from '@angular/material/toolbar';
-//import {AdministrationComponent} from './modules/administration/administration.component';
-//import {HomePageComponent} from './modules/administration/home-page/home-page.component';
-//import {BlogListComponent} from './modules/blogs/blog-posts.component';
+import {AdministrationComponent} from './modules/administration/administration.component';
+import {HomePageComponent} from './modules/administration/home-page/home-page.component';
+import {BlogListComponent} from './modules/blogs/blog-posts.component';
 import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
 import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment.component';
@@ -38,21 +38,23 @@ import { RouterModule } from '@angular/router';
 import { RegisterComponent } from './register/register.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { ForgotPasswordComponent } from './login/forgot-password';  
+import { ForgotPasswordComponent } from './forgot-password/forgot-password';
+import { ResetPasswordComponent } from './forgot-password/reset-password/reset-password.component';  
 @NgModule({
   declarations: [
     RegisterComponent,
     LoginComponent,
     AppComponent,
     ForgotPasswordComponent,
-    //AdministrationComponent,
-    //HomePageComponent,
-    //BlogPostsComponent,
-    //BlogEditComponent,
-    //BlogPostComponent,
-   // BlogListComponent,
-   // BlogDetailsComponent,
-   // BlogCommentsComponent,
+    AdministrationComponent,
+    HomePageComponent,
+    BlogPostsComponent,
+    BlogEditComponent,
+    BlogPostComponent,
+    BlogListComponent,
+   BlogDetailsComponent,
+   BlogCommentsComponent,
+   ResetPasswordComponent,
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -70,7 +72,7 @@ import { ForgotPasswordComponent } from './login/forgot-password';
     MatIconModule,
     MatPaginatorModule,
     MatSortModule,
-   // MatCard,
+    MatCard,
     MatCheckbox,
     MatDialogContent,
     MatDialogActions,

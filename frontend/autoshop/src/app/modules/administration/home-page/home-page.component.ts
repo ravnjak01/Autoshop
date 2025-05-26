@@ -1,3 +1,4 @@
+
 import {Component} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
 import {BlogEditComponent} from '../blog-posts/blog-posts-editing/blog-posts-editing.component';
@@ -22,3 +23,4 @@ export class HomePageComponent {
     });
   }
 }
+

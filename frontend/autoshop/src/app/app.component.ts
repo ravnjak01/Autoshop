@@ -11,7 +11,7 @@ import {Router,NavigationEnd} from '@angular/router';
 export class AppComponent {
   isLoginVisible = false;
   title = 'Auto-shop ';
-
+  currentRoute: string = '';
   isAdminPage = false;
 
   constructor(private router: Router) {
@@ -29,4 +29,10 @@ export class AppComponent {
   toggleLoginForm() {
     this.isLoginVisible = !this.isLoginVisible;
   }
+   isLoginPage(): boolean {
+    return this.currentRoute === '/login';
+  }
+  goToLogin() {
+  this.router.navigate(['/login']);
+}
 }

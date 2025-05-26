@@ -24,6 +24,9 @@
   margin-bottom: 24px;
   font-weight: 600;
 }
+.forgot-password-link{
+  cursor: pointer;
+}
 
 /* Form elements styling */
 form {

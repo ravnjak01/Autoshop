@@ -38,7 +38,7 @@
   </div>
     <div *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched" class="error-message">
       <span *ngIf="registrationForm.get('password')?.errors?.['required']">Password je obavezan.</span>
-      <span *ngIf="registrationForm.get('password')?.errors?.['minlength']">Password mora imati najmanje 6 karaktera.</span>
+      <span *ngIf="registrationForm.get('password')?.errors?.['minlength']">Password mora imati najmanje 8 karaktera.</span>
     </div>
   </div>
 
@@ -47,7 +47,10 @@
     <input type="password" id="confirmPassword" formControlName="confirmPassword">
     <div *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched" class="error-message">
       <span *ngIf="registrationForm.get('confirmPassword')?.errors?.['required']">Potvrda lozinke je obavezna.</span>
-      <span *ngIf="registrationForm.get('confirmPassword')?.errors?.['passwordMismatch']">Lozinke se ne podudaraju.</span>
+     <span *ngIf="registrationForm.errors?.['passwordMismatch'] && registrationForm.get('confirmPassword')?.touched">
+  Lozinke se ne podudaraju.
+</span>
+
     </div>
 
 

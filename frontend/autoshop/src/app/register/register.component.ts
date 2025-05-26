@@ -24,19 +24,35 @@ export class RegisterComponent {
       password: ['', [Validators.required, Validators.minLength(8)]],
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
+
+    this.registrationForm.get('password')?.valueChanges.subscribe(() => {
+  this.registrationForm.get('confirmPassword')?.updateValueAndValidity();
+});
+
   }
 
   passwordMatchValidator(form: FormGroup) {
-    const password = form.get('password')?.value;
-    const confirmPassword = form.get('confirmPassword')?.value;
+  const password = form.get('password')?.value;
+  const confirmPassword = form.get('confirmPassword')?.value;
 
-    if (password !== confirmPassword) {
-      form.get('confirmPassword')?.setErrors({ passwordMismatch: true });
-      return { passwordMismatch: true };
-    } else {
-      return null;
+  if (password !== confirmPassword) {
+    form.get('confirmPassword')?.setErrors({ passwordMismatch: true });
+    return { passwordMismatch: true };
+  } else {
+    // ❗ uklanjanje prethodno postavljenih grešaka ako se lozinke poklapaju
+    const errors = form.get('confirmPassword')?.errors;
+    if (errors) {
+      delete errors['passwordMismatch'];
+      if (Object.keys(errors).length === 0) {
+        form.get('confirmPassword')?.setErrors(null);
+      } else {
+        form.get('confirmPassword')?.setErrors(errors);
+      }
     }
+    return null;
   }
+}
+
 
   onSubmit() {
     if (this.registrationForm.valid) {
