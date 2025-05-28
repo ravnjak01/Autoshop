@@ -1,6 +1,7 @@
 
 import {Component} from '@angular/core';
 import {Router,NavigationEnd} from '@angular/router';
+import { MyAuthService } from './services/auth-services/my-auth.service';
 
 @Component({
   selector: 'app-root',
@@ -13,8 +14,8 @@ export class AppComponent {
   title = 'Auto-shop ';
   currentRoute: string = '';
   isAdminPage = false;
-
-  constructor(private router: Router) {
+  isUserLoggedIn = false;
+  constructor(private router: Router, public authService: MyAuthService) {
     this.router.events.subscribe((event) => {
       if(event instanceof NavigationEnd) {
         const url=event.urlAfterRedirects;
@@ -24,15 +25,31 @@ export class AppComponent {
         }
       this.isAdminPage = this.router.url.includes('/admin');
       }
+
+   
     });
+        this.authService.isLoggedIn$.subscribe((loggedIn) => {
+      this.isUserLoggedIn = loggedIn;
+    });
+    
   }
-  toggleLoginForm() {
-    this.isLoginVisible = !this.isLoginVisible;
+  ngOnInit() {
+  if (!this.authService.isLoggedIn()) {
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
   }
-   isLoginPage(): boolean {
-    return this.currentRoute === '/login';
-  }
-  goToLogin() {
-  this.router.navigate(['/login']);
 }
+    toggleLoginForm() {
+      this.isLoginVisible = !this.isLoginVisible;
+    }
+     isLoginPage(): boolean {
+      return this.currentRoute === '/login';
+    }
+    goToLogin() {
+    this.router.navigate(['/login']);
+  }
+  onLogout() {
+  this.authService.logout();
+  }
+
 }

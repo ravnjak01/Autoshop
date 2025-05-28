@@ -10,11 +10,15 @@
   display: flex;
   gap: 20px;
   list-style-type: none;
+  align-items: center; /* Dodato: Poravnaj stavke unutar .main-menu vertikalno po sredini */
+  height: 100%;
 }
 
 .menu-item a {
   color: white;
   text-decoration: none;
+  display: flex;
+  
   padding: 8px 16px;
   border-radius: 5px;
   transition: background-color 0.3s ease;
@@ -24,6 +28,41 @@
   background-color: #555;
 }
 
+.login-button-item button{
+  /* Preuzimamo stilove iz .menu-item a */
+  color: white;
+  text-decoration: none; /* Dugme nema text-decoration, ali zbog uniformnosti stila */
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  background-color: transparent; /* Počinjemo s transparentnom pozadinom kao linkovi */
+  border: none; /* Uklonite podrazumevani obrub dugmeta */
+  cursor: pointer; /* Postavite kursor na pointer da naznačite da je klikabilno */
+  font-family: Arial, sans-serif; /* Primeni font-family kao i na li elemente */
+  font-size: 16px; /* Prilagodite veličinu fonta ako je potrebno da odgovara linkovima */
+  line-height: normal; /* Osigurava da se tekst dugmeta poravna sa linkovima */
+  appearance: none; /* Uklanja podrazumevane stilove dugmeta specifične za pretraživač */
+}
+.logout-button-item button{
+color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  background-color: transparent; 
+  border: none;
+  cursor: pointer; 
+  font-family: Arial, sans-serif; 
+  font-size: 16px; 
+  line-height: normal; 
+  appearance: none; 
+}
+.logout-button-item button:hover {
+  background-color: #555; /* Hover efekat kao kod linkova */
+}
+.login-button-item button:hover {
+  background-color: #555; /* Hover efekat kao kod linkova */
+}
 /* Stil za Home link */
 .home-item a {
   font-size: 18px;
