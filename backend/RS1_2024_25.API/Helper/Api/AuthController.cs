@@ -62,6 +62,9 @@ namespace RS1_2024_25.API.Helper.Api
             {
 
                 var user = await _userManager.FindByNameAsync(model.Username);
+                var roles=await _userManager.GetRolesAsync(user);
+                var role=roles.FirstOrDefault();
+
                 if (user == null)
                 {
                     Console.WriteLine("User not found");
@@ -73,7 +76,11 @@ namespace RS1_2024_25.API.Helper.Api
                 if (!result.Succeeded) return Unauthorized(new { message = "Invalid username or password" });
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return Ok(new { message = "Login successful" });
+                return Ok(new {
+                    message = "Login successful" ,
+                    username = user.UserName,
+                    role=role
+                });
             }
             catch (Exception ex)
             {
