@@ -69,6 +69,7 @@ public partial class Program
             });
         });
 
+
         // **Dodaj servise**
         builder.Services.AddScoped<AuthService>();
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
@@ -107,20 +108,15 @@ public partial class Program
         app.UseRouting(); // **Obavezno za ASP.NET Core**
         app.UseAuthentication(); // **Obavezno za ASP.NET Identity**
 
+
+        app.UseAuthorization(); 
+        app.UseIdentityServer(); // **Obavezno za IdentityServer**
         app.Use(async (context, next) =>
         {
             Console.WriteLine($"🧪 Request: {context.Request.Method} {context.Request.Path}");
             await next();
         });
-
-        app.UseAuthorization(); 
-        app.UseIdentityServer(); // **Obavezno za IdentityServer**
-       
-
-     // app.UseCors("AllowAll"); // **Primeni CORS politiku**
       
-     
-
         app.UseMiddleware<AuditLogMiddleware>();
      
         // **Dodaj rute**

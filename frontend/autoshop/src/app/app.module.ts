@@ -36,6 +36,8 @@ import { FormsModule } from '@angular/forms';
 import { LoginComponent } from './login/login.component';
 import { RouterModule } from '@angular/router'; 
 import { RegisterComponent } from './register/register.component';
+import {ProductListComponent} from './modules/products/products.component';
+import {NgxSliderModule} from '@angular-slider/ngx-slider';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password';
@@ -52,9 +54,11 @@ import { ResetPasswordComponent } from './forgot-password/reset-password/reset-p
     BlogEditComponent,
     BlogPostComponent,
     BlogListComponent,
-   BlogDetailsComponent,
-   BlogCommentsComponent,
-   ResetPasswordComponent,
+    BlogDetailsComponent,
+    BlogCommentsComponent,
+    RegisterComponent,
+    ProductListComponent
+
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -80,6 +84,7 @@ import { ResetPasswordComponent } from './forgot-password/reset-password/reset-p
     InfiniteScrollDirective,
     MatButton,
     MatTooltipModule,
+    NgxSliderModule,
     AppRoutingModule,
     RouterModule ,
     CommonModule,

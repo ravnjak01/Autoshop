@@ -6,6 +6,7 @@ import {HomePageComponent} from './modules/administration/home-page/home-page.co
 import {BlogListComponent} from './modules/blogs/blog-posts.component';
 import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 import {RegisterComponent} from './register/register.component';
+import {ProductListComponent} from './modules/products/products.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password';
 import { ResetPasswordComponent } from './forgot-password/reset-password/reset-password.component';
@@ -18,6 +19,7 @@ const routes: Routes = [
   },
   { path: 'blogs', component: BlogListComponent },  
   { path: 'blog/:id', component: BlogDetailsComponent},
+  {path: 'products', component: ProductListComponent},
   {path:'login', component: LoginComponent},
   {path:'register', component: RegisterComponent},
   { path: '', redirectTo: 'home', pathMatch: 'full' },
