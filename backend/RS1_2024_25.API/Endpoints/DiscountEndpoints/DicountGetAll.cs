@@ -29,8 +29,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                     Name = d.Name,
                     DiscountPercentage = d.DiscountPercentage,
                     StartDate = d.StartDate,
-                    EndDate = d.EndDate,
-                    RequiresPromoCode = d.RequiresPromoCode
+                    EndDate = d.EndDate
                 });
 
             var result = await MyPagedList<DiscountGetAllResponse>.CreateAsync(projectedQuery, request, cancellationToken);
