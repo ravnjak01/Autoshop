@@ -12,26 +12,7 @@ namespace RS1_2024_25.API.Data.Models.Modul1_Auth.Services
             _userManager = userManager;
         }
 
-        //public async Task<bool> RegisterUser(string username, string email, string password, string fullname)
-        //{
-        //    var existingUserByEmail = await _userManager.FindByEmailAsync(email);
-        //    if (existingUserByEmail != null) return false;
-
-        //    var existingUserByUsername = await _userManager.FindByNameAsync(username);
-        //    if (existingUserByUsername != null) return false; // Dodaj provjeru i za korisničko ime
-
-        //    var user = new User
-        //    {
-        //        UserName = username,
-        //        Email = email,
-        //        FullName = fullname,
-        //        CreatedAt = DateTime.Now
-        //    };
-
-        //    var result = await _userManager.CreateAsync(user, password);
-        //    return result.Succeeded;
-        //}
-        public async Task<bool> RegisterUser(string username, string email, string password, string fullname)
+        public async Task<bool> RegisterUser(string username, string email, string password, string firstname,string lastname)
         {
             Console.WriteLine($"Pokusaj registracije: username={username}, email={email}");
 
@@ -48,7 +29,8 @@ namespace RS1_2024_25.API.Data.Models.Modul1_Auth.Services
             {
                 UserName = username,
                 Email = email,
-                FullName = fullname,
+                FirstName=firstname,
+                LastName = lastname,
                 CreatedAt = DateTime.Now
             };
 

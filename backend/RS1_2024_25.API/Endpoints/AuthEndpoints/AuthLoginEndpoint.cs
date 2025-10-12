@@ -15,54 +15,59 @@ using static RS1_2024_25.API.Endpoints.AuthEndpoints.AuthLoginEndpoint;
 namespace RS1_2024_25.API.Endpoints.AuthEndpoints
 {
     [Route("auth")]
-    public class AuthLoginEndpoint(ApplicationDbContext db, MyAuthService authService, UserManager<User> userManager) : MyEndpointBaseAsync
+    public class AuthLoginEndpoint(ApplicationDbContext db, MyAuthService authService, UserManager<User> userManager,MyTokenGenerator myTokenGenerator) : MyEndpointBaseAsync
         .WithRequest<LoginRequest>
         .WithActionResult<LoginResponse>
     {
+
+        
+
         [HttpPost("login")]
         public override async Task<ActionResult<LoginResponse>> HandleAsync(LoginRequest request, CancellationToken cancellationToken = default)
         {
-            // Provjera da li korisnik postoji u bazi  
-            var loggedInUser = await db.MyAppUsersAll
-                .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
 
-            //var user = loggedInUser as User;
-            var user = await db.MyAppUsersAll
-             .OfType<User>()
-                .FirstOrDefaultAsync(u => u.Email == request.Email, cancellationToken);
-            //if (loggedInUser == null || !loggedInUser.VerifyPassword(request.Password))
-            //{
-            //    if (loggedInUser != null)
-            //    {
-            //        await db.SaveChangesAsync(cancellationToken);
-            //    }
-            //    return Unauthorized(new { Message = "Incorrect username or password" });
-            //}
-            if (loggedInUser == null || !await userManager.CheckPasswordAsync(loggedInUser, request.Password))
+            User user = await userManager.FindByEmailAsync(request.Email);
+
+
+            if (user == null || !await userManager.CheckPasswordAsync(user, request.Password))
             {
                 return Unauthorized(new { Message = "Incorrect username or password" });
             }
-            // Generisanje novog autentifikacionog tokena  
-            MyAuthenticationToken newAuthToken = await authService.GenerateSaveAuthToken(loggedInUser, cancellationToken);
-            MyAuthInfo authInfo = authService.GetAuthInfoFromTokenModel(newAuthToken);
+      
+            var roles=await userManager.GetRolesAsync(user);
+
+            string jwtToken = myTokenGenerator.GenerateToken(user, roles);
+
+            var authInfo = new MyAuthInfo
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                IsAdmin = await userManager.IsInRoleAsync(user, "Admin"),
+                IsManager = await userManager.IsInRoleAsync(user, "Manager"),
+                IsCustomer = await userManager.IsInRoleAsync(user, "Customer"),
+                IsLoggedIn = true,
+              
+            };
 
             return new LoginResponse
             {
-                Token = newAuthToken.Value,
+                Token = jwtToken,
                 MyAuthInfo = authInfo
             };
         }
 
         public class LoginRequest
         {
-            public required string Email { get; set; }
-            public required string Password { get; set; }
+            public required string Email { get; init; }
+            public required string Password { get; init; }
         }
 
         public class LoginResponse
         {
-            public required MyAuthInfo? MyAuthInfo { get; set; }
-            public string Token { get; internal set; }
+            public required string Token { get; init; } 
+            public required MyAuthInfo MyAuthInfo { get; init; }
         }
 
         /*

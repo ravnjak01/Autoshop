@@ -10,7 +10,7 @@
   display: flex;
   gap: 20px;
   list-style-type: none;
-  align-items: center; /* Dodato: Poravnaj stavke unutar .main-menu vertikalno po sredini */
+  align-items: center; 
   height: 100%;
 }
 
@@ -58,12 +58,12 @@ color: white;
   appearance: none; 
 }
 .logout-button-item button:hover {
-  background-color: #555; /* Hover efekat kao kod linkova */
+  background-color: #555; 
 }
 .login-button-item button:hover {
-  background-color: #555; /* Hover efekat kao kod linkova */
+  background-color: #555; 
 }
-/* Stil za Home link */
+
 .home-item a {
   font-size: 18px;
   font-weight: bold;
@@ -102,4 +102,63 @@ mat-icon {
 }
 li{
   font-family: Arial, sans-serif;
+}
+/* Navbar mora biti positioning context */
+.navbar {
+    position: relative;
+}
+
+/* Stilovi za dugme korpe u navigation baru */
+.cart-button-item {
+    position: relative; /* Potrebno za pozicioniranje sidebara */
+}
+
+.cart-button-item button {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: normal;
+    appearance: none;
+}
+
+.cart-button-item button:hover {
+    background-color: #555;
+}
+
+/* Osnovni stilovi za sidebar korpe */
+.cart-sidebar {
+    /* Simulira bijelu pozadinu pop-up prozora */
+    background-color: #ffffff;
+    /* Dodaje blagu sjenu za pop-up efekat */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* Manji padding unutar samog panela */
+    padding: 20px 15px;
+    /* Fiksna širina panela za potpunu vidljivost teksta */
+    width: 400px;
+    max-width: 100%;
+    /* Font i boja teksta - prilagoditi font ako je potrebno */
+    font-family: Arial, sans-serif;
+    color: #333333;
+    overflow-x: hidden;
+    /* Pozicioniranje ispod navbara */
+    position: absolute;
+    top: 100%; /* Pozicionira se odmah ispod navbara */
+    right: 20px; /* Poravnanje sa desne strane sa malim razmakom */
+    margin-top: 0; /* Bez razmaka jer je već ispod navbara */
+    z-index: 1000; /* Osigurava da je iznad ostalih elemenata */
+}
+
+/* Alternativno, ako želite da bude tačno ispod dugmeta Korpa */
+.cart-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
 }

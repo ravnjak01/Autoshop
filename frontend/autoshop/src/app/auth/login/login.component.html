@@ -1,0 +1,50 @@
+
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>
+
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <label for="username">Korisničko ime:</label>
+      <input 
+        type="text" 
+        id="username" 
+        formControlName="username" 
+        [ngClass]="{'is-invalid': submitted && f['username'].errors}"
+      />
+      <div *ngIf="submitted && f['username'].errors" class="error-message">
+        <div *ngIf="f['username'].errors['required']">Korisničko ime je obavezno</div>
+        <div *ngIf="f['username'].errors['username']">Unesite korisničko ime</div>
+      </div>
+
+      <label for="password">Password:</label>
+      <input 
+        type="password" 
+        id="password" 
+        formControlName="password"
+        [ngClass]="{'is-invalid': submitted && f['password'].errors}" 
+      />
+      <div *ngIf="submitted && f['password'].errors" class="error-message">
+        <div *ngIf="f['password'].errors['required']">Password je obavezan</div>
+      </div>
+    <div class="forgot-password-link">
+      <a (click)="navigateToForgotPassword()">Zaboravili ste lozinku?</a>
+    </div>
+      
+
+      <button type="submit" [disabled]="loading">
+        <span *ngIf="loading" class="spinner"></span>
+        Prijavi se
+      </button>
+    </form>
+
+    <p>Nemate nalog? 
+      <a routerLink="/register">Registruj se</a>
+    </p>
+  </div>
+</div>
+

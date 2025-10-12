@@ -1,31 +1,33 @@
 <nav class="navbar">
   <ul class="main-menu">
     <li class="menu-item home-item"><a routerLink="/home">Home</a></li>
-    <li *ngIf="!isAdminPage"  class="menu-item"><a routerLink="/blogs">Blogs</a></li> <!-- Ovdje nema uslova, uvijek je prisutno -->
-    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/products">Products</a></li>
-    <!-- Administracija na desnoj strani, prikazuje se samo kad niste na administrativnoj stranici -->
+    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/blogs">Blogs</a></li>
+    <li *ngIf="!isAdminPage" class="menu-item">
+      <a routerLink="/products">Products</a>
+    </li>
     <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
-   <li class="menu-item login-button-item" *ngIf="!authService.isLoggedIn()">
-    <button (click)="goToLogin()">Login</button>
-  </li>
-  <li class="menu-item logout-button-item" *ngIf="isUserLoggedIn">
-    <button (click)="onLogout()">Odjavi se</button>
-  </li>
+    
+   
+    <li class="menu-item login-button-item " *ngIf="!authService.isLoggedIn()">
+      <button (click)="goToLogin()">Login</button>
+    </li>
+    <li class="menu-item logout-button-item " *ngIf="isUserLoggedIn">
+      <button (click)="onLogout()">Odjavi se</button>
+    </li>
+   <li class="menu-item cart-button-item push-right-desno" >
+  <button (click)="toggleCart()">Korpa</button>
+</li>
 
   </ul>
+
+ <cart-sidebar *ngIf="isCartOpen" class="cart-dropdown"></cart-sidebar>
 
   <div *ngIf="isAdminPage" class="admin-menu">
     <ul class="admin-submenu">
       <li class="submenu-item"><a routerLink="/administration/admin/blog-posts">Blogs</a></li>
     </ul>
   </div>
-  
 </nav>
 
-<!-- Prikaz aktivne komponente kroz rute -->
-<div>
-  <router-outlet></router-outlet>
- 
 
-  
-</div>
+<router-outlet></router-outlet>

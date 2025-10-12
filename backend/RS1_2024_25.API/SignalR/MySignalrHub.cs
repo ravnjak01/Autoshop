@@ -1,75 +1,80 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using RS1_2024_25.API.Services;
+using System.Security.Claims;
 
 namespace RS1_2024_25.API.SignalRHubs
 {
-    public class MySignalrHub(MyAuthService myAuthService) : Hub
+    public class MySignalrHub : Hub
     {
-        private string? GetMyAuthToken()
+        private string? GetUserEmail()
         {
-            return Context.GetHttpContext()?.Request.Query["my-auth-token"];
+            return Context.User?.FindFirst(ClaimTypes.Email)?.Value;
+        }
+        private string? GetUserId()
+        {
+            return Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         }
 
         public override async Task OnConnectedAsync()
         {
-            // Dohvati token iz query stringa
-            var tokenString = GetMyAuthToken();
-
-            if (string.IsNullOrEmpty(tokenString))
+            if (Context.User?.Identity?.IsAuthenticated != true)
             {
-                // Prekid konekcije ako token nije poslan
-                throw new HubException("Unauthorized: Token is missing.");
+                throw new HubException("Unauthorized: User not authenticated.");
             }
 
-            // Validacija tokena i dohvatanje korisničkih informacija
-            MyAuthInfo authInfo = myAuthService.GetAuthInfoFromTokenString(tokenString);
-
-            if (!authInfo.IsLoggedIn)
+            var email = GetUserEmail();
+            if (string.IsNullOrEmpty(email))
             {
-                // Prekid konekcije ako token nije validan
-                throw new HubException("Unauthorized: Invalid token.");
+                throw new HubException("Unauthorized: Email claim missing.");
             }
 
-            // Dodavanje korisnika u grupu na osnovu njegovog korisničkog emaila/username
-            await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{authInfo.Email}");
+            // Dodavanje korisnika u grupu na osnovu emaila
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{email}");
 
-            Console.WriteLine($"User {authInfo.Email} connected with ConnectionId {Context.ConnectionId}");
+            Console.WriteLine($"User {email} connected with ConnectionId {Context.ConnectionId}");
 
             await base.OnConnectedAsync();
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            // Dohvati token iz query stringa
-            var tokenString = GetMyAuthToken();
+            var email = GetUserEmail();
 
-            if (!string.IsNullOrEmpty(tokenString))
+            if (!string.IsNullOrEmpty(email))
             {
-                var authInfo = myAuthService.GetAuthInfoFromTokenString(tokenString);
-
-                if (authInfo.IsLoggedIn)
-                {
-                    // Uklanjanje korisnika iz grupe
-                    await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user_{authInfo.Email}");
-                }
+                // Uklanjanje korisnika iz grupe
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user_{email}");
+                Console.WriteLine($"User {email} disconnected from ConnectionId {Context.ConnectionId}");
             }
 
             await base.OnDisconnectedAsync(exception);
         }
 
         // Metoda za slanje poruke korisniku
-        public async Task MyServerHubMethod1(string toUser, string message)
+        public async Task MyServerHubMethod1(string toUserEmail, string message)
         {
-            var tokenString = GetMyAuthToken();
+                // Korisnik je već autentifikovan kroz [Authorize] atribut
+            var senderEmail = GetUserEmail();
 
-            var authInfo = myAuthService.GetAuthInfoFromTokenString(tokenString);
+            if (string.IsNullOrEmpty(senderEmail))
+                throw new HubException("Unauthorized: Sender email missing.");
 
-            if (!authInfo.IsLoggedIn)
-                throw new HubException("Unauthorized.");
+            // Slanje poruke korisniku toUserEmail
+            await Clients.Group($"user_{toUserEmail}")
+                         .SendAsync("myClientMethod1", new
+                         {
+                             from = senderEmail,
+                             message = message,
+                             timestamp = DateTime.UtcNow
+                         });
+        }
+        // Opciono: Metoda za provjeru da li je korisnik u određenoj ulozi
+        public async Task SendToAdmins(string message)
+        {
+            if (!Context.User.IsInRole("Admin"))
+                throw new HubException("Forbidden: Only admins can use this method.");
 
-            // Slanje poruke useru toUser
-            await Clients.Group($"user_{toUser}")
-                         .SendAsync("myClientMethod1", message);
+            await Clients.Group("Admins").SendAsync("adminMessage", message);
         }
     }
 }

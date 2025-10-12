@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RS1_2024_25.API.Data.Models;
+using RS1_2024_25.API.Data.DTOs;
 using RS1_2024_25.API.Data.Models.Modul1_Auth.Services;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
 using RS1_2024_25.API.Services;
+using RS1_2024_25.API.Data.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace RS1_2024_25.API.Helper.Api
 {
@@ -17,42 +22,44 @@ namespace RS1_2024_25.API.Helper.Api
         private readonly AuthService _authService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IConfiguration _config;
         private readonly IEmailService _emailService;
-        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager, IEmailService emailService)
+        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration  config,IEmailService emailService)
         {
             _authService = authService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _config  = config;
             _emailService = emailService;
         }
 
         [AllowAnonymous]
-        [HttpPost("register")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
             if (!ModelState.IsValid)
-            {
-                foreach (var modelState in ModelState)
-                {
-                    Console.WriteLine($"Key: {modelState.Key}");
-                    foreach (var error in modelState.Value.Errors)
-                    {
-                        Console.WriteLine($"  Error: {error.ErrorMessage}");
-                    }
-                }
                 return BadRequest(ModelState);
-            }
 
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var user = new User
+            {
+                UserName = model.Username,
+                Email = model.Email,
+                FirstName = model.Firstname, 
+                LastName = model.Lastname
+            };
 
-            var success = await _authService.RegisterUser(model.Username, model.Email, model.Password, model.Fullname);
-            if (!success) return BadRequest( new { message= "Email or Username already in use." });
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-            return Ok(new { message = "Registration successful." });
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+          
+            await _userManager.AddToRoleAsync(user, "Customer");
+
+            return Ok(new { message = "Registration successful" });
         }
-
 
         [AllowAnonymous]
         [HttpPost("login")]
@@ -60,27 +67,59 @@ namespace RS1_2024_25.API.Helper.Api
         {
             try
             {
-
                 var user = await _userManager.FindByNameAsync(model.Username);
-                var roles=await _userManager.GetRolesAsync(user);
-                var role=roles.FirstOrDefault();
-
                 if (user == null)
                 {
                     Console.WriteLine("User not found");
                     return Unauthorized(new { message = "Invalid username or password" });
                 }
 
-                var result = await _signInManager.PasswordSignInAsync(user, model.Password, isPersistent: false, lockoutOnFailure: false);
-                Console.WriteLine($"Login attempt for {model.Username}, success: {result.Succeeded}");
-                if (!result.Succeeded) return Unauthorized(new { message = "Invalid username or password" });
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password,
+                    isPersistent: false, lockoutOnFailure: false);
 
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                return Ok(new {
-                    message = "Login successful" ,
+                Console.WriteLine($"Login attempt for {model.Username}, success: {result.Succeeded}");
+
+                if (!result.Succeeded)
+                    return Unauthorized(new { message = "Invalid username or password" });
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+        };
+
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var token = new JwtSecurityToken(
+                    issuer: _config["Jwt:Issuer"],
+                    audience: _config["Jwt:Audience"],
+                    claims: claims,
+                    expires: DateTime.Now.AddHours(3),
+                    signingCredentials: creds
+                );
+       
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                var expiration = token.ValidTo; 
+                var expUnix = new DateTimeOffset(expiration).ToUnixTimeSeconds();
+
+                return Ok(new
+                {
+                    token = tokenString,
                     username = user.UserName,
-                    role=role
+                    roles = roles,
+                    expires=expiration,
+                    exp=expUnix
                 });
+
+
+                
             }
             catch (Exception ex)
             {
@@ -88,22 +127,13 @@ namespace RS1_2024_25.API.Helper.Api
                 return StatusCode(500, "Internal server error");
             }
         }
-
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
             return Ok(new { message = "Logged out" });
         }
-        [Authorize]
-        [HttpGet("check-auth")]
-        public IActionResult CheckAuth()
-        {
-            if (User.Identity != null && User.Identity.IsAuthenticated)
-                return Ok(new { user = User.Identity.Name });
-
-            return Unauthorized();
-        }
+     
 
         [AllowAnonymous]
         [HttpPost("forgot-password")]
@@ -113,7 +143,7 @@ namespace RS1_2024_25.API.Helper.Api
             if (user == null)
             {
                 
-                return Ok(new { message = "Ako račun postoji,link je poslan." });
+                return Ok(new { message = "if account exists,a link has been sent" });
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -132,7 +162,7 @@ namespace RS1_2024_25.API.Helper.Api
             }
             catch(Exception ex)
             {
-                return StatusCode(500, $"Greška pri slanju email-a: {ex.Message}");
+                return StatusCode(500, $"Error during sending email-a: {ex.Message}");
             }
 
         }
@@ -144,40 +174,19 @@ namespace RS1_2024_25.API.Helper.Api
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                return BadRequest(new { message = "Nevalidan zahtjev." });
+                return BadRequest(new { message = "invalid request." });
             }
 
             var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
             if (!result.Succeeded)
             {
-                return BadRequest(new { message = "Reset nije uspio", errors = result.Errors });
+                return BadRequest(new { message = "Reset unsuccessfull", errors = result.Errors });
             }
 
-            return Ok(new { message = "Resetovanje lozinke uspjesno." });
+            return Ok(new { message = "Reset of password successfull" });
         }
 
      
-        public class RegisterModel
-        {
-            [Required]
-            [JsonPropertyName("username")]
-            public string Username { get; set; }
-
-            [Required]
-            [EmailAddress]
-            [JsonPropertyName("email")]
-            public string Email { get; set; }
-
-            [Required]
-            [MinLength(6)]
-            [JsonPropertyName("password")]
-            public string Password { get; set; }
-
-            [Required]
-            [JsonPropertyName("fullname")]
-            public string Fullname { get; set; }
-            
-
-        }
+     
     }
 }

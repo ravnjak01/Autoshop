@@ -11,10 +11,15 @@ using RS1_2024_25.API.Helper.Auth;
 using RS1_2024_25.API.Services;
 using RS1_2024_25.API.SignalRHubs;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 
 public partial class Program
 {
-    private static void Main(string[] args)
+    private static async Task Main(string[] args)
     {
         var config = new ConfigurationBuilder()
             .AddJsonFile("appsettings.json", optional: false)
@@ -24,51 +29,116 @@ public partial class Program
 
         // **Dodaj DbContext**
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(config.GetConnectionString("db1")));
+       options.UseSqlServer(
+           config.GetConnectionString("db1"),
+           sqlOptions => sqlOptions.EnableRetryOnFailure(
+               maxRetryCount: 5,
+               maxRetryDelay: TimeSpan.FromSeconds(10),
+               errorNumbersToAdd: null
+           )
+       )
 
-        // **Dodaj ASP.NET Identity**
+
+   );
+
+
+        
         builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
 
 
-        builder.Services.ConfigureApplicationCookie(options =>
+        var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
+
+        builder.Services.AddAuthentication(options =>
         {
-            options.Cookie.HttpOnly = true;
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-            options.LoginPath = "/api/auth/login"; // frontend šalje POST
-            options.AccessDeniedPath = "/api/auth/access-denied";
-            options.SlidingExpiration = true;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+                IssuerSigningKey = new SymmetricSecurityKey(key)
+            };
+            options.Events = new JwtBearerEvents
+            {
+                OnMessageReceived = context =>
+                {
+                    var accessToken = context.Request.Query["access_token"];
+                    var path = context.HttpContext.Request.Path;
+
+                    // Ako je SignalR zahtjev, uzmi token iz query stringa
+                    if (!string.IsNullOrEmpty(accessToken) &&
+                        path.StartsWithSegments("/myHub"))
+                    {
+                        context.Token = accessToken;
+                    }
+                    return Task.CompletedTask;
+                }
+            };
         });
 
-        // **Dodaj IdentityServer**
-        builder.Services.AddIdentityServer(options =>
+
+
+
+        builder.Services.Configure<IdentityOptions>(options =>
         {
-            options.KeyManagement.Enabled = false;
-        })
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireUppercase = true;
+            options.Password.RequiredLength = 8;
+            options.Password.RequireNonAlphanumeric = false;
+
+        });
 
 
-.AddDeveloperSigningCredential()
-.AddAspNetIdentity<User>();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-        //builder.Services.AddIdentityServer()
-        //    .AddDeveloperSigningCredential()
-        //    .AddAspNetIdentity<MyAppUser>();
+          
+            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Unesite vaš JWT token"
+            });
 
-       
-        // **Dodaj CORS konfiguraciju**
+            c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
+            },
+            new string[] {}
+        }
+    });
+            c.OperationFilter<MyAuthorizationSwaggerHeader>();
+        });
+
+
 
         builder.Services.AddCors(options =>
         {
-            options.AddPolicy("AllowFrontend", policy =>
+            options.AddPolicy("AllowFrontendAndSwagger", policy =>
             {
-               policy.WithOrigins("http://localhost:4200") // Prilagodi po potrebi
+                policy.WithOrigins("http://localhost:4200", "https://localhost:7001")
                       .AllowAnyMethod()
                       .AllowAnyHeader()
-                     .AllowCredentials(); // Ako koristi� cookies za autentifikaciju
+                      .AllowCredentials();
             });
         });
-
 
         // **Dodaj servise**
         builder.Services.AddScoped<AuthService>();
@@ -82,43 +152,38 @@ public partial class Program
         // **Dodaj kontrolere i Swagger**
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(x => x.OperationFilter<MyAuthorizationSwaggerHeader>());
         builder.Services.AddHttpContextAccessor();
 
-        builder.Services.ConfigureApplicationCookie(options =>
-        {
-            options.Cookie.HttpOnly = true;
-            options.ExpireTimeSpan = TimeSpan.FromMinutes(60); // trajanje sesije
-            options.LoginPath = "/api/auth/login"; // gdje preusmjeriti ako nije autorizovan
-            options.AccessDeniedPath = "/api/auth/access-denied";
-            options.SlidingExpiration = true; // produži trajanje ako korisnik ostaje aktivan
-        });
 
 
 
         // **Dodaj middleware**
 
 
-
         var app =builder.Build();
+     
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            await SeedRolesAsync(services);
+        }
+
+        app.UseRouting();
+        app.UseCors("AllowFrontendAndSwagger");
+        app.UseAuthentication();   
+        app.UseAuthorization();
 
 
-        app.UseCors("AllowFrontend"); // **Primeni CORS politiku**
-
-        app.UseRouting(); // **Obavezno za ASP.NET Core**
-        app.UseAuthentication(); // **Obavezno za ASP.NET Identity**
-
-
-        app.UseAuthorization(); 
-        app.UseIdentityServer(); // **Obavezno za IdentityServer**
         app.Use(async (context, next) =>
         {
-            Console.WriteLine($"🧪 Request: {context.Request.Method} {context.Request.Path}");
+            Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
             await next();
         });
       
         app.UseMiddleware<AuditLogMiddleware>();
-     
+        app.UseStaticFiles();
+      
         // **Dodaj rute**
         app.MapControllers();
         app.MapHub<MySignalrHub>("/mysignalr-hub-path");
@@ -130,5 +195,27 @@ public partial class Program
             c.RoutePrefix = "swagger"; // This line changes the Swagger UI path
         });
         app.Run();
+    }
+    public static async Task SeedRolesAsync(IServiceProvider serviceProvider)
+    {
+        var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        string[] roleNames = { "Admin", "Customer", "Manager" };
+        string roleToDelete = "Dean";
+
+        var deanRole = await roleManager.FindByNameAsync(roleToDelete);
+        if (deanRole != null)
+        {
+            
+            await roleManager.DeleteAsync(deanRole);
+        }
+
+        foreach (var roleName in roleNames)
+        {
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
     }
 }
