@@ -40,6 +40,9 @@ namespace RS1_2024_25.API.Controllers
             var cart = await _context.Carts
                 .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId);
+            if (product == null)
+                return NotFound("Product not found.");
 
             if (cart == null)
             {
@@ -63,6 +66,7 @@ namespace RS1_2024_25.API.Controllers
                 var newItem = new CartItem
                 {
                     ProductId = request.ProductId,
+                    Product=product,
                     Quantity = request.Quantity,
                     Cart = cart
                 };
@@ -79,6 +83,7 @@ namespace RS1_2024_25.API.Controllers
         [HttpGet("my-cart")]
         public async Task<IActionResult> GetMyCart()
         {
+
             var userId = _userManager.GetUserId(User);
             if (userId == null)
                 return Unauthorized();
@@ -94,6 +99,7 @@ namespace RS1_2024_25.API.Controllers
 
             var items = cart.Items.Select(i => new CartItemDTO
             {
+                Id = i.Id,
                 ProductId = i.ProductId,
                 ProductName = i.Product.Name,
                 Quantity = i.Quantity,
@@ -220,35 +226,38 @@ namespace RS1_2024_25.API.Controllers
             });
         }
 
-        //[HttpPut("update-quantity/{itemId}")]
-        //public async Task<IActionResult> UpdateQuantity(int itemId, [FromBody] UpdateCartItemDTO request)
-        //{
-        //    var userId = _userManager.GetUserId(User);
-        //    if (userId == null)
-        //        return Unauthorized();
+        [HttpPut("update-quantity/{itemId}")]
+        public async Task<IActionResult> UpdateQuantity(int itemId, [FromBody] UpdateCartItemDTO request)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+                return Unauthorized();
 
-        //    var item = await _context.CartItems
-        //        .Include(i => i.Cart)
-        //        .FirstOrDefaultAsync(i => i.Id == itemId && i.Cart.UserId == userId);
+            var item = await _context.CartItems
+                .Include(i => i.Cart)
+                .Include(i=>i.Product)
+                .FirstOrDefaultAsync(i => i.Id == itemId && i.Cart.UserId == userId);
 
-        //    if (item == null)
-        //        return NotFound("Item not found in your cart.");
+            if (item == null)
+                return NotFound("Item not found in your cart.");
 
-        //    item.Quantity = request.Quantity;
-        //    await _context.SaveChangesAsync();
 
-        //    return Ok(new
-        //    {
-        //        Id = item.Id,
-        //        ProductId = item.ProductId,
-        //        ProductName = item.Product.Name,
-        //        Price = item.Product.Price,
-        //        Quantity = item.Quantity,
-        //        ImageUrl = item.Product.ImageUrl
-        //    });
-        //}
+            item.Quantity = request.Quantity;
+            await _context.SaveChangesAsync();
 
-       
+            return Ok(new
+            {
+                
+                Id = item.Id,
+                ProductId = item.ProductId,
+                ProductName = item.Product.Name,
+                Price = item.Product.Price,
+                Quantity = item.Quantity,
+                ImageUrl = item.Product.ImageUrl
+            });
+        }
+
+
 
 
     }

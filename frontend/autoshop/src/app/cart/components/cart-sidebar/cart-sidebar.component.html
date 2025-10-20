@@ -1,0 +1,49 @@
+<div class="cart-sidebar" [class.open]="isCartOpen">
+<div class="cart-sidebar">
+  <h3>Vaša korpa</h3>
+
+  <!-- Lista proizvoda -->
+  <ul class="cart-items">
+    <li class="cart-item" *ngFor="let item of cartItems">
+<li class="cart-item" *ngFor="let item of cartItems">
+       <img 
+         *ngIf="item.imageUrl" 
+         [src]="'http://localhost:7000' + item.imageUrl" 
+         alt="{{ item.productName }}" 
+         class="cart-item-image" 
+       />
+      <div class="cart-item-details">
+        <span class="cart-item-name">{{ item.productName }}</span>
+          <div class="quantity-controls">
+          <button 
+            class="quantity-button decrease" 
+            (click)="decreaseQuantity(item)"
+            [disabled]="item.quantity === 1"
+          >-</button>
+          <span class="cart-item-quantity">{{ item.quantity }}</span>
+          <button 
+            class="quantity-button increase" 
+            (click)="increaseQuantity(item)"
+          >+</button>
+        </div>
+        <span class="cart-item-price">{{ item.price | currency:'BAM' }}</span>
+      </div>
+      <button 
+       class="remove-item-button" (click)="removeItem(item)">X</button>
+    </li>
+  </ul>
+
+
+  <div class="cart-total" *ngIf="cartItems && cartItems.length > 0">
+    <span>Ukupno:</span>
+    <span class="total-price">{{ getTotalPrice() | currency:'BAM' }}</span>
+  </div>
+
+
+  <div class="cart-actions">
+    <button class="clear-cart-button" (click)="clearCart()">Isprazni korpu</button>
+  <button class="go-to-cart-btn" (click)="goToCart()">Idi na korpu</button>
+
+  </div>
+</div>
+</div>

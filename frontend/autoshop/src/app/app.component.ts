@@ -116,14 +116,18 @@ removeItem(productId: number): void {
     }
   toggleCart(): void {
     this.isCartOpen = !this.isCartOpen;
-    // Dodaj/ukloni klasu za body da sprečiš skrolovanje kada je cart otvoren
+   
     if (this.isCartOpen) {
       document.body.classList.add('cart-open');
     } else {
       document.body.classList.remove('cart-open');
     }
   }
+/*
+    closeCart(): void {
+    this.isCartOpen = false;
+  }
 
+  */
 }
-   
    

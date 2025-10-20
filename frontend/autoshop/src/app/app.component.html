@@ -15,12 +15,18 @@
       <button (click)="onLogout()">Odjavi se</button>
     </li>
    <li class="menu-item cart-button-item push-right-desno" >
-  <button (click)="toggleCart()">Korpa</button>
+  <button (click)="toggleCart()">Cart</button>
+   <cart-sidebar *ngIf="isCartOpen" class="cart-dropdown"></cart-sidebar>
 </li>
-
+<!--
+<cart-sidebar
+  *ngIf="isCartOpen"
+  (closeSidebar)="closeCart()">
+</cart-sidebar>
+-->
   </ul>
 
- <cart-sidebar *ngIf="isCartOpen" class="cart-dropdown"></cart-sidebar>
+
 
   <div *ngIf="isAdminPage" class="admin-menu">
     <ul class="admin-submenu">

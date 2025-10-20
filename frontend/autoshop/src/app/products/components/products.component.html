@@ -1,0 +1,39 @@
+<div class="container"> 
+  <!-- Sidebar (Kategorije) -->
+  
+  <!-- Product List + Search + Sorting -->
+  <div class="product-section">
+    <div class="search-sort-wrapper">
+      <input
+        type="text"
+        class="form-control search-input"
+        placeholder="Pretraga proizvoda..."
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="onSearchChange()"
+      />
+
+      <select class="form-control sort-select" [(ngModel)]="sortBy" (change)="onSortChange()">
+        <option value="createdDateDesc">Najnovije prvo</option>
+        <option value="createdDateAsc">Najstarije prvo</option>
+        <option value="priceAsc">Najjeftiniji prvo</option>
+        <option value="priceDesc">Najskuplji prvo</option>
+      </select>
+    </div>
+
+    <div class="row">
+      <div *ngFor="let product of products" class="col-md-4 mb-4">
+        <div class="card p-3">
+     <img [src]="'http://localhost:7000' + product.imageUrl" alt="{{ product.name }}" />
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">{{ product.description }}</p>
+          <p><strong>Price:</strong> {{ product.price }} KM</p>
+
+       
+          <button class="btn btn-primary" (click)="addToCart(product.id)">
+        Add to cart
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

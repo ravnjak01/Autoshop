@@ -1,25 +1,29 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Data.Models.Modul3_Audit;
+using RS1_2024_25.API.Data.Models.ShoppingCart;
 using RS1_2024_25.API.Helper;
 using RS1_2024_25.API.Helper.BaseClasses;
 using RS1_2024_25.API.Services;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq.Expressions;
+using Category = RS1_2024_25.API.Data.Models.ShoppingCart.Category;
+using Product = RS1_2024_25.API.Data.Models.ShoppingCart.Product;
 
 namespace RS1_2024_25.API.Data
 {
-    //public class ApplicationDbContext(DbContextOptions options, IServiceProvider serviceProvider) : DbContext(options)
+    
     public class ApplicationDbContext : IdentityDbContext<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
-        public DbSet<MyAppUser> MyAppUsersAll { get; set; }
+       
         public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
       
         public DbSet<BlogPost> BlogPosts { get; set; }
@@ -28,7 +32,11 @@ namespace RS1_2024_25.API.Data
         public DbSet<BlogRating> BlogRatings { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
-
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
+   
+        public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<Order> Orders { get; set; }
 
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,14 +53,19 @@ namespace RS1_2024_25.API.Data
 
             modelBuilder.Entity<User>(entity =>
             {
-                entity.HasKey(e => e.Id); // Postavite primarni ključ
+                entity.HasKey(e => e.Id); 
                 entity.Property(e => e.Email)
                       .IsRequired()
-                      .HasMaxLength(100); // Maksimalna dužina emaila
+                      .HasMaxLength(100); 
             });
             modelBuilder.Entity<MyAuthenticationToken>().HasNoKey();
-            // opcija kod nasljeđivanja
-            // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
+        
+
+            modelBuilder.Entity<Category>().HasData(
+       new Category { Id = 1, Name = "Electronics", Code = "ELEC" },
+       new Category { Id = 2, Name = "Clothing", Code = "CLOTH" },
+       new Category { Id = 3, Name = "Books", Code = "BOOKS" }
+   );
         }
         #endregion
     }

@@ -1,0 +1,146 @@
+/* General layout */
+:host {
+  display: block;
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  color: #333;
+}
+
+/* Empty cart message */
+.empty-cart {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.empty-cart p {
+  font-size: 1.3rem;
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+/* Cart item container */
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #fafafa;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.cart-item:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Product image */
+.cart-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+/* Item details */
+.details {
+  flex: 1;
+}
+
+.details p {
+  margin: 0.3rem 0;
+}
+
+/* Quantity controls */
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.quantity-controls button {
+  background-color: #1976d2;
+  border: none;
+  color: white;
+  font-size: 1.1rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.quantity-controls button:hover {
+  background-color: #1259a6;
+}
+
+.quantity-controls span {
+  font-size: 1rem;
+  width: 25px;
+  text-align: center;
+}
+
+/* Cart summary */
+.cart-summary {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f5f5f5;
+  border-radius: 10px;
+  text-align: right;
+  border: 1px solid #ddd;
+}
+
+.cart-summary p {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.cart-summary button {
+  font-size: 1rem;
+  padding: 0.7rem 1.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .cart-item img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .details {
+    width: 100%;
+  }
+
+  .cart-summary {
+    text-align: center;
+  }
+  .remove-btn {
+  background: none;
+  border: none;
+  color: #c62828;
+  font-size: 1.3rem;
+  cursor: pointer;
+  margin-left: auto;
+  transition: color 0.2s ease;
+}
+
+.remove-btn:hover {
+  color: #8e0000;
+}
+.quantity-controls button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+}

@@ -74,7 +74,7 @@ public partial class Program
                     var accessToken = context.Request.Query["access_token"];
                     var path = context.HttpContext.Request.Path;
 
-                    // Ako je SignalR zahtjev, uzmi token iz query stringa
+                   
                     if (!string.IsNullOrEmpty(accessToken) &&
                         path.StartsWithSegments("/myHub"))
                     {
@@ -192,7 +192,7 @@ public partial class Program
         app.UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1");
-            c.RoutePrefix = "swagger"; // This line changes the Swagger UI path
+            c.RoutePrefix = "swagger"; 
         });
         app.Run();
     }

@@ -61,8 +61,11 @@ this.router.navigate(['/forgot-password']);
 
 
   this.authService.login({ username, password }).subscribe({
-    next: () => {
-      setTimeout(() => {
+    next: (response) => {
+      if (response && response.token) {
+      localStorage.setItem('jwtToken', response.token);
+    }
+   
          this.httpClient.get<MyAuthInfo>('http://localhost:7000/api/user/me').subscribe({
         next: (user) => {
           localStorage.setItem('userName', user.username);
@@ -78,8 +81,6 @@ this.router.navigate(['/forgot-password']);
           this.loading = false;
         }
       });
-      }, 100);
-     
     },
     error: (err) => {
             console.error(' Login error:', err);
