@@ -144,5 +144,14 @@ getCartItems(): Observable<CartItemDTO[]> {
   );
 }
 
-  
+  saveForLater(productId: number): Observable<any> {
+  return this.http.post(`${this.baseUrl}/save-for-later/${productId}`, {}, { withCredentials: true })
+    .pipe(tap(() => this.loadCart()));
+}
+
+moveToCart(productId: number): Observable<any> {
+  return this.http.post(`${this.baseUrl}/move-to-cart/${productId}`, {}, { withCredentials: true })
+    .pipe(tap(() => this.loadCart()));
+}
+
 }

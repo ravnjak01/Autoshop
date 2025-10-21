@@ -16,20 +16,14 @@ import { Router } from '@angular/router';
   ]
 })
 export class CartPageComponent implements OnInit {
+   cartItems: CartItemDTO[] = [];
+  isCartEmpty: boolean = false;
+savedForLaterItems: CartItemDTO[] = [];
 goToCart() {
 throw new Error('Method not implemented.');
 }
-
-  cartItems: CartItemDTO[] = [];
-  isCartEmpty: boolean = false;
   constructor(public cartService: CartService,private router:Router) {}
-
  
-  
-
-
-
-
   ngOnInit(): void {
     this.loadCart();
   }
@@ -89,4 +83,30 @@ loadCart(): void {
     error: (err) => console.error('Error removing item', err)
   });
   }
+
+
+saveForLater(item: CartItemDTO): void {
+  this.cartService.saveForLater(item.productId).subscribe({
+    next: () => {
+      this.cartItems = this.cartItems.filter(i => i.productId !== item.productId);
+      this.savedForLaterItems.push(item);
+    },
+    error: (err) => console.error('Error saving item for later:', err)
+  });
+}
+
+moveToCart(item: CartItemDTO): void {
+  this.cartService.moveToCart(item.productId).subscribe({
+    next: () => {
+      this.savedForLaterItems = this.savedForLaterItems.filter(i => i.productId !== item.productId);
+      this.cartItems.push(item);
+    },
+    error: (err) => console.error('Error moving item back to cart:', err)
+  });
+}
+
+removeSavedItem(item: CartItemDTO): void {
+  this.savedForLaterItems = this.savedForLaterItems.filter(i => i.productId !== item.productId);
+}
+
 }

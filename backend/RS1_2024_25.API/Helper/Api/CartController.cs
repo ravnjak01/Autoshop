@@ -68,7 +68,8 @@ namespace RS1_2024_25.API.Controllers
                     ProductId = request.ProductId,
                     Product=product,
                     Quantity = request.Quantity,
-                    Cart = cart
+                    Cart = cart,
+                    UserId=userId
                 };
                 cart.Items.Add(newItem);
             }
@@ -257,6 +258,43 @@ namespace RS1_2024_25.API.Controllers
             });
         }
 
+        [HttpPost("save-for-later/{productId}")]
+        public async Task<IActionResult> SaveForLater(int productId)
+        {
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+                return Unauthorized();
+
+            var cartItem = await _context.CartItems
+                .FirstOrDefaultAsync(i => i.ProductId == productId && i.UserId == userId);
+
+            if (cartItem == null)
+                return NotFound("Product not found in cart.");
+
+            cartItem.SavedForLater = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Product saved for later." });
+        }
+        [HttpPost("move-to-cart/{productId}")]
+        public async Task<IActionResult> MoveToCart(int productId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var cart = await _context.Carts
+                .Include(c => c.Items)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (cart == null) return NotFound("Cart not found");
+
+            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item == null) return NotFound("Item not found");
+
+            item.SavedForLater = false;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+    }
 
 
 
@@ -264,4 +302,4 @@ namespace RS1_2024_25.API.Controllers
 
 
 
-}
+
