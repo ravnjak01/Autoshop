@@ -19,7 +19,7 @@ namespace RS1_2024_25.API.Services
         public async Task AddToCartAsync(string userId, AddToCartDTO request)
         {
             var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == request.ProductId && p.Active.HasValue && p.Active.Value);
+                .FirstOrDefaultAsync(p => p.Id == request.ProductId && p.Active);
 
             if (product == null)
             {

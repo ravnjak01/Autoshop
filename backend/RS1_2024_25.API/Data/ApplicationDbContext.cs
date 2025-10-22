@@ -37,6 +37,7 @@ namespace RS1_2024_25.API.Data
    
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Address> Addresses { get; set; }
 
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)

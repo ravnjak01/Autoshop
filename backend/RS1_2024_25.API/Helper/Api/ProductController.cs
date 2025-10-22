@@ -70,7 +70,7 @@ namespace RS1_2024_25.API.Helper.Api
             if (dto.StockQuantity.HasValue) product.StockQuantity = dto.StockQuantity.Value;
             if (dto.Description != null) product.Description = dto.Description;
             if (dto.ImageUrl != null) product.ImageUrl = dto.ImageUrl;
-            if(dto.Active!=null)product.Active = dto.Active;
+            if(dto.Active!=null)product.Active = dto.Active.Value;
             if (dto.SKU != null) product.SKU = dto.SKU;
             if (dto.Brend != null) product.Brend = dto.Brend;
             if (dto.CategoryId != null) product.CategoryId = dto.CategoryId;
