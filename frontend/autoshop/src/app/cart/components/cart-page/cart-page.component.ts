@@ -47,24 +47,35 @@ loadCart(): void {
   });
 }
 
-  increaseQuantity(item: CartItemDTO): void {
-    this.cartService.updateQuantity(item.id, item.quantity + 1).subscribe({
-      next: (updatedItem) => item.quantity = updatedItem.quantity
-    });
-  }
+ increaseQuantity(item: CartItemDTO): void {
+  const newQuantity = item.quantity + 1;
 
- decreaseQuantity(item: CartItemDTO): void {
+  this.cartService.updateQuantity(item.id!, newQuantity).subscribe({
+    next: (updatedItem) => {
+      item.quantity = updatedItem.quantity; 
+    },
+    error: (err) => {
+      console.error('Error during increasing quantity', err);
+    }
+  });
+}
+
+decreaseQuantity(item: CartItemDTO): void {
   if (item.quantity > 1) {
     const newQuantity = item.quantity - 1;
 
     this.cartService.updateQuantity(item.id, newQuantity).subscribe({
-      next: (updatedItem) => item.quantity = updatedItem.quantity,
+      next: (updatedItem) => {
+        item.quantity = updatedItem.quantity;
+      },
       error: (err) => console.error('Error decreasing quantity', err)
     });
   } else {
-    console.warn('Količina ne može biti manja od 1');
+    
+    
   }
 }
+
 
  getTotal(): number {
     return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -74,15 +85,27 @@ loadCart(): void {
     this.router.navigate(['/checkout']);
   }
   
-  removeItem(item: CartItemDTO): void {
-    this.cartService.removeFromCart(item.productId).subscribe({
-    next: () => {
-      this.cartItems = this.cartItems.filter(i => i.productId !== item.productId);
-      this.isCartEmpty = this.cartItems.length === 0;
-    },
-    error: (err) => console.error('Error removing item', err)
-  });
+removeItem(item: CartItemDTO): void {
+  const itemId = item.id;
+  
+  if (!itemId) {
+    console.error('Error: item doesnt have id.');
+    return;
   }
+
+  this.cartService.removeFromCart(itemId).subscribe({
+    next: () => {
+      console.log('Product removed:', item.productName);
+      this.cartService.loadCart();
+    
+      this.cartItems = this.cartItems.filter(i => i.id !== itemId);
+    },
+    error: (err) => {
+      console.error('Error during removing product from the cart', err);
+    }
+  });
+}
+
 
 
 saveForLater(item: CartItemDTO): void {

@@ -13,11 +13,11 @@ public class MyAuthenticationToken
 
     public DateTime RecordedAt { get; set; } // Timestamp of token creation
 
-    // Foreign key to link the token to a specific user
+ 
     [ForeignKey(nameof(User))]
     public string UserId { get; set; }
 
-    public User? User { get; set; } // Navigation property to the user
+    public User? User { get; set; } 
 
     public DateTime CreatedAt { get; set; }
     public DateTime? ExpiresAt { get; set; }

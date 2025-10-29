@@ -79,7 +79,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public List<int>? CategoryIds { get; set; } 
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
-        public string? SortBy { get; set; } // "price", "createdDate"
+        public string? SortBy { get; set; } 
     }
     public class ProductGetAllResponse
     {

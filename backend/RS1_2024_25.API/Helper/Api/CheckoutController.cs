@@ -40,7 +40,6 @@ namespace RS1_2024_25.API.Helper.Api
             if (!items.Any())
                 return BadRequest("Cannot checkout with empty cart.");
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 var address = new Address
@@ -88,21 +87,19 @@ namespace RS1_2024_25.API.Helper.Api
                 _context.CartItems.RemoveRange(items);
 
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
 
-
-                var responseDTO=new CheckoutResponseDTO
+                var responseDTO = new CheckoutResponseDTO
                 {
                     Message = "Order successfully created.",
                     OrderId = order.Id,
                     Total = order.TotalAmount,
                     Status = order.Status
                 };
+
                 return Ok(responseDTO);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 return StatusCode(500, $"Checkout failed: {ex.Message}");
             }
         }

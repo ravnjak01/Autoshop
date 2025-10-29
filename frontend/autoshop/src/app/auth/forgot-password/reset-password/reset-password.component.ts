@@ -55,11 +55,11 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
       newPassword: password
     }).subscribe({
       next: () => {
-        this.successMessage = 'Lozinka je uspješno resetovana.';
+        this.successMessage = 'Password reset successfully. Redirecting to login...';
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
-        this.errorMessage = 'Greška pri resetovanju lozinke. Pokušajte ponovo.';
+        this.errorMessage = 'Error resetting password. Please try again.';
         console.error(err);
       }
     });

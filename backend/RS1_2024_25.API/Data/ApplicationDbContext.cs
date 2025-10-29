@@ -45,7 +45,12 @@ namespace RS1_2024_25.API.Data
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<AuditLog>().ToTable("AuditLogs");
-      
+
+            modelBuilder.Entity<Cart>()
+      .HasMany(c => c.Items)
+      .WithOne(ci => ci.Cart)
+      .HasForeignKey(ci => ci.CartId)
+      .OnDelete(DeleteBehavior.Cascade);
 
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {

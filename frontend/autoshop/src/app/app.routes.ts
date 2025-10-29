@@ -8,7 +8,8 @@ import { ResetPasswordComponent } from './auth/forgot-password/reset-password/re
 import { AuthGuard } from './core/guards/auth/auth.guard';
 import {  CartPageComponent } from './cart/components/cart-page/cart-page.component';
 import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sidebar.component';
-
+import { CheckoutComponent } from './checkout/checkout/checkout.component';
+import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
 export const appRoutes: Routes = [
   {
     path: 'administration',
@@ -19,6 +20,8 @@ export const appRoutes: Routes = [
    
     ]
   },
+    { path: 'home', component: HomePageComponent },
+
   {
     path: 'products',
     loadComponent: () =>
@@ -30,7 +33,13 @@ export const appRoutes: Routes = [
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'cart', component: CartPageComponent },
   { path: 'cartSide', component: CartSidebarComponent },
-  { path: 'home', component: HomePageComponent },
-  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  
+  {
+  path: 'checkout',
+  component: CheckoutComponent,
+  canActivate: [AuthGuard]
+},
+{path:'confirmation-modal',component:ConfirmationModalComponent},
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' }
 ];

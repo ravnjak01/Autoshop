@@ -29,7 +29,7 @@
 
   <div class="cart-summary">
     <p><strong>Subtotal:</strong> {{ getTotal() | currency:'BAM' }}</p>
-    <button mat-raised-button color="accent" (click)="goToCheckout()">Go to Checkout</button>
+    <button mat-raised-button color="accent" (click)="goToCheckout()">Proceed to Checkout</button>
   </div>
 
   <!-- SAVED FOR LATER SECTION -->
@@ -43,7 +43,7 @@
         <p class="price">{{ item.price | currency:'BAM' }}</p>
         <div class="actions">
           <button mat-raised-button color="accent" (click)="moveToCart(item)">Add back to cart</button>
-          <button mat-button color="warn" (click)="removeSavedItem(item)">🗑️ Remove</button>
+          <button mat-button color="warn" (click)="removeSavedItem(item)"> Remove</button>
         </div>
       </div>
     </div>

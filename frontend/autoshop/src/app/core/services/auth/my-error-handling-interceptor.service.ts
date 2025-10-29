@@ -12,10 +12,10 @@ export class MyErrorHandlingInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
-        // Prikaži grešku korisniku
+      
         this.handleError(error);
 
-        // Propustiti grešku dalje ako je potrebno
+        
         return throwError(() => error);
       })
     );

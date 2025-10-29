@@ -31,7 +31,7 @@ namespace RS1_2024_25.API.Data.Middleware
 
             var auditLog = new AuditLog
             {
-                UserEmail = "email@gmail.com", //user email
+                UserEmail = "email@gmail.com", 
                 EntityName = controllerName,
                 Action = request.Method,
                 Timestamp = DateTime.UtcNow,

@@ -16,14 +16,8 @@
     </li>
    <li class="menu-item cart-button-item push-right-desno" >
   <button (click)="toggleCart()">Cart</button>
-   <cart-sidebar *ngIf="isCartOpen" class="cart-dropdown"></cart-sidebar>
+
 </li>
-<!--
-<cart-sidebar
-  *ngIf="isCartOpen"
-  (closeSidebar)="closeCart()">
-</cart-sidebar>
--->
   </ul>
 
 
@@ -35,5 +29,8 @@
   </div>
 </nav>
 
-
+ <cart-sidebar
+  *ngIf="isCartOpen"
+  (closeSidebar)="closeCart()">
+</cart-sidebar>
 <router-outlet></router-outlet>

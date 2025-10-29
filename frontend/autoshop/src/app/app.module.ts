@@ -33,12 +33,18 @@ import { MatSelectModule } from '@angular/material/select';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { HttpClient } from '@microsoft/signalr';
+import { CheckoutComponent } from './checkout/checkout/checkout.component';
+import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
 
 
 @NgModule({
 
   declarations: [
 
+  
+    
+  
+    ConfirmationModalComponent
   ],
   
   imports: [

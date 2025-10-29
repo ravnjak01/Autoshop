@@ -16,6 +16,11 @@ import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sideba
 
 })
 export class AppComponent {
+   isCartSidebarOpen = false;
+
+  closeSidebar() {
+    this.isCartSidebarOpen = false;
+  }
 clearCart() {
 throw new Error('Method not implemented.');
 }
@@ -123,11 +128,9 @@ removeItem(productId: number): void {
       document.body.classList.remove('cart-open');
     }
   }
-/*
-    closeCart(): void {
-    this.isCartOpen = false;
-  }
-
-  */
+closeCart(): void {
+  this.isCartOpen = false;
+  document.body.classList.remove('cart-open');
+}
 }
    

@@ -12,6 +12,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using RS1_2024_25.API.Controllers;
 
 namespace RS1_2024_25.API.Helper.Api
 {
@@ -24,13 +25,16 @@ namespace RS1_2024_25.API.Helper.Api
         private readonly SignInManager<User> _signInManager;
         private readonly IConfiguration _config;
         private readonly IEmailService _emailService;
-        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration  config,IEmailService emailService)
+   private readonly ICartService _cartService;
+        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration  config,IEmailService emailService,
+            ICartService cartService)
         {
             _authService = authService;
             _userManager = userManager;
             _signInManager = signInManager;
             _config  = config;
             _emailService = emailService;
+            _cartService = cartService;
         }
 
         [AllowAnonymous]
@@ -82,6 +86,17 @@ namespace RS1_2024_25.API.Helper.Api
                 if (!result.Succeeded)
                     return Unauthorized(new { message = "Invalid username or password" });
 
+                var guestSessionId = Request.Cookies["guest_session"];
+                Console.WriteLine($"=== LOGIN DEBUG ===");
+                Console.WriteLine($"Guest session ID from cookie: {guestSessionId}");
+                Console.WriteLine($"User ID: {user.Id}");
+                if (!string.IsNullOrEmpty(guestSessionId))
+                {
+                    Console.WriteLine($"Attempting to merge cart...");
+                    await _cartService.MergeGuestCartWithUser(user.Id, guestSessionId);
+                    Console.WriteLine($"Merge completed");
+                }
+
                 var roles = await _userManager.GetRolesAsync(user);
                 var claims = new List<Claim>
         {
@@ -118,8 +133,9 @@ namespace RS1_2024_25.API.Helper.Api
                     exp=expUnix
                 });
 
+         
 
-                
+
             }
             catch (Exception ex)
             {
