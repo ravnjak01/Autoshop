@@ -7,12 +7,14 @@ import {BlogListComponent} from './modules/blogs/blog-posts.component';
 import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 import {RegisterComponent} from './register/register.component';
 import {ProductListComponent} from './modules/products/products.component';
+import {DiscountsComponent} from './modules/administration/discount/discount.component';
 // Importujte komponentu
 
 const routes: Routes = [
   { path: 'administration', component: AdministrationComponent, children: [
       { path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
       { path: 'admin/blog-posts', component: BlogPostsComponent },
+      { path: 'admin/discount', component: DiscountsComponent},
       { path: 'admin/home-page', component: HomePageComponent },
     ],
   },

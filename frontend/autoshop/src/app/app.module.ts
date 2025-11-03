@@ -36,6 +36,18 @@ import {MatButton} from '@angular/material/button';
 import { RegisterComponent } from './register/register.component';
 import {ProductListComponent} from './modules/products/products.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
+import {DiscountsComponent} from './modules/administration/discount/discount.component';
+import {DiscountPostComponent} from './modules/administration/discount/discount-post/discount-post.component';
+import {
+  DiscountEditComponent
+} from './modules/administration/discount/discount-post-editing/discount-posts-editing.component';
+import {
+  MatDatepicker,
+  MatDatepickerInput,
+  MatDatepickerModule,
+  MatDatepickerToggle
+} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
 @NgModule({
   declarations: [
     AppComponent,
@@ -48,7 +60,10 @@ import {NgxSliderModule} from '@angular-slider/ngx-slider';
     BlogDetailsComponent,
     BlogCommentsComponent,
     RegisterComponent,
-    ProductListComponent
+    ProductListComponent,
+    DiscountsComponent,
+    DiscountPostComponent,
+    DiscountEditComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -74,7 +89,14 @@ import {NgxSliderModule} from '@angular-slider/ngx-slider';
     InfiniteScrollDirective,
     MatButton,
     MatTooltipModule,
-    NgxSliderModule
+    NgxSliderModule,
+    MatDatepickerToggle,
+    MatDatepicker,
+    MatDatepickerInput,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [
     {
