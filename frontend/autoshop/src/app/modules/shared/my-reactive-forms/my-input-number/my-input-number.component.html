@@ -9,7 +9,7 @@
   />
 
   <!-- Dinamičko prikazivanje grešaka -->
-  <mat-error *ngIf="formControl.invalid && (formControl.touched || formControl.dirty)">
+  <mat-error *ngIf="formControl.invalid && (formControl.dirty)">
     <ng-container *ngIf="formControl.errors as errors">
       <ng-container *ngFor="let errorKey of getErrorKeys(errors)">
         <small>{{ getErrorMessage(errorKey, errors[errorKey]) }}</small>
