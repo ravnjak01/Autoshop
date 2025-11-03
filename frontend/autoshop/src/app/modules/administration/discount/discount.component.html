@@ -1,0 +1,74 @@
+<div class="header-container">
+  <h2 class="page-title">Discount Management</h2>
+  <div class="button-container">
+    <button class="add" color="primary" mat-raised-button (click)="openDiscountPostForm($event, undefined)" matTooltip="New Discount">
+      <mat-icon>add</mat-icon>
+    </button>
+  </div>
+</div>
+
+<div class="search-container">
+  <mat-form-field appearance="outline">
+    <mat-label>Search</mat-label>
+    <input matInput placeholder="Search discount" (input)="applyFilter($event)">
+  </mat-form-field>
+</div>
+
+<!-- Show message when no data is available -->
+<div *ngIf="dataSource.data.length === 0" class="no-data">
+  <p>No discounts to display.</p>
+</div>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+
+  <!-- Name -->
+  <ng-container matColumnDef="name">
+    <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+    <mat-cell *matCellDef="let discount">{{ discount.name }}</mat-cell>
+  </ng-container>
+
+  <!-- Percent -->
+  <ng-container matColumnDef="discountPercentage">
+    <mat-header-cell *matHeaderCellDef>Percent</mat-header-cell>
+    <mat-cell *matCellDef="let discount">{{ discount.discountPercentage }}%</mat-cell>
+  </ng-container>
+
+  <!-- Start Date -->
+  <ng-container matColumnDef="startDate">
+    <mat-header-cell *matHeaderCellDef>Start Date</mat-header-cell>
+    <mat-cell *matCellDef="let discount">{{ discount.startDate | date }}</mat-cell>
+  </ng-container>
+
+  <!-- End Date -->
+  <ng-container matColumnDef="endDate">
+    <mat-header-cell *matHeaderCellDef>End Date</mat-header-cell>
+    <mat-cell *matCellDef="let discount">{{ discount.endDate | date }}</mat-cell>
+  </ng-container>
+
+  <!-- Requires Promo Code -->
+  <ng-container matColumnDef="requiresPromoCode">
+    <mat-header-cell *matHeaderCellDef>Promo Code?</mat-header-cell>
+    <mat-cell *matCellDef="let discount">{{ discount.requiresPromoCode ? 'Yes' : 'No' }}</mat-cell>
+  </ng-container>
+
+  <!-- Actions -->
+  <ng-container matColumnDef="actions">
+    <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+    <mat-cell *matCellDef="let discount">
+      <div class="action-buttons">
+        <!-- Add your edit/delete buttons here -->
+        <button mat-icon-button color="primary" matTooltip="Edit" (click)="openDiscountPostForm($event, discount.id)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" matTooltip="Delete" (click)="openMyConfirmDialog(discount.id, $event)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </mat-cell>
+  </ng-container>
+
+  <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+  <mat-row *matRowDef="let row; columns: displayedColumns;" (click)="openDiscountModal(row.id)"></mat-row>
+</table>
+
+<mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>

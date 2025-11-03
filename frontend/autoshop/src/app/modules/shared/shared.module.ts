@@ -25,6 +25,7 @@ import {MatInput} from '@angular/material/input';
 import {MyDropdownComponent} from './my-reactive-forms/my-dropdown/my-dropdown.component';
 import {MatOption, MatSelect} from '@angular/material/select';
 import {MatSpinner} from '@angular/material/progress-spinner';
+import {MyInputNumberComponent} from './my-reactive-forms/my-input-number/my-input-number.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import {MatSpinner} from '@angular/material/progress-spinner';
     MyPageProgressbarComponent,
     MyInputTextComponent,
     MyDropdownComponent,
+    MyInputNumberComponent,
   ],
   imports: [
     CommonModule,
@@ -67,7 +69,8 @@ import {MatSpinner} from '@angular/material/progress-spinner';
     ReactiveFormsModule,
     MyPageProgressbarComponent,
     MyInputTextComponent,
-    MyDropdownComponent
+    MyDropdownComponent,
+    MyInputNumberComponent
   ]
 })
 export class SharedModule {
