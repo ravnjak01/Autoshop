@@ -168,6 +168,7 @@ public partial class Program
         {
             var services = scope.ServiceProvider;
             await SeedRolesAsync(services);
+            await RS1_2024_25.API.Data.Seed.DatabaseSeeder.SeedCategoriesAsync(services);
         }
 
         app.UseRouting();
