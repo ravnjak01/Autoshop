@@ -10,5 +10,8 @@
         public string? Author { get; set; }  //zamijeniti sa id zaposlenika
         public bool IsPublished { get; set; }  
         public bool Active { get; set; }
+
+        public ICollection<BlogComment> Comments { get; set; }
+        public ICollection<BlogRating> Ratings { get; set; }
     }
 }
