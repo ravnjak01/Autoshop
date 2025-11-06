@@ -7,5 +7,11 @@
 
         public int DiscountId { get; set; }
         public Discount Discount { get; set; }
+
+        public DateTime? ValidFrom { get; set; }
+        public DateTime? ValidTo { get; set; }
+        public bool IsActive =>
+            (!ValidFrom.HasValue || ValidFrom.Value <= DateTime.UtcNow) &&
+            (!ValidTo.HasValue || ValidTo.Value >= DateTime.UtcNow);
     }
 }
