@@ -11,6 +11,7 @@ import {DiscountPostComponent} from './discount-post/discount-post.component';
 import {MyDialogConfirmComponent} from '../../shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
 import {DiscountDeleteEndpointService} from '../../../endpoints/discount-endpoints/discount-delete-endpoint.service';
 import {DiscountEditComponent} from './discount-post-editing/discount-posts-editing.component';
+import {DiscountCodesComponent} from './discount-code/discount-codes.component';
 @Component({
   selector: 'app-discounts',
   templateUrl: 'discount.component.html',
@@ -130,6 +131,23 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
       if (result === 'saved') {
         // If the modal is saved, reload or do something (like redirect)
         this.refreshPage();
+      }
+    });
+  }
+
+  openDiscountCodesDialog(discountId: number, event: MouseEvent) {
+    event.stopPropagation();
+
+    const dialogRef = this.dialog.open(DiscountCodesComponent, {
+      width: '600px',
+      maxHeight: '80vh',
+      data: { discountId: discountId },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if(result === 'updated') {
+        this.refreshPage()
+        console.log('Codes updated');
       }
     });
   }
