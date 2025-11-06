@@ -48,6 +48,10 @@ import {
   MatDatepickerToggle
 } from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
+import {DiscountCodesComponent} from './modules/administration/discount/discount-code/discount-codes.component';
+import {
+  DiscountCodeEditComponent
+} from './modules/administration/discount/discount-code/discount-code-edit/discount-code-edit.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -63,7 +67,9 @@ import {MatNativeDateModule} from '@angular/material/core';
     ProductListComponent,
     DiscountsComponent,
     DiscountPostComponent,
-    DiscountEditComponent
+    DiscountEditComponent,
+    DiscountCodesComponent,
+    DiscountCodeEditComponent,
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije

@@ -63,6 +63,9 @@
         <button mat-icon-button color="warn" matTooltip="Delete" (click)="openMyConfirmDialog(discount.id, $event)">
           <mat-icon>delete</mat-icon>
         </button>
+        <button mat-icon-button color="accent" matTooltip="Manage Codes" (click)="openDiscountCodesDialog(discount.id, $event)">
+          <mat-icon>code</mat-icon>
+        </button>
       </div>
     </mat-cell>
   </ng-container>
