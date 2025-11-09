@@ -1,0 +1,29 @@
+<h2>{{ data.discountName }} – Categories</h2>
+
+<!-- Header: Check All + Search -->
+<div class="header-row">
+  <!-- Check All checkbox -->
+  <mat-checkbox class="check-all" [(ngModel)]="checkAllToggle" (change)="toggleCheckAll()">
+  </mat-checkbox>
+
+  <!-- Search input -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search categories</mat-label>
+    <input matInput placeholder="Type to search" [(ngModel)]="filterText">
+  </mat-form-field>
+</div>
+
+<!-- Lista kategorija -->
+<div class="category-list">
+  <mat-checkbox *ngFor="let category of filteredCategories()"
+                [(ngModel)]="category.selected"
+                (change)="toggleCategory(category.categoryId)">
+    {{ category.categoryName }}
+  </mat-checkbox>
+</div>
+
+<!-- Akcije -->
+<div class="actions">
+  <button mat-button (click)="close()">Close</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</div>

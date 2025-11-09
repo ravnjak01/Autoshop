@@ -66,6 +66,10 @@
         <button mat-icon-button color="accent" matTooltip="Manage Codes" (click)="openDiscountCodesDialog(discount.id, $event)">
           <mat-icon>code</mat-icon>
         </button>
+        <button mat-icon-button color="primary" matTooltip="Manage Categories"
+                (click)="openCategoryDialog(discount, $event)">
+          <mat-icon>category</mat-icon>
+        </button>
       </div>
     </mat-cell>
   </ng-container>

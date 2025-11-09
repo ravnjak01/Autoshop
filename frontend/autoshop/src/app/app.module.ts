@@ -52,6 +52,9 @@ import {DiscountCodesComponent} from './modules/administration/discount/discount
 import {
   DiscountCodeEditComponent
 } from './modules/administration/discount/discount-code/discount-code-edit/discount-code-edit.component';
+import {
+  DiscountCategoryDialogComponent
+} from './modules/administration/discount/discount-categories/discount-category.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -70,6 +73,7 @@ import {
     DiscountEditComponent,
     DiscountCodesComponent,
     DiscountCodeEditComponent,
+    DiscountCategoryDialogComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije

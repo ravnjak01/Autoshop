@@ -12,6 +12,7 @@ import {MyDialogConfirmComponent} from '../../shared/dialogs/my-dialog-confirm/m
 import {DiscountDeleteEndpointService} from '../../../endpoints/discount-endpoints/discount-delete-endpoint.service';
 import {DiscountEditComponent} from './discount-post-editing/discount-posts-editing.component';
 import {DiscountCodesComponent} from './discount-code/discount-codes.component';
+import {DiscountCategoryDialogComponent} from './discount-categories/discount-category.component';
 @Component({
   selector: 'app-discounts',
   templateUrl: 'discount.component.html',
@@ -154,5 +155,14 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
 
   refreshPage(): void {
     window.location.reload();
+  }
+
+  openCategoryDialog(discount: any, event: MouseEvent) {
+    event.stopPropagation();
+
+    this.dialog.open(DiscountCategoryDialogComponent, {
+      width: '500px',
+      data: { discountId: discount.id, discountName: discount.name }
+    });
   }
 }
