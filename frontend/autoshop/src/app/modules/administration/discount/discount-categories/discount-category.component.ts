@@ -32,7 +32,7 @@ export class DiscountCategoryDialogComponent implements OnInit {
     this.discountCategoryGetAllService.handleAsync(this.data.discountId)
       .subscribe(categories => {
         this.categories = categories;
-        this.selectedCategoryIds = categories.filter(c => c.selected).map(c => c.categoryId);
+        this.selectedCategoryIds = categories.filter(c => c.isSelected).map(c => c.categoryId);
         this.updateCheckAllToggle();
       });
   }
@@ -47,7 +47,7 @@ export class DiscountCategoryDialogComponent implements OnInit {
     const category = this.categories.find(c => c.categoryId === id);
     if (!category) return;
 
-    category.selected = !category.selected;
+    category.isSelected = !category.isSelected;
 
     const index = this.selectedCategoryIds.indexOf(id);
     if (index > -1) {
@@ -62,14 +62,14 @@ export class DiscountCategoryDialogComponent implements OnInit {
   toggleCheckAll(): void {
     if (this.checkAllToggle) {
       this.filteredCategories().forEach(c => {
-        c.selected = true;
+        c.isSelected = true;
         if (!this.selectedCategoryIds.includes(c.categoryId)) {
           this.selectedCategoryIds.push(c.categoryId);
         }
       });
     } else {
       this.filteredCategories().forEach(c => {
-        c.selected = false;
+        c.isSelected = false;
         const index = this.selectedCategoryIds.indexOf(c.categoryId);
         if (index > -1) this.selectedCategoryIds.splice(index, 1);
       });
@@ -78,7 +78,7 @@ export class DiscountCategoryDialogComponent implements OnInit {
 
   private updateCheckAllToggle(): void {
     const filtered = this.filteredCategories();
-    this.checkAllToggle = filtered.length > 0 && filtered.every(c => c.selected);
+    this.checkAllToggle = filtered.length > 0 && filtered.every(c => c.isSelected);
   }
 
   save(): void {
