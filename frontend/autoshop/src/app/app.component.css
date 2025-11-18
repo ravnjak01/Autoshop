@@ -135,7 +135,14 @@ li{
 .cart-button-item button:hover {
     background-color: #555;
 }
-
+.plain-link {
+  text-decoration: none;
+  color: inherit;
+}
+.plain-link.router-link-active {
+  color: inherit;
+  text-decoration: none;
+}
 /*
 .cart-dropdown,
 /* Osnovni stilovi za sidebar korpe */

@@ -64,6 +64,13 @@ namespace RS1_2024_25.API.Data
                       .IsRequired()
                       .HasMaxLength(100); 
             });
+
+            modelBuilder.Entity<CartItem>()
+       .HasOne(c => c.Product)
+       .WithMany(p => p.CartItems)
+       .HasForeignKey(c => c.ProductId)
+       .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<MyAuthenticationToken>().HasNoKey();
         
 

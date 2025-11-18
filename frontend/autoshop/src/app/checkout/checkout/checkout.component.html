@@ -65,7 +65,7 @@
 
         <div class="summary-row shipping-row">
           <strong>Delivery within 24 hours</strong>
-          <span>{{ shippingFee | currency:'KM' }}</span> 
+          <span>{{ shippingFee }} KM</span> 
         </div>
       </div>
       
@@ -84,7 +84,7 @@
       <div class="submit-area">
         <button type="submit">Place Order</button>
         <p class="terms-text">
-          "By submitting the order, you confirm that you accept the Terms and Conditions...
+          By submitting the order, you confirm that you accept the Terms and Conditions...
         </p>
       </div>
     </div>
@@ -94,7 +94,7 @@
   <app-confirmation-modal
     [isVisible]="showConfirmModal"
     title="Potvrda narudžbe"
-    message="Da li ste sigurni da želite potvrditi narudžbu?"
+    message="Are you sure you want to confirm order?"
     (onConfirm)="placeOrder()"
     (onCancel)="showConfirmModal = false">
   </app-confirmation-modal>

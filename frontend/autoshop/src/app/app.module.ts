@@ -35,6 +35,8 @@ import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { HttpClient } from '@microsoft/signalr';
 import { CheckoutComponent } from './checkout/checkout/checkout.component';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
+import { ProductManagementComponent } from './administration/products/product-management/product-management.component';
+import { CategoriesComponent } from './categories/components/categories.component';
 
 
 @NgModule({
@@ -44,7 +46,8 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
   
     
   
-    ConfirmationModalComponent
+
+      
   ],
   
   imports: [

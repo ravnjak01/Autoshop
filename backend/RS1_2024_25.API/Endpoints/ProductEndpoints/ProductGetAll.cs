@@ -41,8 +41,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             if (request.CategoryIds?.Any() == true)
             {
                 query = query.Where(p =>
-                    p.CategoryId.HasValue &&
-                    request.CategoryIds.Contains(p.CategoryId.Value));
+                    request.CategoryIds.Contains(p.CategoryId));
+                   
             }
 
         
@@ -150,8 +150,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
      
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 20;
+   
 
-       
         public string? SearchQuery { get; set; }
 
        
@@ -175,7 +175,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
     {
         public required List<ProductDto> Products { get; set; }
 
-     
+
+    
         public int TotalCount { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }

@@ -16,7 +16,9 @@ export interface ProductGetAllRequest {
   categoryIds?: number[];
   minPrice?: number;
   maxPrice?: number;
-  sortBy?: string; // "price" or "createdDate"
+  sortBy?: string; 
+  pageNumber?: number;
+pageSize?: number;
 }
 export interface Product {
   id: number;
@@ -28,6 +30,8 @@ export interface Product {
   categoryId?: number;
   category: Category;
   imageUrl: string;
+brend: string;
+  
 }
 
 export interface ProductGetAllResponse {
@@ -45,7 +49,24 @@ export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllR
 
   handleAsync(request: ProductGetAllRequest) {
 
-    const params = buildHttpParams(request);  // Use the helper function here
+      const cleanRequest: any = { ...request };
+
+      const categoryIds = cleanRequest.categoryIds;
+
+      delete cleanRequest.categoryIds;
+
+
+
+    let params = buildHttpParams(cleanRequest);
+    
+     if (categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0) {
+      categoryIds.forEach((id: number) => {
+        if (id != null && id > 0) { // Provjeri da nije null/undefined
+          params = params.append('categoryIds', id.toString());
+        }
+      });
+    }
+    console.log('GET all products with params:', params.toString());
     return this.httpClient.get<ProductGetAllResponse>(`${this.apiUrl}`, {params}).pipe(
       tap(function () {}));
   }

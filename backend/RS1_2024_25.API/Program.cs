@@ -39,6 +39,7 @@ public partial class Program
        )
 
 
+
    );
 
 
@@ -168,6 +169,7 @@ public partial class Program
         {
             var services = scope.ServiceProvider;
             await SeedRolesAsync(services);
+            await SeedAdminUserAsync(services);
             await RS1_2024_25.API.Data.Seed.DatabaseSeeder.SeedCategoriesAsync(services);
         }
 
@@ -185,7 +187,7 @@ public partial class Program
       
         app.UseMiddleware<AuditLogMiddleware>();
         app.UseStaticFiles();
-      
+
         // **Dodaj rute**
         app.MapControllers();
         app.MapHub<MySignalrHub>("/mysignalr-hub-path");
@@ -220,4 +222,57 @@ public partial class Program
             }
         }
     }
-}
+    public static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
+    {
+        var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
+
+    
+        string adminEmail = "admin@shop.ba";
+        string adminUsername = "admin";
+        string adminPassword = "Admin123!";
+
+       
+        var existingAdmin = await userManager.FindByEmailAsync(adminEmail);
+
+        if (existingAdmin == null)
+        {
+            
+            var adminUser = new User
+            {
+                UserName = adminUsername,
+                Email = adminEmail,
+                FirstName = "Admin",
+                LastName = "Administrator",
+                EmailConfirmed = true
+            };
+
+            var result = await userManager.CreateAsync(adminUser, adminPassword);
+
+            if (result.Succeeded)
+            {
+               
+                await userManager.AddToRoleAsync(adminUser, "Admin");
+           
+            }
+            else
+            {
+              
+                foreach (var error in result.Errors)
+                {
+                    Console.WriteLine($"   - {error.Description}");
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine(" Admin korisnik već postoji.");
+
+           
+            if (!await userManager.IsInRoleAsync(existingAdmin, "Admin"))
+            {
+                await userManager.AddToRoleAsync(existingAdmin, "Admin");
+                Console.WriteLine(" Admin uloga je dodata postojećem korisniku.");
+            }
+        }
+    }
+    }

@@ -1,0 +1,140 @@
+<div class="product-management-container">
+  <h2>Admin - Upravljanje proizvodima</h2>
+
+  <div class="product-form">
+    <h3>{{ isEditing ? 'Uredi proizvod' : 'Dodaj novi proizvod' }}</h3>
+
+    <form [formGroup]="productForm" (ngSubmit)="isEditing ? updateProduct() : addProduct()">
+
+      <div class="form-row">
+        <div class="form-group"><label>Naziv proizvoda <span class="required-asterisk">*</span></label>
+          <input type="text" formControlName="name" placeholder="Unesi naziv proizvoda" /></div>
+        <div class="form-group"><label>SKU kod<span class="required-asterisk">*</span></label>
+          <input type="text" formControlName="sku" placeholder="Unesi SKU" /></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>Cijena (KM)<span class="required-asterisk">*</span></label>
+          <input type="number" formControlName="price" placeholder="Unesi cijenu" /></div>
+        <div class="form-group"><label>Količina na stanju<span class="required-asterisk">*</span></label>
+          <input type="number" formControlName="stockQuantity" placeholder="Unesi količinu" /></div>
+      </div>
+
+      <div class="form-group full-width">
+        <label>Opis</label>
+        <textarea formControlName="description" placeholder="Unesi opis proizvoda"></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group"><label>ID kategorije<span class="required-asterisk">*</span></label>
+          <input type="number" formControlName="categoryId" placeholder="Unesi ID kategorije" /></div>
+        <div class="form-group"><label>Brend<span class="required-asterisk">*</span></label>
+          <input type="text" formControlName="brend" placeholder="Unesi brend proizvoda" /></div>
+      </div>
+      
+      <div class="form-group image-input-group full-width">
+        <label for="imageUrl">URL Slike</label>
+        <div class="input-with-button">
+            <input id="imageUrl" type="text" formControlName="imageUrl" placeholder="Direktan URL ili odaberite sliku" />
+            <button type="button" (click)="openImageModal()" class="btn btn-secondary btn-sm">
+              Odaberi sliku
+            </button>
+        </div>
+        <div *ngIf="productForm.get('imageUrl')?.invalid && productForm.get('imageUrl')?.touched" class="error-message">
+          URL slike je obavezan.
+        </div>
+      </div>
+
+      <div *ngIf="productForm.get('imageUrl')?.value" class="selected-image-preview full-width">
+        <img
+          [src]="productForm.get('imageUrl')?.value"
+          alt="Odabrana slika"
+          class="preview-img"
+        />
+      </div>
+
+      <div class="form-row full-width controls-row">
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" formControlName="active" />
+              Aktivno
+            </label>
+          </div>
+
+          <div class="button-group">
+            <button type="submit" [disabled]="productForm.invalid" class="btn btn-primary">
+              {{ isEditing ? 'Spremi izmjene' : 'Dodaj proizvod' }}
+            </button>
+            <button type="button" (click)="cancelEdit()" *ngIf="isEditing" class="btn btn-warning">
+              Poništi
+            </button>
+          </div>
+      </div>
+
+    </form>
+  </div>
+  
+  <hr>
+
+  <div class="product-list" *ngIf="products.length > 0">
+    </div>
+</div>
+
+
+<div *ngIf="showImageModal" class="image-picker-modal-overlay">
+  <div class="image-picker-modal-content">
+    <h4>Odaberite sliku iz foldera</h4>
+
+    <div class="image-grid">
+      <div
+        *ngFor="let imageURL of availableImages"
+        class="image-item"
+        (click)="selectImage(imageURL)"
+      >
+        <img [src]="imageURL" alt="Dostupna slika" class="image-thumbnail" />
+      </div>
+    </div>
+
+    <div *ngIf="availableImages.length === 0" class="no-images-message">
+      Nema dostupnih slika u folderu 'wwwroot/images/products'.
+    </div>
+
+    <button type="button" (click)="closeImageModal()" class="btn btn-secondary mt-3">
+      Zatvori
+    </button>
+  </div>
+</div>
+
+<div class="product-list" *ngIf="products.length > 0">
+    <h3>Postojeći proizvodi</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Naziv</th>
+          <th>SKU</th>
+          <th>Cijena</th>
+          <th>Količina</th>
+          <th>Brend</th>
+          <th>Aktivno</th>
+          <th>Akcije</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of products">
+          <td>{{ p.id }}</td>
+          <td>{{ p.name }}</td>
+          <td>{{ p.sku }}</td>
+          <td>{{ p.price | currency:'BAM' }}</td>
+          <td>{{ p.stockQuantity }}</td>
+          <td>{{ p.brend }}</td>
+          <td>{{ p.active ? 'Da' : 'Ne' }}</td>
+          <td class="actions">
+            <button class="btn btn-small btn-edit" (click)="editProduct(p)">Uredi</button>
+            <button class="btn btn-small btn-delete" (click)="deleteProduct(p.id)">Obriši</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+

@@ -2,10 +2,15 @@
   <ul class="main-menu">
     <li class="menu-item home-item"><a routerLink="/home">Home</a></li>
     <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/blogs">Blogs</a></li>
-    <li *ngIf="!isAdminPage" class="menu-item">
-      <a routerLink="/products">Products</a>
-    </li>
-    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administracija</a></li>
+     <a routerLink="/products">Products</a>
+   
+
+   <li *ngIf="authService.isAdmin()" class="menu-item">
+  <a routerLink="/administration">Administracija</a>
+</li>
+<li *ngIf="authService.isAdmin() && isAdminPage">
+  <a routerLink="/administration/product-management">Upravljanje proizvodima</a>
+</li>
     
    
     <li class="menu-item login-button-item " *ngIf="!authService.isLoggedIn()">

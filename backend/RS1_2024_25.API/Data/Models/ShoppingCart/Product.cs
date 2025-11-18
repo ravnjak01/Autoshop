@@ -5,6 +5,7 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
 {
     public class Product
     {
+        
         public int Id { get; set; }
 
         [Required] 
@@ -20,7 +21,7 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
         [StringLength(4000)] 
         public string Description { get; set; }
 
-       
+        [Required]
         public string ImageUrl { get; set; }
 
         public bool Active { get; set; } = true;
@@ -29,10 +30,11 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
         public string? SKU { get; set; } 
 
         [StringLength(100)]
-        public string Brend { get; set; } 
+        public string Brend { get; set; }
 
-    
-        public int? CategoryId { get; set; } 
+        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Category ID must be a positive number.")]
+        public int CategoryId { get; set; } 
 
 
         public Category Category { get; set; }
@@ -40,7 +42,9 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
         // Opciono: Lista URL-ova za dodatne slike
         public List<string>? AdditionalImagesUrl { get; set; } // Može se mapirati kao JSON u DB ili kao zasebna tabela
 
-    
+
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
+
         [Column(TypeName = "decimal(8, 2)")]
         public decimal ?AvgGrade { get; set; }
         public int ?NumberOfReviews { get; set; }

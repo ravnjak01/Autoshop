@@ -10,22 +10,27 @@ import {  CartPageComponent } from './cart/components/cart-page/cart-page.compon
 import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sidebar.component';
 import { CheckoutComponent } from './checkout/checkout/checkout.component';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
+import { ProductManagementComponent } from './administration/products/product-management/product-management.component';
+import { ProductsComponent } from './products/components/products.component';
+import { CategoriesComponent } from './categories/components/categories.component';
 export const appRoutes: Routes = [
   {
     path: 'administration',
     component: AdministrationComponent,
+       canActivate: [AuthGuard],
+  data: { isAdmin: true },
     children: [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomePageComponent },
+      {    path: 'product-management',
+  component: ProductManagementComponent,}
    
     ]
   },
     { path: 'home', component: HomePageComponent },
 
   {
-    path: 'products',
-    loadComponent: () =>
-      import('./products/components/products.component').then(c => c.ProductsComponent)
+    path: 'products',component: ProductsComponent
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
@@ -40,6 +45,7 @@ export const appRoutes: Routes = [
   canActivate: [AuthGuard]
 },
 {path:'confirmation-modal',component:ConfirmationModalComponent},
+{path:'categories',component:CategoriesComponent},
     { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' }
 ];
