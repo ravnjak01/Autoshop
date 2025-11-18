@@ -6,7 +6,7 @@ import {MyConfig} from '../../my-config';
 export interface DiscountCategories {
   categoryId: number;
   categoryName: string;
-  selected: boolean;
+  isSelected: boolean;
 }
 
 @Injectable({

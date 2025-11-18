@@ -32,7 +32,7 @@ import {BlogListComponent} from './modules/blogs/blog-posts.component';
 import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
 import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
 import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment.component';
-import {MatButton} from '@angular/material/button';
+import {MatButton, MatIconButton} from '@angular/material/button';
 import { RegisterComponent } from './register/register.component';
 import {ProductListComponent} from './modules/products/products.component';
 import {NgxSliderModule} from '@angular-slider/ngx-slider';
@@ -55,6 +55,9 @@ import {
 import {
   DiscountCategoryDialogComponent
 } from './modules/administration/discount/discount-categories/discount-category.component';
+import {
+  DiscountProductDialogComponent
+} from './modules/administration/discount/discount-products/discount-product.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -73,7 +76,8 @@ import {
     DiscountEditComponent,
     DiscountCodesComponent,
     DiscountCodeEditComponent,
-    DiscountCategoryDialogComponent
+    DiscountCategoryDialogComponent,
+    DiscountProductDialogComponent
   ],
   imports: [
     BrowserAnimationsModule, // Potrebno za animacije
@@ -107,6 +111,7 @@ import {
     MatNativeDateModule,
     MatFormFieldModule,
     MatInputModule,
+    MatIconButton,
   ],
   providers: [
     {

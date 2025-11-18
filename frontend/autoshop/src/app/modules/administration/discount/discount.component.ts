@@ -13,6 +13,7 @@ import {DiscountDeleteEndpointService} from '../../../endpoints/discount-endpoin
 import {DiscountEditComponent} from './discount-post-editing/discount-posts-editing.component';
 import {DiscountCodesComponent} from './discount-code/discount-codes.component';
 import {DiscountCategoryDialogComponent} from './discount-categories/discount-category.component';
+import {DiscountProductDialogComponent} from './discount-products/discount-product.component';
 @Component({
   selector: 'app-discounts',
   templateUrl: 'discount.component.html',
@@ -161,6 +162,15 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
     event.stopPropagation();
 
     this.dialog.open(DiscountCategoryDialogComponent, {
+      width: '500px',
+      data: { discountId: discount.id, discountName: discount.name }
+    });
+  }
+
+  openProductDialog(discount: any, event: MouseEvent) {
+    event.stopPropagation();
+
+    this.dialog.open(DiscountProductDialogComponent, {
       width: '500px',
       data: { discountId: discount.id, discountName: discount.name }
     });

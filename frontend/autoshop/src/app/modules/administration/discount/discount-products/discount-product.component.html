@@ -1,0 +1,32 @@
+<h2>{{ data.discountName }} – Products</h2>
+
+<div class="header-row">
+
+  <!-- Check All -->
+  <mat-checkbox [(ngModel)]="checkAllToggle"
+                (ngModelChange)="toggleCheckAll()"
+                class="check-all">
+    Select All
+  </mat-checkbox>
+
+  <!-- Search -->
+  <mat-form-field appearance="outline" class="search-field">
+    <mat-label>Search products</mat-label>
+    <input matInput [(ngModel)]="filterText" placeholder="Type to search">
+  </mat-form-field>
+
+</div>
+
+<!-- Product list -->
+<div class="product-list">
+  <mat-checkbox *ngFor="let product of filteredProducts()"
+                [(ngModel)]="product.isSelected"
+                (ngModelChange)="toggleProduct(product)">
+    {{ product.productCode }} - {{ product.productName }}
+  </mat-checkbox>
+</div>
+
+<div class="actions">
+  <button mat-button (click)="close()">Close</button>
+  <button mat-raised-button color="primary" (click)="save()">Save</button>
+</div>
