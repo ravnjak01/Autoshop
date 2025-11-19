@@ -66,7 +66,7 @@ export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllR
         }
       });
     }
-    console.log('GET all products with params:', params.toString());
+  
     return this.httpClient.get<ProductGetAllResponse>(`${this.apiUrl}`, {params}).pipe(
       tap(function () {}));
   }
