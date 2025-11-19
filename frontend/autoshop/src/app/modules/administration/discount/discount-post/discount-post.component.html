@@ -1,0 +1,15 @@
+<h2 mat-dialog-title>{{ discount.name }}</h2>
+
+<mat-dialog-content class="discount-detail">
+  <div class="info-grid">
+    <p><strong>ID:</strong> {{ discount.id }}</p>
+    <p><strong>Name:</strong> {{ discount.name }}</p>
+    <p><strong>Discount Percentage:</strong> {{ discount.discountPercentage }}%</p>
+    <p><strong>Start Date:</strong> {{ discount.startDate | date: 'shortDate' }}</p>
+    <p><strong>End Date:</strong> {{ discount.endDate | date: 'shortDate' }}</p>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">Close</button>
+</mat-dialog-actions>

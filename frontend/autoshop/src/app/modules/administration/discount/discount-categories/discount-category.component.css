@@ -1,0 +1,63 @@
+/* Header: Check All + Search */
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-left: 15px;
+}
+
+.check-all {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  height: 32px;
+}
+
+.search-field {
+  flex: 1;
+}
+
+.search-field .mat-form-field-wrapper {
+  padding-bottom: 0;
+}
+
+.search-field .mat-form-field-infix {
+  height: 32px;
+  padding: 0 8px;
+}
+
+.search-field input.mat-input-element {
+  height: 32px;
+  line-height: 32px;
+  font-size: 14px;
+  padding: 0;
+}
+
+/* Lista kategorija */
+.category-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  padding: 5px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.category-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 10px; /* da se poravna sa Check All */
+  height: 32px;
+  font-size: 14px;
+}
+
+/* Akcije */
+.actions {
+  margin-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

@@ -1,0 +1,51 @@
+<mat-card class="discount-form-card">
+  <h2 *ngIf="discountId != 0" class="form-title">Edit Discount</h2>
+  <h2 *ngIf="discountId == 0" class="form-title">Add New Discount</h2>
+
+  <form (ngSubmit)="save()" [formGroup]="discountForm">
+    <!-- Name Input -->
+    <app-my-input-text
+      myControlName="name"
+      myLabel="Discount Name"
+      myPlaceholder="Enter discount name"
+    ></app-my-input-text>
+
+    <!-- Discount Percentage Input -->
+    <app-my-input-number
+      myControlName="discountPercentage"
+      myLabel="Discount Percentage (%)"
+      myPlaceholder="Enter discount percentage"
+    ></app-my-input-number>
+
+    <!-- Start Date -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>Start Date</mat-label>
+      <input matInput [matDatepicker]="startPicker" formControlName="startDate" placeholder="Choose start date">
+      <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+      <mat-datepicker #startPicker></mat-datepicker>
+    </mat-form-field>
+
+    <!-- End Date -->
+    <mat-form-field appearance="outline" class="form-field">
+      <mat-label>End Date</mat-label>
+      <input matInput [matDatepicker]="endPicker" formControlName="endDate" placeholder="Choose end date">
+      <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+      <mat-datepicker #endPicker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="form-buttons">
+      <button [disabled]="discountForm.invalid"
+              color="primary"
+              mat-raised-button
+              type="submit">
+        Save
+      </button>
+      <button color="warn"
+              mat-raised-button
+              type="button"
+              (click)="close()">
+        Close
+      </button>
+    </div>
+  </form>
+</mat-card>
