@@ -1,5 +1,5 @@
 
-/*
+
 import {Component, Input, OnInit} from '@angular/core';
 import {
   BlogCommentDto,
@@ -71,4 +71,3 @@ export class BlogCommentsComponent implements OnInit {
     this.newCommentContent = '';
   }
 }
-*/

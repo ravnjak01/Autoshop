@@ -9,7 +9,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 @Component({
   selector: 'app-blog-list',
   templateUrl: './blog-posts.component.html',
-  standalone: false,
+  standalone: true,
   styleUrls: ['./blog-posts.component.css'],
   
 })

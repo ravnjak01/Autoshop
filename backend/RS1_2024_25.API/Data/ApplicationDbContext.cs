@@ -38,6 +38,11 @@ namespace RS1_2024_25.API.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<DiscountProduct> DiscountProducts { get; set; }
+        public DbSet<DiscountCategory> DiscountCategories { get; set; }
+        public DbSet<DiscountCode> DiscountCodes { get; set; }
+
 
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -65,6 +70,20 @@ namespace RS1_2024_25.API.Data
                       .HasMaxLength(100); 
             });
             modelBuilder.Entity<MyAuthenticationToken>().HasNoKey();
+
+            modelBuilder.Entity<DiscountCode>()
+                        .HasIndex(x => x.Code)
+                        .IsUnique();
+
+            modelBuilder.Entity<DiscountProduct>()
+                        .HasIndex(x => new { x.DiscountId, x.ProductId })
+                        .IsUnique();
+
+            modelBuilder.Entity<DiscountCategory>()
+                        .HasIndex(x => new { x.DiscountId, x.CategoryId })
+                        .IsUnique();
+            // opcija kod nasljeđivanja
+            // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
         
 
             modelBuilder.Entity<Category>().HasData(

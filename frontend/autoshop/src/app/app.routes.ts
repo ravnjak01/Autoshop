@@ -10,14 +10,19 @@ import {  CartPageComponent } from './cart/components/cart-page/cart-page.compon
 import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sidebar.component';
 import { CheckoutComponent } from './checkout/checkout/checkout.component';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
+import { BlogPostsComponent } from './blog/components/blog-posts/blog-posts.component';
+import { DiscountsComponent } from './modules/administration/discount/discount.component';
 export const appRoutes: Routes = [
   {
     path: 'administration',
     component: AdministrationComponent,
     children: [
+           //{ path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomePageComponent },
-   
+     { path: 'admin/blog-posts', component: BlogPostsComponent },
+         { path: 'admin/discount', component: DiscountsComponent},
+         { path: 'admin/home-page', component: HomePageComponent },
     ]
   },
     { path: 'home', component: HomePageComponent },

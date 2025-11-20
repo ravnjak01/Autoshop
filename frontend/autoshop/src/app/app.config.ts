@@ -7,13 +7,21 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MyAuthInterceptor } from './core/services/auth/my-auth-interceptor.service';
 import { MyErrorHandlingInterceptor } from './core/services/auth/my-error-handling-interceptor.service';
-
+import { importProvidersFrom } from '@angular/core';
+import { AppModule } from './app.module';
+import { SharedModule } from './modules/shared/shared.module';
+import { DiscountModule } from './modules/administration/discount/discount.module';
+import { BlogModule } from './blog/blog.module';
 export const appConfig: ApplicationConfig = {
-  providers: [provideZoneChangeDetection({ eventCoalescing: true }), 
-    provideRouter(routes), 
+  
+    providers: [
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
     provideClientHydration(withEventReplay()),
-  provideAnimations(),
+    provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
+
+    // Interceptori
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MyAuthInterceptor,
@@ -23,6 +31,17 @@ export const appConfig: ApplicationConfig = {
       provide: HTTP_INTERCEPTORS,
       useClass: MyErrorHandlingInterceptor,
       multi: true
-    }]
+    },
+
+  
+    importProvidersFrom(
+      AppModule,
+      SharedModule,
+      DiscountModule,
+      BlogModule
+    )
+  ]
+
+    
     
 };

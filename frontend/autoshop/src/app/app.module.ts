@@ -34,17 +34,17 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { HttpClient } from '@microsoft/signalr';
 import { CheckoutComponent } from './checkout/checkout/checkout.component';
-import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
 
+
+import { BlogEditComponent } from './administration/blog-management/components/blog-posts-editing/blog-posts-editing.component';
+import { BlogPostComponent } from './administration/blog-management/components/blog/blog-post.component';
+import { BlogModule } from './blog/blog.module';
 
 @NgModule({
 
   declarations: [
-
-  
-    
-  
-    ConfirmationModalComponent
+    BlogEditComponent,
+    BlogPostComponent,
   ],
   
   imports: [
@@ -54,6 +54,8 @@ import { ConfirmationModalComponent } from './confirmation-modal/confirmation-mo
         FormsModule,
     ReactiveFormsModule,
     
+    BlogModule,
+    SharedModule,
     // Router sa rutama
     RouterModule.forRoot(routes),
     

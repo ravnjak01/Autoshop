@@ -1,0 +1,30 @@
+<mat-card class="discount-code-form-card">
+  <h2 *ngIf="codeId">Edit Discount Code</h2>
+  <h2 *ngIf="!codeId">Add Discount Code</h2>
+
+  <form [formGroup]="codeForm" (ngSubmit)="save()">
+    <mat-form-field appearance="outline">
+      <mat-label>Code</mat-label>
+      <input matInput formControlName="code" placeholder="Enter code">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Valid From</mat-label>
+      <input matInput [matDatepicker]="fromPicker" formControlName="validFrom">
+      <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+      <mat-datepicker #fromPicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Valid To</mat-label>
+      <input matInput [matDatepicker]="toPicker" formControlName="validTo">
+      <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+      <mat-datepicker #toPicker></mat-datepicker>
+    </mat-form-field>
+
+    <div class="form-buttons">
+      <button mat-raised-button color="primary" type="submit" [disabled]="codeForm.invalid">Save</button>
+      <button mat-raised-button color="warn" type="button" (click)="close()">Close</button>
+    </div>
+  </form>
+</mat-card>

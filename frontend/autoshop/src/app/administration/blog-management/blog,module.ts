@@ -34,9 +34,7 @@ import { MyInputTextComponent } from '../../modules/shared/my-reactive-forms/my-
     //BlogPostComponent,
     //BlogCommentsComponent,
     //BlogDetailsComponent,
-    MyDialogConfirmComponent,
-    MyDialogSimpleComponent,
-    MyInputTextComponent
+
   ],
   imports: [
     CommonModule,

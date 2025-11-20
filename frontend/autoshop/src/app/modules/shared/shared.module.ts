@@ -1,13 +1,17 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router'; // Koristimo RouterModule
+
+// Vaše i kolegine komponente
 import { MyDialogSimpleComponent } from './dialogs/my-dialog-simple/my-dialog-simple.component';
 import { MyDialogConfirmComponent } from './dialogs/my-dialog-confirm/my-dialog-confirm.component';
 import { MyPageProgressbarComponent } from './progressbars/my-page-progressbar/my-page-progressbar.component';
 import { MyInputTextComponent } from './my-reactive-forms/my-input-text/my-input-text.component';
 import { MyDropdownComponent } from './my-reactive-forms/my-dropdown/my-dropdown.component';
+import { MyInputNumberComponent } from './my-reactive-forms/my-input-number/my-input-number.component'; // Nova komponenta
 
+// *Kombinovani Angular Material Moduli* (Najstabilniji pristup za SharedModule)
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -21,19 +25,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-@NgModule({
-  declarations: [
-    MyDialogSimpleComponent,
-    MyDialogConfirmComponent,
-    MyPageProgressbarComponent,
-    //MyInputTextComponent,
-    MyDropdownComponent,
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    RouterModule,
+
+const MATERIAL_MODULES = [
     MatDialogModule,
     MatButtonModule,
     MatIconModule,
@@ -45,15 +38,37 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatProgressSpinnerModule
-  ],
-  exports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
+    MatProgressSpinnerModule,
+];
+
+const COMPONENTS = [
+    MyDialogSimpleComponent,
+    MyDialogConfirmComponent,
     MyPageProgressbarComponent,
-  //  MyInputTextComponent,
-    MyDropdownComponent
-  ]
+    MyInputTextComponent,
+    MyDropdownComponent,
+    MyInputNumberComponent,
+];
+
+
+@NgModule({
+    declarations: [
+        ...COMPONENTS
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule,
+        ...MATERIAL_MODULES
+    ],
+    exports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule, // Izvozimo RouterModule
+        ...COMPONENTS,
+        ...MATERIAL_MODULES // Izvozimo sve Material module
+    ]
 })
 export class SharedModule { }
