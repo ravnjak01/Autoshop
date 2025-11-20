@@ -23,6 +23,7 @@ function endDateAfterStartDate(control: AbstractControl): ValidationErrors | nul
   templateUrl: './discount-posts-editing.component.html',
   styleUrls: ['./discount-posts-editing.component.css'],
   standalone: false,
+  
 })
 export class DiscountEditComponent implements OnInit {
   discountForm: FormGroup;

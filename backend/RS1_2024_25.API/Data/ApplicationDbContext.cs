@@ -19,11 +19,11 @@ namespace RS1_2024_25.API.Data
     
     public class ApplicationDbContext : IdentityDbContext<User>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+       public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
         {
         }
 
-       
         public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
       
         public DbSet<BlogPost> BlogPosts { get; set; }

@@ -1,9 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
-import { MyAuthInterceptor } from './core/services/auth/my-auth-interceptor.service';
 import { MyAuthService } from './core/services/auth/my-auth.service';
 import { SharedModule } from './modules/shared/shared.module';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -17,74 +13,45 @@ import { appRoutes as routes  } from './app.routes';
 
 
 // Imports za Angular Material komponente i NgxSlider
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+//import {BlogListComponent} from './administration/blog-management/components/';
+import {InfiniteScrollDirective, InfiniteScrollModule} from 'ngx-infinite-scroll';
+import {BlogDetailsComponent} from './blog/components/blog-post/blog-post.component';
+import { BlogCommentsComponent } from './blog/components/blog-post/blog-comment/blog-comment.component';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
+import { MatSelectModule } from '@angular/material/select';
+import { BlogEditComponent } from './administration/blog-management/components/blog-posts-editing/blog-posts-editing.component';
+import { BlogPostsComponent } from './blog/components/blog-posts/blog-posts.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {BlogPostComponent} from './modules/administration/blog-posts/blog-post/blog-post.component';
-import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
-import {MatToolbar} from '@angular/material/toolbar';
-import {AdministrationComponent} from './modules/administration/administration.component';
-import {HomePageComponent} from './modules/administration/home-page/home-page.component';
-import {BlogListComponent} from './modules/blogs/blog-posts.component';
-import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
-import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
-import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment.component';
-import {MatButton} from '@angular/material/button';
-import { RegisterComponent } from './register/register.component';
-import {ProductListComponent} from './modules/products/products.component';
-import { NgxSliderModule } from '@angular-slider/ngx-slider';
-import { DiscountsComponent } from './modules/administration/discount/discount.component';
-import { DiscountPostComponent } from './modules/administration/discount/discount-post/discount-post.component';
-import {
-    DiscountEditComponent
-} from './modules/administration/discount/discount-post-editing/discount-posts-editing.component';
-import {
-    MatDatepicker,
-    MatDatepickerInput,
-    MatDatepickerModule,
-    MatDatepickerToggle
-} from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { DiscountCodesComponent } from './modules/administration/discount/discount-code/discount-codes.component';
-import {
-    DiscountCodeEditComponent
-} from './modules/administration/discount/discount-code/discount-code-edit/discount-code-edit.component';
-import {
-    DiscountCategoryDialogComponent
-} from './modules/administration/discount/discount-categories/discount-category.component';
-import {
-    DiscountProductDialogComponent
-} from './modules/administration/discount/discount-products/discount-product.component';
+import { BlogPostComponent } from './administration/blog-management/components/blog/blog-post.component';
+import { DiscountModule } from './modules/administration/discount/discount.module';
 @NgModule({
 
   declarations: [
-    AppComponent,
-    AdministrationComponent,
-    HomePageComponent,
+  
     BlogPostsComponent,
     BlogEditComponent,
     BlogPostComponent,
-    BlogListComponent,
     BlogDetailsComponent,
     BlogCommentsComponent,
-    RegisterComponent,
-        ProductListComponent,
-        DiscountsComponent,
-        DiscountPostComponent,
-        DiscountEditComponent,
-        DiscountCodesComponent,
-        DiscountCodeEditComponent,
-        DiscountCategoryDialogComponent,
-        DiscountProductDialogComponent
+
   ],
   
   imports: [
+       DiscountModule,
+     SharedModule,
     BrowserModule,
     CommonModule,
     BrowserAnimationsModule,
@@ -95,7 +62,9 @@ import {
     RouterModule.forRoot(routes),
     
     // Angular Material moduli
-    MatFormFieldModule,
+
+    NgxSliderModule,
+  MatFormFieldModule,
     MatInputModule,
     MatTableModule,
     MatIconModule,
@@ -103,24 +72,17 @@ import {
     MatSortModule,
     MatCardModule,
     MatTooltipModule,
-    NgxSliderModule,
-    MatDatepickerToggle,
-    MatDatepicker,
-    MatDatepickerInput,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatIconButton,
-    MatCheckboxModule,
-    MatDialogModule,
-    MatToolbarModule,
-    MatButtonModule,
+    MatCheckboxModule, // ISPRAVNO
+    MatDialogModule,   // ISPRAVNO
+    MatToolbarModule,  // ISPRAVNO
+    MatButtonModule,   // ISPRAVNO
     MatSelectModule,
+        MatDatepickerModule,
+    MatNativeDateModule,
     
     // Treći strani moduli
     InfiniteScrollModule,
-    NgxSliderModule,  
+   
   ],
   providers: [
    
@@ -128,7 +90,7 @@ import {
 
   ],
 
-  
+
 
 })
 export class AppModule {

@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MyBaseEndpointAsync} from '../../helper/my-base-endpoint-async.interface';
+import {MyBaseEndpointAsync} from '../../core/helper/my-base-endpoint-async.interface';
 import {MyConfig} from '../../my-config';
 import {HttpClient} from '@angular/common/http';
 

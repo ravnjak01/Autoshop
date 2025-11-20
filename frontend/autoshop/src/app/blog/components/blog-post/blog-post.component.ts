@@ -9,7 +9,6 @@ import {
   BlogRatingAddEndpointService,
   BlogRatingRequest
 } from '../../services/blog-endpoints/blog-rating-add-endpoint.service';
-import { BlogCommentsComponent } from './blog-comment/blog-comment.component';
 
 @Component({
   selector: 'app-blog-post-details',

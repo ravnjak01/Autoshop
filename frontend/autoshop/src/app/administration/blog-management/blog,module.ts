@@ -21,9 +21,6 @@ import { AdministrationComponent } from '../components/administration.component'
 //import { BlogPostComponent } from './components/blog/blog-post.component';
 
 //import { BlogDetailsComponent } from '../../blog/components/blog-post/blog-post.component';
-import { MyDialogConfirmComponent } from '../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
-import { MyDialogSimpleComponent } from '../../modules/shared/dialogs/my-dialog-simple/my-dialog-simple.component';
-import { MyInputTextComponent } from '../../modules/shared/my-reactive-forms/my-input-text/my-input-text.component';
 
 
 @NgModule({
@@ -34,9 +31,8 @@ import { MyInputTextComponent } from '../../modules/shared/my-reactive-forms/my-
     //BlogPostComponent,
     //BlogCommentsComponent,
     //BlogDetailsComponent,
-    MyDialogConfirmComponent,
-    MyDialogSimpleComponent,
-    MyInputTextComponent
+
+   
   ],
   imports: [
     CommonModule,
