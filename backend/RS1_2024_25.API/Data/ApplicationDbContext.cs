@@ -38,6 +38,11 @@ namespace RS1_2024_25.API.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Address> Addresses { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
+        public DbSet<DiscountProduct> DiscountProducts { get; set; }
+        public DbSet<DiscountCategory> DiscountCategories { get; set; }
+        public DbSet<DiscountCode> DiscountCodes { get; set; }
+
 
         #region METHODS
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -79,6 +84,20 @@ namespace RS1_2024_25.API.Data
        new Category { Id = 2, Name = "Clothing", Code = "CLOTH" },
        new Category { Id = 3, Name = "Books", Code = "BOOKS" }
    );
+
+            modelBuilder.Entity<DiscountCode>()
+                        .HasIndex(x => x.Code)
+                        .IsUnique();
+
+            modelBuilder.Entity<DiscountProduct>()
+                        .HasIndex(x => new { x.DiscountId, x.ProductId })
+                        .IsUnique();
+
+            modelBuilder.Entity<DiscountCategory>()
+                        .HasIndex(x => new { x.DiscountId, x.CategoryId })
+                        .IsUnique();
+            // opcija kod nasljeđivanja
+            // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
         }
         #endregion
     }

@@ -1,54 +1,54 @@
 <div class="product-management-container">
-  <h2>Admin - Upravljanje proizvodima</h2>
+  <h2>Admin - Managing products</h2>
 
   <div class="product-form">
-    <h3>{{ isEditing ? 'Uredi proizvod' : 'Dodaj novi proizvod' }}</h3>
+    <h3>{{ isEditing ? 'Edit product' : 'Add new product' }}</h3>
 
     <form [formGroup]="productForm" (ngSubmit)="isEditing ? updateProduct() : addProduct()">
 
       <div class="form-row">
-        <div class="form-group"><label>Naziv proizvoda <span class="required-asterisk">*</span></label>
-          <input type="text" formControlName="name" placeholder="Unesi naziv proizvoda" /></div>
-        <div class="form-group"><label>SKU kod<span class="required-asterisk">*</span></label>
-          <input type="text" formControlName="sku" placeholder="Unesi SKU" /></div>
+        <div class="form-group"><label>Product name <span class="required-asterisk">*</span></label>
+          <input type="text" formControlName="name" placeholder="Enter product name" /></div>
+        <div class="form-group"><label>SKU <span class="required-asterisk">*</span></label>
+          <input type="text" formControlName="sku" placeholder="Enter SKU" /></div>
       </div>
 
       <div class="form-row">
-        <div class="form-group"><label>Cijena (KM)<span class="required-asterisk">*</span></label>
-          <input type="number" formControlName="price" placeholder="Unesi cijenu" /></div>
-        <div class="form-group"><label>Količina na stanju<span class="required-asterisk">*</span></label>
-          <input type="number" formControlName="stockQuantity" placeholder="Unesi količinu" /></div>
+        <div class="form-group"><label>Price (KM)<span class="required-asterisk">*</span></label>
+          <input type="number" formControlName="price" placeholder="Enter price" /></div>
+        <div class="form-group"><label>Stock quantity <span class="required-asterisk">*</span></label>
+          <input type="number" formControlName="stockQuantity" placeholder="Enter  quantity" /></div>
       </div>
 
       <div class="form-group full-width">
-        <label>Opis</label>
-        <textarea formControlName="description" placeholder="Unesi opis proizvoda"></textarea>
+        <label>Description</label>
+        <textarea formControlName="description" placeholder="Enter product description"></textarea>
       </div>
 
       <div class="form-row">
-        <div class="form-group"><label>ID kategorije<span class="required-asterisk">*</span></label>
-          <input type="number" formControlName="categoryId" placeholder="Unesi ID kategorije" /></div>
+        <div class="form-group"><label>ID of category<span class="required-asterisk">*</span></label>
+          <input type="number" formControlName="categoryId" placeholder="Enter  ID of category" /></div>
         <div class="form-group"><label>Brend<span class="required-asterisk">*</span></label>
-          <input type="text" formControlName="brend" placeholder="Unesi brend proizvoda" /></div>
+          <input type="text" formControlName="brend" placeholder="Enter brend" /></div>
       </div>
       
       <div class="form-group image-input-group full-width">
-        <label for="imageUrl">URL Slike</label>
+        <label for="imageUrl">Image URL</label>
         <div class="input-with-button">
-            <input id="imageUrl" type="text" formControlName="imageUrl" placeholder="Direktan URL ili odaberite sliku" />
+            <input id="imageUrl" type="text" formControlName="imageUrl" placeholder="Choose an image" />
             <button type="button" (click)="openImageModal()" class="btn btn-secondary btn-sm">
-              Odaberi sliku
+              Choose an image
             </button>
         </div>
         <div *ngIf="productForm.get('imageUrl')?.invalid && productForm.get('imageUrl')?.touched" class="error-message">
-          URL slike je obavezan.
+          Image URL is required.
         </div>
       </div>
 
       <div *ngIf="productForm.get('imageUrl')?.value" class="selected-image-preview full-width">
         <img
           [src]="productForm.get('imageUrl')?.value"
-          alt="Odabrana slika"
+          alt="Chosen image"
           class="preview-img"
         />
       </div>
@@ -57,16 +57,16 @@
           <div class="form-group checkbox-group">
             <label>
               <input type="checkbox" formControlName="active" />
-              Aktivno
+              Active
             </label>
           </div>
 
           <div class="button-group">
             <button type="submit" [disabled]="productForm.invalid" class="btn btn-primary">
-              {{ isEditing ? 'Spremi izmjene' : 'Dodaj proizvod' }}
+              {{ isEditing ? 'Save changes' : 'Add the product' }}
             </button>
             <button type="button" (click)="cancelEdit()" *ngIf="isEditing" class="btn btn-warning">
-              Poništi
+              Cancel
             </button>
           </div>
       </div>
@@ -83,7 +83,7 @@
 
 <div *ngIf="showImageModal" class="image-picker-modal-overlay">
   <div class="image-picker-modal-content">
-    <h4>Odaberite sliku iz foldera</h4>
+    <h4>Choose image from folder</h4>
 
     <div class="image-grid">
       <div
@@ -91,7 +91,7 @@
         class="image-item"
         (click)="selectImage(imageURL)"
       >
-        <img [src]="imageURL" alt="Dostupna slika" class="image-thumbnail" />
+        <img [src]="imageURL" alt="Available  iamge" class="image-thumbnail" />
       </div>
     </div>
 
@@ -100,24 +100,24 @@
     </div>
 
     <button type="button" (click)="closeImageModal()" class="btn btn-secondary mt-3">
-      Zatvori
+      Close
     </button>
   </div>
 </div>
 
 <div class="product-list" *ngIf="products.length > 0">
-    <h3>Postojeći proizvodi</h3>
+    <h3>Existing products</h3>
     <table>
       <thead>
         <tr>
           <th>ID</th>
-          <th>Naziv</th>
+          <th>Name</th>
           <th>SKU</th>
-          <th>Cijena</th>
-          <th>Količina</th>
+          <th>Price</th>
+          <th>Quantity</th>
           <th>Brend</th>
-          <th>Aktivno</th>
-          <th>Akcije</th>
+          <th>Active</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -128,10 +128,10 @@
           <td>{{ p.price | currency:'BAM' }}</td>
           <td>{{ p.stockQuantity }}</td>
           <td>{{ p.brend }}</td>
-          <td>{{ p.active ? 'Da' : 'Ne' }}</td>
+          <td>{{ p.active ? 'Yes' : 'No' }}</td>
           <td class="actions">
-            <button class="btn btn-small btn-edit" (click)="editProduct(p)">Uredi</button>
-            <button class="btn btn-small btn-delete" (click)="deleteProduct(p.id)">Obriši</button>
+            <button class="btn btn-small btn-edit" (click)="editProduct(p)">Edit</button>
+            <button class="btn btn-small btn-delete" (click)="deleteProduct(p.id)">Delete</button>
           </td>
         </tr>
       </tbody>

@@ -11,8 +11,9 @@ import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sideba
 import { CheckoutComponent } from './checkout/checkout/checkout.component';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
 import { ProductManagementComponent } from './administration/products/product-management/product-management.component';
-import { ProductsComponent } from './products/components/products.component';
 import { CategoriesComponent } from './categories/components/categories.component';
+import { BlogPostsComponent } from './blog/components/blog-posts/blog-posts.component';
+import { DiscountsComponent } from './modules/administration/discount/discount.component';
 export const appRoutes: Routes = [
   {
     path: 'administration',
@@ -23,14 +24,18 @@ export const appRoutes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomePageComponent },
       {    path: 'product-management',
-  component: ProductManagementComponent,}
+  component: ProductManagementComponent,},
+       { path: 'admin/blog-posts', component: BlogPostsComponent },
+         { path: 'admin/discount', component: DiscountsComponent},
+         { path: 'admin/home-page', component: HomePageComponent },
    
     ]
   },
     { path: 'home', component: HomePageComponent },
-
-  {
-    path: 'products',component: ProductsComponent
+{
+      path: 'products',
+    loadComponent: () =>
+      import('./products/components/products.component').then(c => c.ProductsComponent)
   },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },

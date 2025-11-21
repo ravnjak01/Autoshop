@@ -7,7 +7,6 @@ import { BlogRoutingModule } from './blog-routing.module';
 // Komponente
 import { BlogDetailsComponent } from './components/blog-post/blog-post.component';
 import { BlogCommentsComponent } from './components/blog-post/blog-comment/blog-comment.component';
-import { BlogPostsComponent } from './components/blog-posts/blog-posts.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 
@@ -17,7 +16,7 @@ import { MatTableModule } from '@angular/material/table';
   declarations: [
     BlogDetailsComponent,
     BlogCommentsComponent,
-    BlogPostsComponent,
+  
  
   ],
   imports: [
@@ -30,7 +29,6 @@ import { MatTableModule } from '@angular/material/table';
   exports: [
     BlogDetailsComponent,
     BlogCommentsComponent,
-  BlogPostsComponent
   ]
 })
 export class BlogModule {}

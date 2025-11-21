@@ -1,29 +1,29 @@
 <div class="products-page">
 
-  <!-- 🔍 Filter sekcija -->
+  <!--  Filter sekcija -->
   <section class="filter-section">
     <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
-      <input type="text" formControlName="searchQuery" placeholder="Pretraži proizvode..." />
+      <input type="text" formControlName="searchQuery" placeholder="Search products..." />
 
       <select formControlName="categoryId">
-        <option [value]="null">Sve kategorije</option>
+        <option [value]="null">All categories</option>
         <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
       </select>
 
       <div class="price-range">
-        <label>Od:</label>
+        <label>From:</label>
         <input type="number" formControlName="minPrice" />
-        <label>Do:</label>
+        <label>To:</label>
         <input type="number" formControlName="maxPrice" />
       </div>
 
       <select formControlName="sortBy">
-        <option value="createdDateDesc">Najnovije</option>
-        <option value="priceAsc">Cijena - rastuće</option>
-        <option value="priceDesc">Cijena - opadajuće</option>
+        <option value="createdDateDesc">Latest</option>
+        <option value="priceAsc">Price - ascending</option>
+        <option value="priceDesc">Price - Descending</option>
       </select>
 
-      <button type="submit">Primijeni filter</button>
+      <button type="submit">Apply filter</button>
     </form>
   </section>
 
@@ -31,7 +31,7 @@
 
   <!-- 🧩 Lista proizvoda -->
   <section class="product-list">
-    <h2>Proizvodi</h2>
+    <h2>Products</h2>
 
     <div class="product-grid">
       <div *ngFor="let product of products" class="product-card">
@@ -51,7 +51,7 @@
 
         <!-- Dugme za dodavanje u korpu (ako nije admin) -->
         <div class="product-actions" *ngIf="!isAdmin">
-          <button (click)="addToCart(product.id)">Dodaj u korpu</button>
+          <button (click)="addToCart(product.id)">Add to cart</button>
         </div>
 
       </div>

@@ -6,10 +6,10 @@
    
 
    <li *ngIf="authService.isAdmin()" class="menu-item">
-  <a routerLink="/administration">Administracija</a>
+  <a routerLink="/administration">Administration</a>
 </li>
 <li *ngIf="authService.isAdmin() && isAdminPage">
-  <a routerLink="/administration/product-management">Upravljanje proizvodima</a>
+  <a routerLink="/administration/product-management">Manage products</a>
 </li>
     
    
@@ -30,6 +30,8 @@
   <div *ngIf="isAdminPage" class="admin-menu">
     <ul class="admin-submenu">
       <li class="submenu-item"><a routerLink="/administration/admin/blog-posts">Blogs</a></li>
+      <li class="submenu-item"><a routerLink="/administration/admin/discount">Discounts</a></li>
+      <!-- dodajte ostale opcije administracije -->
     </ul>
   </div>
 </nav>

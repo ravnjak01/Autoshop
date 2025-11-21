@@ -345,6 +345,112 @@ namespace RS1_2024_25.API.Migrations
                     b.ToTable("AuditLogs", (string)null);
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("DiscountPercentage")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Discounts");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("DiscountId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("DiscountId", "CategoryId")
+                        .IsUnique();
+
+                    b.ToTable("DiscountCategories");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCode", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("DiscountId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ValidFrom")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ValidTo")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique();
+
+                    b.HasIndex("DiscountId");
+
+                    b.ToTable("DiscountCodes");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountProduct", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DiscountId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("DiscountId", "ProductId")
+                        .IsUnique();
+
+                    b.ToTable("DiscountProducts");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Product", b =>
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>
                 {
                     b.Property<int>("Id")
@@ -364,7 +470,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Carts");
-                });
+                }));
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.CartItem", b =>
                 {
@@ -733,7 +839,7 @@ namespace RS1_2024_25.API.Migrations
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogComment", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", "BlogPost")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("BlogPostId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -744,7 +850,7 @@ namespace RS1_2024_25.API.Migrations
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogRating", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", "BlogPost")
-                        .WithMany()
+                        .WithMany("Ratings")
                         .HasForeignKey("BlogPostId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
@@ -808,6 +914,56 @@ namespace RS1_2024_25.API.Migrations
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.OrderItem", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCategory", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", "Discount")
+                        .WithMany("DiscountCategories")
+                        .HasForeignKey("DiscountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Discount");
+                }));
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCode", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", "Discount")
+                        .WithMany("DiscountCodes")
+                        .HasForeignKey("DiscountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Discount");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountProduct", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", "Discount")
+                        .WithMany("DiscountProducts")
+                        .HasForeignKey("DiscountId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Discount");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Product", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Order", "Order")
                         .WithMany("Items")
@@ -855,6 +1011,22 @@ namespace RS1_2024_25.API.Migrations
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Product", b =>
                 {
                     b.Navigation("CartItems");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Ratings");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", b =>
+                {
+                    b.Navigation("DiscountCategories");
+
+                    b.Navigation("DiscountCodes");
+
+                    b.Navigation("DiscountProducts");
                 });
 #pragma warning restore 612, 618
         }

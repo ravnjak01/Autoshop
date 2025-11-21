@@ -13,10 +13,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { appRoutes as routes  } from './app.routes';
+import { appRoutes as routes } from './app.routes';
 
-
-// Imports za Angular Material komponente i NgxSlider
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
@@ -34,59 +32,55 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 import { HttpClient } from '@microsoft/signalr';
 import { CheckoutComponent } from './checkout/checkout/checkout.component';
-import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
-import { ProductManagementComponent } from './administration/products/product-management/product-management.component';
-import { CategoriesComponent } from './categories/components/categories.component';
 
+
+import { BlogEditComponent } from './administration/blog-management/components/blog-posts-editing/blog-posts-editing.component';
+import { BlogPostComponent } from './administration/blog-management/components/blog/blog-post.component';
+import { BlogModule } from './blog/blog.module';
 
 @NgModule({
 
-  declarations: [
+    declarations: [
+        BlogEditComponent,
+        BlogPostComponent,
+    ],
 
-  
-    
-  
-
-      
-  ],
-  
-  imports: [
-    BrowserModule,
-    CommonModule,
-    BrowserAnimationsModule,
+    imports: [
+        BrowserModule,
+        CommonModule,
+        BrowserAnimationsModule,
         FormsModule,
-    ReactiveFormsModule,
-    
-    // Router sa rutama
-    RouterModule.forRoot(routes),
-    
-    // Angular Material moduli
-    MatFormFieldModule,
-    MatInputModule,
-    MatTableModule,
-    MatIconModule,
-    MatPaginatorModule,
-    MatSortModule,
-    MatCardModule,
-    MatTooltipModule,
-    MatCheckboxModule,
-    MatDialogModule,
-    MatToolbarModule,
-    MatButtonModule,
-    MatSelectModule,
-    
-    // Treći strani moduli
-    InfiniteScrollModule,
-    NgxSliderModule,  
-  ],
-  providers: [
-   
-    MyAuthService,
+        ReactiveFormsModule,
 
-  ],
+        BlogModule,
+        SharedModule,
+        // Router sa rutama
+        RouterModule.forRoot(routes),
 
-  
+        // Angular Material moduli
+        MatFormFieldModule,
+        MatInputModule,
+        MatTableModule,
+        MatIconModule,
+        MatPaginatorModule,
+        MatSortModule,
+        MatCardModule,
+        MatTooltipModule,
+        MatCheckboxModule,
+        MatDialogModule,
+        MatToolbarModule,
+        MatButtonModule,
+        MatSelectModule,
 
+        // Treći strani moduli
+        InfiniteScrollModule,
+        NgxSliderModule,
+    ],
+    providers: [
+
+        MyAuthService,
+
+    ],
 })
 export class AppModule {
 }

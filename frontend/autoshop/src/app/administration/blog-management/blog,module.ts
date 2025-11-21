@@ -16,27 +16,14 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 
 // Komponente koje pripadaju ovom modulu
 import { AdministrationComponent } from '../components/administration.component';
-//import { BlogPostsComponent } from './components/blogs/blog-posts.component';
-//import { BlogEditComponent } from './components/blog-posts-editing/blog-posts-editing.component';
-//import { BlogPostComponent } from './components/blog/blog-post.component';
 
-//import { BlogDetailsComponent } from '../../blog/components/blog-post/blog-post.component';
-import { MyDialogConfirmComponent } from '../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
-import { MyDialogSimpleComponent } from '../../modules/shared/dialogs/my-dialog-simple/my-dialog-simple.component';
-import { MyInputTextComponent } from '../../modules/shared/my-reactive-forms/my-input-text/my-input-text.component';
 
 
 @NgModule({
   declarations: [
  
-   // BlogPostsComponent,
-    //BlogEditComponent,
-    //BlogPostComponent,
-    //BlogCommentsComponent,
-    //BlogDetailsComponent,
-    MyDialogConfirmComponent,
-    MyDialogSimpleComponent,
-    MyInputTextComponent
+ 
+
   ],
   imports: [
     CommonModule,
@@ -57,10 +44,7 @@ import { MyInputTextComponent } from '../../modules/shared/my-reactive-forms/my-
   ],
   exports: [
     AdministrationComponent,
-   // BlogPostsComponent,
-    //BlogEditComponent,
-    //BlogPostComponent,
-  //  BlogDetailsComponent
+
   ]
 })
 export class BlogModule { }
