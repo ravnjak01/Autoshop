@@ -139,6 +139,17 @@ a:hover {
   text-decoration: underline;
 }
 
+.strength-label {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #444;
+}
+.strength-label strong {
+  font-weight: 600;
+}
+
+
+
 /* Responsive styles */
 @media (max-width: 480px) {
   form {
@@ -152,4 +163,6 @@ a:hover {
   input, button {
     padding: 10px;
   }
+
+  
 }
