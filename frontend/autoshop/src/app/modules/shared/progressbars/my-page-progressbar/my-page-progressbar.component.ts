@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
 import {MyPageProgressbarService} from '../my-page-progressbar.service';
-
+ import { MatProgressBarModule } from '@angular/material/progress-bar';
 @Component({
   selector: 'app-my-page-progressbar',
   standalone: false,
 
   templateUrl: './my-page-progressbar.component.html',
-  styleUrl: './my-page-progressbar.component.css'
+  styleUrl: './my-page-progressbar.component.css',
+
 })
 export class MyPageProgressbarComponent {
   isLoading = false;

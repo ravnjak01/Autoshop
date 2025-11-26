@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
-using RS1_2024_25.API.Data.Models.Modul2_Basic;
+using RS1_2024_25.API.Data.Models.ShoppingCart;
 using RS1_2024_25.API.Helper.Api;
 
 namespace RS1_2024_25.API.Endpoints.CategoryEndpoints
@@ -18,7 +18,7 @@ namespace RS1_2024_25.API.Endpoints.CategoryEndpoints
             var categories = await query.ToListAsync(cancellationToken);
             return new CategoryGetAllResponse()
             {
-                Categories = categories ?? new List<Category>()
+                Categories = categories
             };
         }
     }

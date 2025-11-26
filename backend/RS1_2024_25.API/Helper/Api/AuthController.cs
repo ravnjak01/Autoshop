@@ -1,71 +1,192 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using RS1_2024_25.API.Data.Models;
+using RS1_2024_25.API.Data.DTOs;
 using RS1_2024_25.API.Data.Models.Modul1_Auth.Services;
-
+using Microsoft.AspNetCore.Http;
+using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
+using RS1_2024_25.API.Services;
+using RS1_2024_25.API.Data.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace RS1_2024_25.API.Helper.Api
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController:ControllerBase
+    public class AuthController : ControllerBase
     {
         private readonly AuthService _authService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-
-        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager)
+        private readonly IConfiguration _config;
+        private readonly IEmailService _emailService;
+        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration  config,IEmailService emailService)
         {
             _authService = authService;
             _userManager = userManager;
             _signInManager = signInManager;
+            _config  = config;
+            _emailService = emailService;
         }
-        //public AuthController(AuthService authService,UserManager<User>userManager)
-        //{
-        //    _authService = authService;
-        //    _userManager = userManager;
-        //}
 
+        [AllowAnonymous]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterModel model)
         {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            var success = await _authService.RegisterUser(model.Username, model.Email, model.Password, model.Fullname);
-            if (!success) return BadRequest("Email already in use.");
+            var user = new User
+            {
+                UserName = model.Username,
+                Email = model.Email,
+                FirstName = model.Firstname, 
+                LastName = model.Lastname
+            };
 
-            return Ok("Registration successful");
+            var result = await _userManager.CreateAsync(user, model.Password);
+
+            if (!result.Succeeded)
+                return BadRequest(result.Errors);
+
+          
+            await _userManager.AddToRoleAsync(user, "Customer");
+
+            return Ok(new { message = "Registration successful" });
         }
-        //[HttpPost("login")]
-        //public async Task<IActionResult> Login([FromBody] LoginModel model)
-        //{
-        //    var user = await _userManager.FindByNameAsync(model.Username);
 
-        //    if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-        //    {
-        //        return Unauthorized(new { message = "Invalid username or password" });
-        //    }
-
-        //    // Ovdje možeš dodati token ili koristiti Cookie-based autentifikaciju
-        //    return Ok(new { message = "Login successful" });
-        //}
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
-            if (user == null) return Unauthorized(new { message = "Invalid username or password" });
+            try
+            {
+                var user = await _userManager.FindByNameAsync(model.Username);
+                if (user == null)
+                {
+                    Console.WriteLine("User not found");
+                    return Unauthorized(new { message = "Invalid username or password" });
+                }
 
-            var result = await _signInManager.PasswordSignInAsync(user, model.Password, false, false);
-            if (!result.Succeeded) return Unauthorized(new { message = "Invalid username or password" });
+                var result = await _signInManager.PasswordSignInAsync(user, model.Password,
+                    isPersistent: false, lockoutOnFailure: false);
 
-            return Ok(new { message = "Login successful" });
+                Console.WriteLine($"Login attempt for {model.Username}, success: {result.Succeeded}");
+
+                if (!result.Succeeded)
+                    return Unauthorized(new { message = "Invalid username or password" });
+
+                var roles = await _userManager.GetRolesAsync(user);
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+        };
+
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role));
+                }
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+                var token = new JwtSecurityToken(
+                    issuer: _config["Jwt:Issuer"],
+                    audience: _config["Jwt:Audience"],
+                    claims: claims,
+                    expires: DateTime.Now.AddHours(3),
+                    signingCredentials: creds
+                );
+       
+
+                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                var expiration = token.ValidTo; 
+                var expUnix = new DateTimeOffset(expiration).ToUnixTimeSeconds();
+
+                return Ok(new
+                {
+                    token = tokenString,
+                    username = user.UserName,
+                    roles = roles,
+                    expires=expiration,
+                    exp=expUnix
+                });
+
+
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during login: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
         }
-    }
-    public class RegisterModel
-    {
-        public string Username { get; set; }
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Fullname { get; set; } // Added Fullname property
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return Ok(new { message = "Logged out" });
+        }
+     
+
+        [AllowAnonymous]
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                
+                return Ok(new { message = "if account exists,a link has been sent" });
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var resetLink = $"http://localhost:4200/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
+
+            try
+            {
+
+           await _emailService.SendResetPasswordEmail(user.Email, resetLink);
+        return Ok(new
+        {
+            message = "Reset token generated and email sent.",
+            resetToken = token,
+            email = user.Email
+        });
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"Error during sending email-a: {ex.Message}");
+            }
+
+        }
+
+        [AllowAnonymous]
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return BadRequest(new { message = "invalid request." });
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+            if (!result.Succeeded)
+            {
+                return BadRequest(new { message = "Reset unsuccessfull", errors = result.Errors });
+            }
+
+            return Ok(new { message = "Reset of password successfull" });
+        }
+
+     
+     
     }
 }

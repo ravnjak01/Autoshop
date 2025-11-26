@@ -1,49 +1,44 @@
-﻿using System.Security.Cryptography;
+﻿using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
+using RS1_2024_25.API.Data.Models;
+using Microsoft.Extensions.Configuration;
 
-namespace RS1_2024_25.API.Helper;
-
-//https://gist.github.com/wadeschulz/20822570b27159813db8
 public class MyTokenGenerator
 {
-    public string Generate(int size)
+    private readonly IConfiguration _config;
+
+    public MyTokenGenerator(IConfiguration config)
     {
-        // Characters except I, l, O, 1, and 0 to decrease confusion when hand typing tokens
-        var charSet = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-        var chars = charSet.ToCharArray();
-        var data = new byte[1];
-#pragma warning disable SYSLIB0023 // Type or member is obsolete
-        var crypto = new RNGCryptoServiceProvider();
-#pragma warning restore SYSLIB0023 // Type or member is obsolete
-        crypto.GetNonZeroBytes(data);
-        data = new byte[size];
-        crypto.GetNonZeroBytes(data);
-        var result = new StringBuilder(size);
-        foreach (var b in data)
-        {
-            result.Append(chars[b % chars.Length]);
-        }
-        return result.ToString();
+        _config = config;
     }
 
-    public string GenerateName(int size)
+    public string GenerateToken(User user, IList<string> roles)
     {
-        // Characters except I, l, O, 1, and 0 to decrease confusion when hand typing tokens
-        var charSet = "ABCDEFGHJKLMNPQRSTUVWXYZ".ToLower();
-        var chars = charSet.ToCharArray();
-        var data = new byte[1];
-#pragma warning disable SYSLIB0023 // Type or member is obsolete
-        var crypto = new RNGCryptoServiceProvider();
-#pragma warning restore SYSLIB0023 // Type or member is obsolete
-        crypto.GetNonZeroBytes(data);
-        data = new byte[size];
-        crypto.GetNonZeroBytes(data);
-        var result = new StringBuilder(size);
-        foreach (var b in data)
+        var claims = new List<Claim>
         {
-            result.Append(chars[b % chars.Length]);
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
+            new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
         }
-        var s = result.ToString();
-        return "S" + result;
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var token = new JwtSecurityToken(
+            issuer: _config["Jwt:Issuer"],
+            audience: _config["Jwt:Audience"],
+            claims: claims,
+            expires: DateTime.UtcNow.AddHours(3),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

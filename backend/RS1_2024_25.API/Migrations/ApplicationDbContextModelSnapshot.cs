@@ -155,64 +155,30 @@ namespace RS1_2024_25.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul1_Auth.MyAppUser", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("FailedLoginAttempts")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsDean")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LockoutUntil")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PasswordHash")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MyAppUsersAll");
-                });
-
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul1_Auth.MyAuthenticationToken", b =>
                 {
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpiresAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("IpAddress")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("MyAppUserId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("RecordedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasIndex("MyAppUserId");
+                    b.HasIndex("UserId");
 
                     b.ToTable("MyAuthenticationTokensAll");
                 });
@@ -308,7 +274,7 @@ namespace RS1_2024_25.API.Migrations
                     b.ToTable("BlogRatings");
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Category", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul3_Audit.AuditLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -316,17 +282,28 @@ namespace RS1_2024_25.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Code")
+                    b.Property<string>("Action")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Changes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", b =>
@@ -442,35 +419,18 @@ namespace RS1_2024_25.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Code")
+                    b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(18,2)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId");
+                    b.HasIndex("UserId");
 
-                    b.ToTable("Products");
+                    b.ToTable("Carts");
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul3_Audit.AuditLog", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.CartItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -478,28 +438,186 @@ namespace RS1_2024_25.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Action")
+                    b.Property<int>("CartId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("CartItems");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Changes")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("EntityName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("Timestamp")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserEmail")
+                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditLogs", (string)null);
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Code = "ELEC",
+                            Name = "Electronics"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Code = "CLOTH",
+                            Name = "Clothing"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Code = "BOOKS",
+                            Name = "Books"
+                        });
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool?>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("AdditionalImagesUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("AvgGrade")
+                        .HasColumnType("decimal(8, 2)");
+
+                    b.Property<string>("Brend")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Code")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.Property<int?>("NumberOfReviews")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.Property<string>("SKU")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int?>("StockQuantity")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.User", b =>
@@ -525,7 +643,14 @@ namespace RS1_2024_25.API.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
-                    b.Property<string>("FullName")
+                    b.Property<int>("FailedLoginAttempts")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -534,6 +659,9 @@ namespace RS1_2024_25.API.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("LockoutUntil")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -628,13 +756,13 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul1_Auth.MyAuthenticationToken", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Modul1_Auth.MyAppUser", "MyAppUser")
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("MyAppUserId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("MyAppUser");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogComment", b =>
@@ -710,12 +838,44 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Product", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Category", "Category")
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Order", "Order")
+                        .WithMany("Items")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Product", "Product")
                         .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Product", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Category", null)
+                        .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.NoAction);
+                });
 
-                    b.Navigation("Category");
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>
+                {
+                    b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Category", b =>
+                {
+                    b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Order", b =>
+                {
+                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", b =>

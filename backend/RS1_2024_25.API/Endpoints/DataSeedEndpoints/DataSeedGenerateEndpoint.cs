@@ -3,12 +3,14 @@
 using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
+using RS1_2024_25.API.Data.Models.ShoppingCart;
 using RS1_2024_25.API.Helper.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Category = Data.Models.ShoppingCart.Category;
 
 [Route("data-seed")]
 public class DataSeedGenerateEndpoint(ApplicationDbContext db)

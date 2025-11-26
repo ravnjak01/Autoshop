@@ -1,4 +1,6 @@
-﻿namespace RS1_2024_25.API.Data.Models.Modul2_Basic
+﻿using RS1_2024_25.API.Data.Models.ShoppingCart;
+
+namespace RS1_2024_25.API.Data.Models.Modul2_Basic
 {
     public class DiscountProduct
     {

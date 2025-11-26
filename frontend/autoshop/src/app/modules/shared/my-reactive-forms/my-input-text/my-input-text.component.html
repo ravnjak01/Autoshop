@@ -1,3 +1,4 @@
+<!--
 <mat-form-field appearance="outline" class="full-width">
   <mat-label>{{ myLabel }}</mat-label>
   <input
@@ -8,7 +9,7 @@
     matInput
   />
 
-  <!-- Dinamičko prikazivanje grešaka -->
+
   <mat-error *ngIf="formControl.invalid && (formControl.touched || formControl.dirty)">
     <ng-container *ngIf="formControl.errors as errors">
       <ng-container *ngFor="let errorKey of getErrorKeys(errors)">
@@ -18,3 +19,4 @@
 
   </mat-error>
 </mat-form-field>
+-->

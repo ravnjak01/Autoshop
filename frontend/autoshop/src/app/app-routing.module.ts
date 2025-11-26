@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+﻿import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';
 import {AdministrationComponent} from './modules/administration/administration.component';
@@ -9,12 +9,10 @@ import {RegisterComponent} from './register/register.component';
 import {ProductListComponent} from './modules/products/products.component';
 import {DiscountsComponent} from './modules/administration/discount/discount.component';
 // Importujte komponentu
-
-const routes: Routes = [
+const routes2: Routes = [
   { path: 'administration', component: AdministrationComponent, children: [
       { path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
       { path: 'admin/blog-posts', component: BlogPostsComponent },
-      { path: 'admin/discount', component: DiscountsComponent},
       { path: 'admin/home-page', component: HomePageComponent },
     ],
   },
@@ -24,9 +22,9 @@ const routes: Routes = [
   {path:'register', component: RegisterComponent},
   //{ path: '', redirectTo: '/admin/blog-posts', pathMatch: 'full' }, // Možete postaviti početnu stranicu
 ];
-
+import { appRoutes as routes } from './app.routes';
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],  // Dodajte rute u aplikaciju
+  imports: [RouterModule.forRoot(routes2,routes, { enableTracing: true })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }

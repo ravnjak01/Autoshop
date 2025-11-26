@@ -1,32 +1,48 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace RS1_2024_25.API.Data.Models.Modul1_Auth.Services
 {
     public class AuthService
     {
-        private readonly ApplicationDbContext _context;
-        private readonly IPasswordHasher<User> _passwordHasher;
+        private readonly UserManager<User> _userManager;
 
-        public AuthService(ApplicationDbContext context, IPasswordHasher<User> passwordHasher)
+        public AuthService(UserManager<User> userManager)
         {
-            _context = context;
-            _passwordHasher = passwordHasher;
+            _userManager = userManager;
         }
 
-        public async Task<bool> RegisterUser(string username, string email, string password,string fullname)
+        public async Task<bool> RegisterUser(string username, string email, string password, string firstname,string lastname)
         {
-            if (_context.Users.Any(u => u.Email == email)) return false;
+            Console.WriteLine($"Pokusaj registracije: username={username}, email={email}");
 
-            var user = new User { UserName = username, 
-                Email = email 
-            ,FullName=fullname,
+            var existingUserByEmail = await _userManager.FindByEmailAsync(email);
+            var existingUserByUsername = await _userManager.FindByNameAsync(username);
+
+            Console.WriteLine($"Postojeci email: {(existingUserByEmail != null)}");
+            Console.WriteLine($"Postojeci username: {(existingUserByUsername != null)}");
+
+            if (existingUserByEmail != null || existingUserByUsername != null)
+                return false;
+
+            var user = new User
+            {
+                UserName = username,
+                Email = email,
+                FirstName=firstname,
+                LastName = lastname,
                 CreatedAt = DateTime.Now
             };
-            user.PasswordHash = _passwordHasher.HashPassword(user, password);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
-            return true;
+            var result = await _userManager.CreateAsync(user, password);
+            foreach (var error in result.Errors)
+            {
+                Console.WriteLine($"Greška: {error.Code} - {error.Description}");
+            }
+            Console.WriteLine($"Kreiranje uspjelo: {result.Succeeded}");
+
+            return result.Succeeded;
         }
+
     }
 }

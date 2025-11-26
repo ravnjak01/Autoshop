@@ -1,0 +1,27 @@
+<div *ngIf="isCartEmpty" class="empty-cart">
+  <p>Your cart is empty.</p>
+  <button mat-raised-button color="primary" routerLink="/home">Go shopping</button>
+</div>
+
+<div *ngIf="!isCartEmpty">
+  <div *ngFor="let item of cartItems" class="cart-item">
+<img [src]="'http://localhost:7000' + item.imageUrl" alt="{{ item.productName }}" />
+    <div class="details">
+      <p>{{ item.productName }}</p>
+      <p>{{ item.price | currency:'BAM' }}</p>
+   <div class="quantity-controls">
+  <button (click)="decreaseQuantity(item)" [disabled]="item.quantity <= 1">−</button>
+  <span>{{ item.quantity }}</span>
+  <button (click)="increaseQuantity(item)">+</button>
+</div>
+
+      <p>Total: {{ item.price * item.quantity | currency:'BAM' }}</p>
+          <button class="remove-btn" (click)="removeItem(item)">🗑️</button>
+    </div>
+  </div>
+
+  <div class="cart-summary">
+    <p><strong>Subtotal:</strong> {{ getTotal() | currency:'BAM' }}</p>
+    <button mat-raised-button color="accent" (click)="goToCheckout()">Go to Checkout</button>
+  </div>
+</div>
