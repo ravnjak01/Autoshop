@@ -18,7 +18,7 @@ import {DiscountProductDialogComponent} from './discount-products/discount-produ
   selector: 'app-discounts',
   templateUrl: 'discount.component.html',
   styleUrls: ['discount.component.css'],
-  standalone: true
+  standalone: false
 })
 export class DiscountsComponent implements OnInit, AfterViewInit {
 

@@ -67,3 +67,8 @@ coverage/
 # Temporary local files
 *.log
 
+# Privremeni fajlovi generisani tokom Git merga (Konflikti)
+RS1_2024_25.API/Data/ApplicationDbContext_BASE_*.cs
+RS1_2024_25.API/Data/ApplicationDbContext_LOCAL_*.cs
+RS1_2024_25.API/Data/ApplicationDbContext_REMOTE_*.cs
+RS1_2024_25.API/Data/ApplicationDbContext_BACKUP_*.cs

@@ -13,6 +13,7 @@ import { DiscountEditComponent } from '../../modules/administration/discount/dis
   ]
 })
 export class HomePageComponent {
+
   title = 'Administration ';
   constructor(
     private dialog: MatDialog

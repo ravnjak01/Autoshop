@@ -84,13 +84,7 @@ namespace RS1_2024_25.API.Data
                         .IsUnique();
             // opcija kod nasljeđivanja
             // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
-        
 
-            modelBuilder.Entity<Category>().HasData(
-       new Category { Id = 1, Name = "Electronics", Code = "ELEC" },
-       new Category { Id = 2, Name = "Clothing", Code = "CLOTH" },
-       new Category { Id = 3, Name = "Books", Code = "BOOKS" }
-   );
         }
         #endregion
     }

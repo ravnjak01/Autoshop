@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {MyBaseFormControlComponent} from '../my-base-form-control-component';
 import {ControlContainer} from '@angular/forms';
-
+import {MatInputModule} from '@angular/material/input';
 export enum MyInputNumberType {
   Text = 'text',
   Password = 'password',
