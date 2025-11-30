@@ -2,15 +2,15 @@
 
 using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
-using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
+using RS1_2024_25.API.Data.Models.ShoppingCart;
 using RS1_2024_25.API.Helper.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Category = Data.Models.ShoppingCart.Category;
 
 [Route("data-seed")]
 public class DataSeedGenerateEndpoint(ApplicationDbContext db)
@@ -75,7 +75,149 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 );
             db.SaveChanges();
         }
-        
+
+        if (!db.Categories.Any())
+        {
+            var categories = new List<Category>
+            {
+                new Category { Name = "Gume", Code = "CAT001" },
+                new Category { Name = "Akumulatori", Code = "CAT002" },
+                new Category { Name = "Oprema/Kozmetika", Code = "CAT003" },
+                new Category { Name = "Autopatosnice", Code = "CAT004" },
+                new Category { Name = "Podmetači za gepek", Code = "CAT005" },
+                new Category { Name = "Alu felge", Code = "CAT006" }
+            };
+
+            db.Categories.AddRange(categories);
+            db.SaveChanges();
+        }
+
+        if (!db.Products.Any())
+        {
+            db.Products.AddRange(
+                new Product
+                {
+                    Name = "Motorno ulje",
+                    Code = "ENG001",
+                    Description = "Visokokvalitetno sintetičko motorno ulje.",
+                    Price = 50.00m,
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Kočione pločice",
+                    Code = "BRK002",
+                    Description = "Izdržljive kočione pločice za sve modele automobila.",
+                    Price = 75.00m,
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Akumulator",
+                    Code = "BAT003",
+                    Description = "Dugotrajni akumulator visokih performansi.",
+                    Price = 120.00m,
+                    CategoryId = 2
+                },
+                new Product
+                {
+                    Name = "Guma",
+                    Code = "TIR004",
+                    Description = "Cjelogodišnja guma s odličnim prianjanjem.",
+                    Price = 100.00m,
+                    CategoryId = 1
+                },
+                new Product
+                {
+                    Name = "Svjećice",
+                    Code = "SPK005",
+                    Description = "Svjećice visokih performansi za bolju paljenje.",
+                    Price = 30.00m,
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Filter zraka",
+                    Code = "AIR006",
+                    Description = "Filter zraka visoke učinkovitosti za čišći unos zraka.",
+                    Price = 25.00m,
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Metlice brisača",
+                    Code = "WIP007",
+                    Description = "Izdržljive metlice brisača za jasnu vidljivost.",
+                    Price = 20.00m,
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Žarulje za farove",
+                    Code = "HLB008",
+                    Description = "Svijetle žarulje za farove za bolju vožnju noću.",
+                    Price = 40.00m,
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Vosak za auto",
+                    Code = "WAX009",
+                    Description = "Premium vosak za auto za sjajnu završnicu.",
+                    Price = 15.00m,
+                    CategoryId = 3
+                },
+                new Product
+                {
+                    Name = "Navlaka za auto",
+                    Code = "COV010",
+                    Description = "Zaštitna navlaka za auto za sve vremenske uvjete.",
+                    Price = 60.00m,
+                    CategoryId = 3
+                }
+            );
+            db.SaveChanges();
+        }
+
+        if (!db.Discounts.Any())
+        {
+            db.Discounts.Add(new Discount
+            {
+                Name = "Proljetna Akcija",
+                DiscountPercentage = 10,
+                StartDate = new DateTime(2025, 4, 1),
+                EndDate = new DateTime(2025, 6, 1)
+            });
+            db.SaveChanges();
+        }
+
+        if (!db.DiscountProducts.Any())
+        {
+            db.DiscountProducts.AddRange(
+                new DiscountProduct { DiscountId = 1, ProductId = 1002 },
+                new DiscountProduct { DiscountId = 1, ProductId = 1003 }
+                );
+            db.SaveChanges();
+        }
+
+        if (!db.DiscountCategories.Any())
+        {
+            db.DiscountCategories.AddRange(
+                new DiscountCategory { DiscountId = 1, CategoryId = 1 },
+                new DiscountCategory { DiscountId = 1, CategoryId = 2 }
+                );
+            db.SaveChanges();
+        }
+
+        if (!db.DiscountCodes.Any())
+        {
+            db.DiscountCodes.AddRange(
+                new DiscountCode { DiscountId = 1, Code = "PROLJECE5" },
+                new DiscountCode { DiscountId = 1, Code = "AUTO10" }
+                );
+            db.SaveChanges();
+        }
+
         return "Data generation completed successfully.";
     }
 }

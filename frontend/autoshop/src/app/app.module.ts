@@ -1,90 +1,94 @@
-import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { MyAuthService } from './core/services/auth/my-auth.service';
+import { SharedModule } from './modules/shared/shared.module';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MyErrorHandlingInterceptor } from './core/services/auth/my-error-handling-interceptor.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
-import {AppRoutingModule} from "./app-routing.module";
-import {AppComponent} from './app.component';
-import {HTTP_INTERCEPTORS, HttpClient, HttpClientModule} from '@angular/common/http';
-import {MyAuthInterceptor} from './services/auth-services/my-auth-interceptor.service';
-import {MyAuthService} from './services/auth-services/my-auth.service';
-import {SharedModule} from './modules/shared/shared.module';
-import {provideAnimationsAsync} from '@angular/platform-browser/animations/async';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {MyErrorHandlingInterceptor} from './services/auth-services/my-error-handling-interceptor.service';
-import {MatFormField, MatLabel} from '@angular/material/form-field';
-import {MatOption, MatSelect} from '@angular/material/select';
+import { appRoutes as routes } from './app.routes';
+
+
+// Imports za Angular Material komponente i NgxSlider
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
-import {BlogPostsComponent} from './modules/administration/blog-posts/blog-posts.component';
-import {BlogEditComponent} from './modules/administration/blog-posts/blog-posts-editing/blog-posts-editing.component';
-import {MatCard} from '@angular/material/card';
-import {MatCheckbox} from '@angular/material/checkbox';
-import {BlogPostComponent} from './modules/administration/blog-posts/blog-post/blog-post.component';
-import {MatDialogActions, MatDialogContent} from '@angular/material/dialog';
-import {MatToolbar} from '@angular/material/toolbar';
-import {AdministrationComponent} from './modules/administration/administration.component';
-import {HomePageComponent} from './modules/administration/home-page/home-page.component';
-import {BlogListComponent} from './modules/blogs/blog-posts.component';
-import {InfiniteScrollDirective} from 'ngx-infinite-scroll';
-import {BlogDetailsComponent} from './modules/blogs/blog/blog-post.component';
-import { BlogCommentsComponent } from './modules/blogs/blog-comment/blog-comment.component';
-import { RegisterComponent } from './register/register.component';
+import { MatCardModule } from '@angular/material/card';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { NgxSliderModule } from '@angular-slider/ngx-slider';
+
+import { BlogModule } from './blog/blog.module';
+import { DiscountModule } from './modules/administration/discount/discount.module';
+import { MatSelectModule } from '@angular/material/select';
+import { BlogPostsComponent } from './blog/components/blog-posts/blog-posts.component';
+import { DiscountsComponent } from './modules/administration/discount/discount.component';
+import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import { BlogManagementModule } from './administration/blog-management/blog-management.module';
 
 @NgModule({
+
   declarations: [
-    AppComponent,
-    AdministrationComponent,
-    HomePageComponent,
-    BlogPostsComponent,
-    BlogEditComponent,
-    BlogPostComponent,
-    BlogListComponent,
-    BlogDetailsComponent,
-    BlogCommentsComponent,
-    RegisterComponent
+  
 
   ],
+  
   imports: [
-    BrowserAnimationsModule, // Potrebno za animacije
+       DiscountModule,
+     SharedModule,
     BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    SharedModule,
-    MatFormField,
-    MatSelect,
-    MatOption,
-    MatLabel,
-    MatFormFieldModule,
+    CommonModule,
+    BrowserAnimationsModule,
+        FormsModule,
+    ReactiveFormsModule,
+    
+    BlogModule,
+    BlogManagementModule,
+    // Router sa rutama
+    RouterModule.forRoot(routes),
+    
+    // Angular Material moduli
+
+    NgxSliderModule,
+  MatFormFieldModule,
     MatInputModule,
     MatTableModule,
     MatIconModule,
     MatPaginatorModule,
     MatSortModule,
-    MatCard,
-    MatCheckbox,
-    MatDialogContent,
-    MatDialogActions,
-    MatToolbar,
-    InfiniteScrollDirective,
+    MatCardModule,
+    MatTooltipModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSelectModule,
+        MatDatepickerModule,
+    MatNativeDateModule,
+    
+    // Treći strani moduli
+    InfiniteScrollModule,
+    NgxSliderModule,  
   ],
   providers: [
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MyAuthInterceptor,
-      multi: true // Ensures multiple interceptors can be used if needed
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: MyErrorHandlingInterceptor,
-      multi: true // Dodaje ErrorHandlingInterceptor u lanac
-    },
+   
     MyAuthService,
-    provideAnimationsAsync() // Ensure MyAuthService is available for the interceptor
-  ],
-  bootstrap: [AppComponent]
+
+    ],
+
+
+
 })
 export class AppModule {
 }

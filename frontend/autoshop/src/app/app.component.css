@@ -1,10 +1,154 @@
+
 .navbar {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  position: relative;
+  overflow: visible;
 }
 
-.main-menu, .admin-submenu {
+.main-menu {
+  display: flex;
+  gap: 20px;
   list-style-type: none;
-  padding: 0;
-  margin: 0;
+  align-items: center; 
+  height: 100%;
+  overflow: visible; 
+}
+
+.menu-item a {
+  color: white;
+  text-decoration: none;
+  display: flex;
+  
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.menu-item a:hover {
+  background-color: #555;
+}
+
+.login-button-item button{
+  /* Preuzimamo stilove iz .menu-item a */
+  color: white;
+  text-decoration: none; /* Dugme nema text-decoration, ali zbog uniformnosti stila */
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  background-color: transparent; /* Počinjemo s transparentnom pozadinom kao linkovi */
+  border: none; /* Uklonite podrazumevani obrub dugmeta */
+  cursor: pointer; /* Postavite kursor na pointer da naznačite da je klikabilno */
+  font-family: Arial, sans-serif; /* Primeni font-family kao i na li elemente */
+  font-size: 16px; /* Prilagodite veličinu fonta ako je potrebno da odgovara linkovima */
+  line-height: normal; /* Osigurava da se tekst dugmeta poravna sa linkovima */
+  appearance: none; /* Uklanja podrazumevane stilove dugmeta specifične za pretraživač */
+}
+.logout-button-item button{
+color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  background-color: transparent; 
+  border: none;
+  cursor: pointer; 
+  font-family: Arial, sans-serif; 
+  font-size: 16px; 
+  line-height: normal; 
+  appearance: none; 
+}
+.logout-button-item button:hover {
+  background-color: #555; 
+}
+.login-button-item button:hover {
+  background-color: #555; 
+}
+
+.home-item a {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffcc00; /* Promijenite boju Home linka */
+  padding: 10px 20px;
+}
+
+.home-item a:hover {
+  background-color: #666; /* Dodajte hover efekt ako želite */
+}
+
+.admin-menu {
+  display: flex;
+}
+
+.admin-submenu {
+  list-style-type: none;
+  display: flex;
+  gap: 10px;
+}
+
+.admin-submenu .submenu-item a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.admin-submenu .submenu-item a:hover {
+  background-color: #555;
+}
+
+mat-icon {
+  font-size: 16px; /* Postavite željenu veličinu ikone */
+}
+li{
+  font-family: Arial, sans-serif;
+}
+/* Navbar mora biti positioning context */
+.navbar {
+    position: relative;
+}
+
+/* Stilovi za dugme korpe u navigation baru */
+.cart-button-item {
+    position: relative; /* Potrebno za pozicioniranje sidebara */
+    overflow: visible; 
+}
+
+.cart-button-item button {
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    line-height: normal;
+    appearance: none;
+}
+
+.cart-button-item button:hover {
+    background-color: #555;
+}
+.plain-link {
+  text-decoration: none;
+  color: inherit;
+}
+.plain-link.router-link-active {
+  color: inherit;
+  text-decoration: none;
+}
+/*
+.cart-dropdown,
+/* Osnovni stilovi za sidebar korpe */
+
+
+/* Skriva standardni naslov "Vaša korpa" jer ga nema na slici */
+.cart-sidebar h3 {
+    display: none; 
 }

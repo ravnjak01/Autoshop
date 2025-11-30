@@ -1,0 +1,50 @@
+
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>
+
+
+<div class="auth-container">
+  <div class="auth-card">
+    <h2>Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <label for="username">Username</label>
+      <input 
+        type="text" 
+        id="username" 
+        formControlName="username" autocomplete="off"
+        [ngClass]="{'is-invalid': submitted && f['username'].errors}"
+      />
+      <div *ngIf="submitted && f['username'].errors" class="error-message">
+        <div *ngIf="f['username'].errors['required']">Username is required</div>
+        <div *ngIf="f['username'].errors['username']">Enter your username</div>
+      </div>
+
+      <label for="password">Password:</label>
+      <input 
+        type="password" 
+        id="password" 
+        formControlName="password" autocomplete="off"
+        [ngClass]="{'is-invalid': submitted && f['password'].errors}" 
+      />
+      <div *ngIf="submitted && f['password'].errors" class="error-message">
+        <div *ngIf="f['password'].errors['required']">Password is required</div>
+      </div>
+    <div class="forgot-password-link">
+      <a (click)="navigateToForgotPassword()">Forgot password?</a>
+    </div>
+      
+
+      <button type="submit" [disabled]="loading">
+        <span *ngIf="loading" class="spinner"></span>
+        Login
+      </button>
+    </form>
+
+    <p>Dont have an account? 
+      <a routerLink="/register">Register</a>
+    </p>
+  </div>
+</div>
+

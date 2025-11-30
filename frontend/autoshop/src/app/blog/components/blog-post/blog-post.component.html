@@ -1,0 +1,32 @@
+<!-- This is the HTML template for the registration component. It includes a form for user registration with fields for full name, username, email, and password. The form uses Angular's reactive forms for validation and data binding. 
+
+<h2 class="blog-title">{{ blog.title }}</h2>
+
+  <div class="image-container">
+    <img *ngIf="blog.image" [src]="'data:image/jpeg;base64,' + blog.image" alt="Blog Image" class="blog-image">
+  </div>
+
+  <div class="content">
+    <p>{{ blog.content }}</p>
+  </div>
+
+  <div class="author-container">
+    <div class="author-info">
+      <p><strong>Author:</strong> {{ blog.authorName }}</p>
+      <p><strong>Published on:</strong> {{ blog.publishedTime | date: 'short' }}</p>
+    </div>
+  </div>
+
+  <div class="rating-container">
+    <div class="star-rating">
+      <span *ngFor="let star of stars; let i = index" (click)="ratePost(i + 1)" [class.filled]="i < currentRating">
+        &#9733;
+      </span>
+    </div>
+    <div class="rating" *ngIf="averageRating !== null">
+      ⭐ {{ averageRating.toFixed(1) }}
+    </div>
+  </div>
+
+<app-blog-comments [blogPostId]="blogId"></app-blog-comments>
+--> 

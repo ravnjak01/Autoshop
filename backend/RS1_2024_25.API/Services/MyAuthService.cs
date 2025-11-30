@@ -1,107 +1,69 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RS1_2024_25.API.Data;
+﻿using Microsoft.AspNetCore.Identity;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
-using RS1_2024_25.API.Helper;
+using System.Security.Claims;
 
 namespace RS1_2024_25.API.Services
 {
-    public class MyAuthService(ApplicationDbContext applicationDbContext, IHttpContextAccessor httpContextAccessor, MyTokenGenerator myTokenGenerator)
+    public class MyAuthService
     {
+        private readonly UserManager<User> _userManager;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        // Generisanje novog tokena za korisnika
-        public async Task<MyAuthenticationToken> GenerateSaveAuthToken(MyAppUser user, CancellationToken cancellationToken = default)
+        public MyAuthService(
+            UserManager<User> userManager,
+            IHttpContextAccessor httpContextAccessor)
         {
-            string randomToken = myTokenGenerator.Generate(10);
+            _userManager = userManager;
+            _httpContextAccessor = httpContextAccessor;
+        }
 
-            var authToken = new MyAuthenticationToken
+       
+        public MyAuthInfo GetCurrentAuthInfo()
+        {
+            var user = _httpContextAccessor.HttpContext?.User;
+
+            if (user == null || !user.Identity?.IsAuthenticated == true)
             {
-                IpAddress = httpContextAccessor.HttpContext?.Connection.RemoteIpAddress?.ToString() ?? string.Empty,
-                Value = randomToken,
-                MyAppUser = user,
-                RecordedAt = DateTime.Now,
-            };
-
-            applicationDbContext.Add(authToken);
-            await applicationDbContext.SaveChangesAsync(cancellationToken);
-
-            return authToken;
-        }
-
-        // Uklanjanje tokena iz baze podataka
-        public async Task<bool> RevokeAuthToken(string tokenValue, CancellationToken cancellationToken = default)
-        {
-            var authToken = await applicationDbContext.MyAuthenticationTokensAll
-                .FirstOrDefaultAsync(t => t.Value == tokenValue, cancellationToken);
-
-            if (authToken == null)
-                return false;
-
-            applicationDbContext.Remove(authToken);
-            await applicationDbContext.SaveChangesAsync(cancellationToken);
-
-            return true;
-        }
-
-        //// Dohvatanje informacija o autentifikaciji korisnika
-        public MyAuthInfo GetAuthInfoFromTokenString(string? authToken)
-        {
-            if (string.IsNullOrEmpty(authToken))
-            {
-                return GetAuthInfoFromTokenModel(null);
-            }
-
-            MyAuthenticationToken? myAuthToken = applicationDbContext.MyAuthenticationTokensAll
-                .IgnoreQueryFilters()
-                .SingleOrDefault(x => x.Value == authToken);
-
-            return GetAuthInfoFromTokenModel(myAuthToken);
-        }
-
-
-        // Dohvatanje informacija o autentifikaciji korisnika
-        public MyAuthInfo GetAuthInfoFromRequest()
-        {
-            string? authToken = httpContextAccessor.HttpContext?.Request.Headers["my-auth-token"];
-            return GetAuthInfoFromTokenString(authToken);
-        }
-
-        public MyAuthInfo GetAuthInfoFromTokenModel(MyAuthenticationToken? myAuthToken)
-        {
-            if (myAuthToken == null)
-            {
-                return new MyAuthInfo
-                {
-                    IsAdmin = false,
-                    IsDean = false,
-                    IsLoggedIn = false,
-                };
+                return new MyAuthInfo { IsLoggedIn = false };
             }
 
             return new MyAuthInfo
             {
-                UserId = myAuthToken.MyAppUserId,
-                Email = myAuthToken.MyAppUser!.Email,
-                FirstName = myAuthToken.MyAppUser.FirstName,
-                LastName = myAuthToken.MyAppUser.LastName,
-                IsAdmin = myAuthToken.MyAppUser.IsAdmin,
-                IsDean = myAuthToken.MyAppUser.IsDean,
+                UserId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+                Email = user.FindFirst(ClaimTypes.Email)?.Value,
+                FirstName = user.FindFirst(ClaimTypes.GivenName)?.Value,
+                LastName = user.FindFirst(ClaimTypes.Surname)?.Value,
+                IsAdmin = user.IsInRole("Admin"),
+                IsCustomer = user.IsInRole("Customer"),
+                IsManager = user.IsInRole("Manager"),
                 IsLoggedIn = true,
+                
             };
+        }
+
+        public async Task<User?> GetCurrentUser()
+        {
+            var userId = _httpContextAccessor.HttpContext?.User
+                .FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userId))
+                return null;
+
+            return await _userManager.FindByIdAsync(userId);
+        }
+
+        public bool IsInRole(string role)
+        {
+            return _httpContextAccessor.HttpContext?.User.IsInRole(role) ?? false;
+        }
+
+    
+        public bool IsAuthenticated()
+        {
+            return _httpContextAccessor.HttpContext?.User?.Identity?.IsAuthenticated ?? false;
         }
     }
 
-    // DTO to hold authentication information
-    public class MyAuthInfo
-    {
-        public int UserId { get; set; }
-        public string Email { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public bool IsAdmin { get; set; }
-        public bool IsDean { get; set; }
-        public bool IsStudent { get; set; }
-        public bool IsProfessor { get; set; }
-        public bool IsLoggedIn { get; set; }
-        public string SlikaPath {  get; set; }
-    }
+   
 }

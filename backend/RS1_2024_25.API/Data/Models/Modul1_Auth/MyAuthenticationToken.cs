@@ -7,15 +7,20 @@ namespace RS1_2024_25.API.Data.Models.Modul1_Auth;
 
 public class MyAuthenticationToken
 {
+    [Key]
+    public int Id { get; set; } 
     public required string Value { get; set; } // Token string
 
     public string IpAddress { get; set; } = string.Empty;// IP address of the client
 
     public DateTime RecordedAt { get; set; } // Timestamp of token creation
 
-    // Foreign key to link the token to a specific user
-    [ForeignKey(nameof(MyAppUser))]
-    public int MyAppUserId { get; set; }
+ 
+    [ForeignKey(nameof(User))]
+    public string UserId { get; set; }
 
-    public MyAppUser? MyAppUser { get; set; } // Navigation property to the user
+    public User? User { get; set; } 
+
+    public DateTime CreatedAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 }

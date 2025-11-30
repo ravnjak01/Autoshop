@@ -1,0 +1,71 @@
+<h2>Registration</h2>
+<form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="email">Email:</label>
+    <input type="email" id="email" formControlName="email">
+    <div *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched" class="error-message">
+      <span *ngIf="registrationForm.get('email')?.errors?.['required']">Email required.</span>
+      <span *ngIf="registrationForm.get('email')?.errors?.['email']">Enter valid email address.</span>
+    </div>
+  </div>
+<div class="form-group">
+    <label for="firstName">Name :</label>
+    <input type="text" id="firstName" formControlName="firstName">
+    <div *ngIf="registrationForm.get('firstName')?.invalid && registrationForm.get('firstName')?.touched" class="error-message">
+      <span *ngIf="registrationForm.get('firstName')?.errors?.['required']">Name is required.</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="lastName">Lastname :</label>
+    <input type="text" id="lastName" formControlName="lastName">
+    <div *ngIf="registrationForm.get('lastName')?.invalid && registrationForm.get('lastName')?.touched" class="error-message">
+      <span *ngIf="registrationForm.get('lastName')?.errors?.['required']">Lastname is required</span>
+    </div>
+  </div>
+  <div class="form-group">
+    <label for="username">Username:</label>
+    <input type="text" id="username" formControlName="username" autocomplete="off">
+    <div *ngIf="registrationForm.get('username')?.invalid && registrationForm.get('username')?.touched" class="error-message">
+      <span *ngIf="registrationForm.get('username')?.errors?.['required']">Username required.</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="password">Password:</label>
+    <input type="password" id="password" formControlName="password" autocomplete="off">
+    <div class="password-requirements">
+    <small>Password has to contain:</small>
+    <ul>
+      <li><small>At least 8 characters</small></li>
+      <li><small>At least one small letter</small></li>
+      <li><small>At least one capital letter</small></li>
+      <li><small>At least one number</small></li>
+     
+    </ul>
+    <div *ngIf="registrationForm.get('password')?.value"  class="strength-label">
+  Password strength: <strong>{{ getStrengthLabel(passwordStrength) }}</strong>
+</div>
+
+  </div>
+    <div *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched" class="error-message">
+      <span *ngIf="registrationForm.get('password')?.errors?.['required']">Password required.</span>
+      <span *ngIf="registrationForm.get('password')?.errors?.['minlength']">Password must be 8+ characters.</span>
+    </div>
+  </div>
+
+  <div class="form-group"></div>
+    <label for="confirmPassword">Confirm  password:</label>
+    <input type="password" id="confirmPassword" formControlName="confirmPassword">
+    <div *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched" class="error-message">
+      <span *ngIf="registrationForm.get('confirmPassword')?.errors?.['required']">Confirm of password is required  .</span>
+     <span *ngIf="registrationForm.errors?.['passwordMismatch'] && registrationForm.get('confirmPassword')?.touched">
+Passwords do not match.
+</span>
+
+    </div>
+
+
+  <button type="submit" [disabled]="registrationForm.invalid">Register</button>
+</form>
+
+<p>Already have an account? <a routerLink="/login">Back to login</a></p>

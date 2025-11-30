@@ -1,0 +1,18 @@
+﻿namespace RS1_2024_25.API.Data.Models.ShoppingCart
+{
+    public class CartItem
+    {
+        public int Id { get; set; }
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
+        public int Quantity { get; set; }
+
+        public int CartId { get; set; }
+        public Cart Cart { get; set; }
+        public bool SavedForLater { get; set; }
+        public string? UserId { get; set; }
+        public User User { get; set; }
+
+
+    }
+}

@@ -1,7 +1,7 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {MyBaseFormControlComponent} from '../my-base-form-control-component';
 import {ControlContainer} from '@angular/forms';
-
+import {MatSelectModule} from '@angular/material/select';
 @Component({
   selector: 'app-my-dropdown',
   standalone: false,
