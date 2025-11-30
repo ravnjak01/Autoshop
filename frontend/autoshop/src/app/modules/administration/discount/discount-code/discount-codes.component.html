@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>Discount Codes</h2>
+
+<mat-dialog-content>
+
+  <div class="add-button-container">
+    <button mat-flat-button color="primary" (click)="addCode()">
+      <mat-icon>add</mat-icon> Add Code
+    </button>
+  </div>
+
+  <table mat-table [dataSource]="codes" class="mat-elevation-z8">
+
+    <!-- Code Column -->
+    <ng-container matColumnDef="code">
+      <th mat-header-cell *matHeaderCellDef>Code</th>
+      <td mat-cell *matCellDef="let code">{{ code.code }}</td>
+    </ng-container>
+
+    <!-- Valid From -->
+    <ng-container matColumnDef="validFrom">
+      <th mat-header-cell *matHeaderCellDef>Valid From</th>
+      <td mat-cell *matCellDef="let code">{{ code.validFrom | date:'shortDate' }}</td>
+    </ng-container>
+
+    <!-- Valid To -->
+    <ng-container matColumnDef="validTo">
+      <th mat-header-cell *matHeaderCellDef>Valid To</th>
+      <td mat-cell *matCellDef="let code">{{ code.validTo | date:'shortDate' }}</td>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <th mat-header-cell *matHeaderCellDef>Actions</th>
+      <td mat-cell *matCellDef="let code">
+        <button mat-icon-button color="primary" (click)="editCode(code)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="deleteCode(code.id, $event)">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-flat-button color="primary" (click)="close()">Close</button>
+</mat-dialog-actions>
