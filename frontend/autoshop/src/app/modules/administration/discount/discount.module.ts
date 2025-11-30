@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { SharedModule } from '../../shared/shared.module';
 
-import { DiscountsComponent } from './discount.component';
 import { DiscountPostComponent } from './discount-post/discount-post.component';
 import { DiscountEditComponent } from './discount-post-editing/discount-posts-editing.component';
 import { DiscountCodesComponent } from './discount-code/discount-codes.component';
@@ -17,29 +16,30 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
+import { DiscountsComponent } from './discount.component';
 @NgModule({
-  declarations: [
+    declarations: [
 
-    
-  
-    DiscountPostComponent,
-    DiscountEditComponent,
-    DiscountCodesComponent,
-    DiscountCodeEditComponent,
-    DiscountCategoryDialogComponent,
-    DiscountProductDialogComponent
-  ],
-  imports: [
-    CommonModule,
-    SharedModule,
-    ReactiveFormsModule,
-     MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatDatepickerModule,
-    MatNativeDateModule,
-    MatButtonModule,
-    MatTableModule
-  ]
+        DiscountsComponent,
+        DiscountPostComponent,
+        DiscountEditComponent,
+        DiscountCodesComponent,
+        DiscountCodeEditComponent,
+        DiscountCategoryDialogComponent,
+        DiscountProductDialogComponent
+    ],
+    imports: [
+        CommonModule,
+        SharedModule,
+        ReactiveFormsModule,
+        MatCardModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatButtonModule,
+        MatTableModule,
+        SharedModule
+    ]
 })
-export class DiscountModule {}
+export class DiscountModule { }

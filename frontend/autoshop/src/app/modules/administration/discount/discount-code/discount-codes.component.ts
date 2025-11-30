@@ -6,7 +6,7 @@ import { DiscountCodeEditComponent } from './discount-code-edit/discount-code-ed
 
 @Component({
   selector: 'app-discount-codes',
-  templateUrl: './discount-codes.component.html',
+  templateUrl: 'discount-codes.component.html',
   styleUrls: ['./discount-codes.component.css'],
   standalone: false
 })

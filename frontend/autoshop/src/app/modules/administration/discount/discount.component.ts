@@ -19,10 +19,8 @@ import { SharedModule } from '../../shared/shared.module';
   selector: 'app-discounts',
   templateUrl: 'discount.component.html',
   styleUrls: ['discount.component.css'],
-  standalone: true,
-  imports:[
-    SharedModule
-  ]
+  standalone: false,
+
 })
 export class DiscountsComponent implements OnInit, AfterViewInit {
 

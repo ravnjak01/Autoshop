@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
@@ -16,16 +15,14 @@ using Product = RS1_2024_25.API.Data.Models.ShoppingCart.Product;
 
 namespace RS1_2024_25.API.Data
 {
-    
     public class ApplicationDbContext : IdentityDbContext<User>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
         {
         }
 
-       
         public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
-      
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }
@@ -34,7 +31,6 @@ namespace RS1_2024_25.API.Data
         public DbSet<Category> Categories { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
-   
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Address> Addresses { get; set; }
@@ -43,62 +39,57 @@ namespace RS1_2024_25.API.Data
         public DbSet<DiscountCategory> DiscountCategories { get; set; }
         public DbSet<DiscountCode> DiscountCodes { get; set; }
 
-
         #region METHODS
+        protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+        {
+            // Postavi Restrict kao DEFAULTNO ponašanje za SVE FK
+            base.ConfigureConventions(configurationBuilder);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<AuditLog>().ToTable("AuditLogs");
+            // ========== SVE FK relacionalnosti na Restrict ==========
+            var cascadeFKs = modelBuilder.Model.GetEntityTypes()
+                .SelectMany(t => t.GetForeignKeys())
+                .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Cart>()
-      .HasMany(c => c.Items)
-      .WithOne(ci => ci.Cart)
-      .HasForeignKey(ci => ci.CartId)
-      .OnDelete(DeleteBehavior.Cascade);
-
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            foreach (var fk in cascadeFKs)
             {
-                relationship.DeleteBehavior = DeleteBehavior.NoAction;
+                fk.DeleteBehavior = DeleteBehavior.Restrict;
             }
 
-            modelBuilder.Entity<User>(entity =>
-            {
-                entity.HasKey(e => e.Id); 
-                entity.Property(e => e.Email)
-                      .IsRequired()
-                      .HasMaxLength(100); 
-            });
+           
 
-            modelBuilder.Entity<CartItem>()
-       .HasOne(c => c.Product)
-       .WithMany(p => p.CartItems)
-       .HasForeignKey(c => c.ProductId)
-       .OnDelete(DeleteBehavior.Cascade);
+            // Cart -> CartItem
+            modelBuilder.Entity<Cart>()
+                .HasMany(c => c.Items)
+                .WithOne(ci => ci.Cart)
+                .HasForeignKey(ci => ci.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<MyAuthenticationToken>().HasNoKey();
         
+            modelBuilder.Entity<Order>()
+                .HasMany(o => o.Items)
+                .WithOne(oi => oi.Order)
+                .HasForeignKey(oi => oi.OrderId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<Category>().HasData(
-       new Category { Id = 1, Name = "Electronics", Code = "ELEC" },
-       new Category { Id = 2, Name = "Clothing", Code = "CLOTH" },
-       new Category { Id = 3, Name = "Books", Code = "BOOKS" }
-   );
-
+         
             modelBuilder.Entity<DiscountCode>()
-                        .HasIndex(x => x.Code)
-                        .IsUnique();
+                .HasIndex(x => x.Code)
+                .IsUnique();
 
             modelBuilder.Entity<DiscountProduct>()
-                        .HasIndex(x => new { x.DiscountId, x.ProductId })
-                        .IsUnique();
+                .HasIndex(x => new { x.DiscountId, x.ProductId })
+                .IsUnique();
 
             modelBuilder.Entity<DiscountCategory>()
-                        .HasIndex(x => new { x.DiscountId, x.CategoryId })
-                        .IsUnique();
-            // opcija kod nasljeđivanja
-            // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
+                .HasIndex(x => new { x.DiscountId, x.CategoryId })
+                .IsUnique();
         }
-        #endregion
     }
+    #endregion
 }
+
