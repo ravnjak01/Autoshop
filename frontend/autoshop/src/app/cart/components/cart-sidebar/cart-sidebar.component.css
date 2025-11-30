@@ -1,21 +1,18 @@
-/* Osnovni stilovi za sidebar korpe */
-.cart-sidebar {
-    /* Simulira bijelu pozadinu pop-up prozora */
-    background-color: #ffffff;
-    /* Dodaje blagu sjenu za pop-up efekat */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    /* Manji padding unutar samog panela */
-    padding: 20px 15px;
-    /* Širina panela */
-    width: 350px; 
-    /* Font i boja teksta - prilagoditi font ako je potrebno */
-    font-family: Arial, sans-serif;
-    color: #333333;
-}
 
-/* Skriva standardni naslov "Vaša korpa" jer ga nema na slici */
-.cart-sidebar h3 {
-    display: none; 
+
+.cart-sidebar {
+    position: fixed; /* fiksno u viewportu */
+    top: 0;
+    right: 0;
+    width: 400px;
+    max-width: 100%;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    overflow-x: hidden;
+    overflow-y: auto;
+    border-radius: 8px;
+    padding: 20px 15px;
 }
 
 /* Lista stavki u korpi */
@@ -180,22 +177,7 @@
 .clear-cart-button:hover {
     background-color: #f0f0f0;
 }
-/* Osnovni stilovi za sidebar korpe */
-.cart-sidebar {
-    /* Simulira bijelu pozadinu pop-up prozora */
-    background-color: #ffffff;
-    /* Dodaje blagu sjenu za pop-up efekat */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    /* Manji padding unutar samog panela */
-    padding: 20px 15px;
-    /* Fiksna širina panela za potpunu vidljivost teksta */
-    width: 400px;
-    max-width: 100%;
-    /* Font i boja teksta - prilagoditi font ako je potrebno */
-    font-family: Arial, sans-serif;
-    color: #333333;
-    overflow-x: hidden;
-}
+
 /* Kontejner za smještanje dugmadi i polja za unos */
 .quantity-controls {
     display: flex;
@@ -353,12 +335,4 @@
     border-bottom: 1px solid #e0e0e0;
     /* Uklanjanje lijeve i desne linije da se stopi s dugmadima */
     padding: 0;
-}
-.cart-sidebar {
-  right: -400px;
-  transition: right 0.3s ease;
-}
-
-.cart-sidebar.open {
-  right: 0;
 }

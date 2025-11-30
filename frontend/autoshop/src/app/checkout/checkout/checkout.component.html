@@ -1,0 +1,108 @@
+
+
+<div class="checkout-page-content">
+  
+  <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="data-form" id="data-form-id">
+    <div class="checkout-section data-section">
+      <h3 class="section-title dark-bg">Personal details</h3>
+      
+      <div class="form-row">
+        <div class="form-group half-width">
+          <input id="firstName" formControlName="firstName" type="text" placeholder="Name" />
+        </div>
+        <div class="form-group half-width">
+          <input id="lastName" formControlName="lastName" type="text" placeholder="Surname" />
+        </div>
+      </div>
+
+      <div class="form-group fixed-country">
+        <input formControlName="country" type="text" placeholder="Country"/>
+      </div>
+
+      <div class="form-group">
+        <input id="city" formControlName="city" type="text" placeholder="City" />
+      </div>
+      <div class="form-group">
+        <div class="form-group">
+          <input id="postalCode" formControlName="postalCode" type="text" placeholder="Postal code" />
+        </div>
+        <input id="street" formControlName="street" type="text" placeholder="Street and number" />
+      </div>
+
+
+
+      <div class="form-group">
+        <input id="phone" formControlName="phone" type="text" placeholder="Telefon" />
+      </div>
+
+      <div class="form-group">
+        <input id="email" formControlName="email" type="email" placeholder="Email adresa" />
+      </div>
+    </div>
+
+    <div class="checkout-section details-section">
+      <h3 class="section-title">Order details</h3>
+     
+      <div class="order-summary-table">
+        <div class="summary-row header-row">
+          <strong>Product</strong>
+          <strong>Total</strong>
+        </div>
+        
+        <!-- Prikaz proizvoda sa slikom -->
+        <div class="summary-row product-item" *ngFor="let item of cartItems">
+          <div class="product-info">
+            <img 
+              *ngIf="item.imageUrl || item.product?.imageUrl" 
+              [src]="'http://localhost:7000' + (item.imageUrl || item.product?.imageUrl)" 
+              alt="{{ item.productName }}" 
+              class="checkout-product-image" 
+            />
+            <span>{{ item.productName }} × {{ item.quantity }}</span>
+          </div>
+          <span>{{ getItemTotal(item) | number:'1.2-2' }} KM</span>
+        </div>
+
+        <div class="summary-row shipping-row">
+          <strong>Delivery within 24 hours</strong>
+          <span>{{ shippingFee | currency:'KM' }}</span> 
+        </div>
+      </div>
+      
+      <div class="total-row-highlight">
+        <strong>Total</strong>
+        <div class="total-amount-box">
+          <span class="final-total">{{ finalTotalPrice | currency:'KM' }}</span> 
+          <p class="vat-info">(uključuje {{ vatAmount | currency:'KM' }} PDV)</p>
+        </div>
+      </div>
+
+      <div class="payment-options">
+        <h4>Pay on delivery</h4>
+      </div>
+      
+      <div class="submit-area">
+        <button type="submit">Place Order</button>
+        <p class="terms-text">
+          "By submitting the order, you confirm that you accept the Terms and Conditions...
+        </p>
+      </div>
+    </div>
+  </form>
+
+  <!--Modal za potvrdu -->
+  <app-confirmation-modal
+    [isVisible]="showConfirmModal"
+    title="Potvrda narudžbe"
+    message="Da li ste sigurni da želite potvrditi narudžbu?"
+    (onConfirm)="placeOrder()"
+    (onCancel)="showConfirmModal = false">
+  </app-confirmation-modal>
+</div>
+ <div *ngIf="successMessage" class="alert alert-success">
+  {{ successMessage }}
+</div>
+
+<div *ngIf="errorMessage" class="alert alert-danger">
+  {{ errorMessage }}
+</div>

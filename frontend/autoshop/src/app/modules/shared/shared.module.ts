@@ -2,7 +2,14 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { MyDialogSimpleComponent } from './dialogs/my-dialog-simple/my-dialog-simple.component';
+import { MyDialogConfirmComponent } from './dialogs/my-dialog-confirm/my-dialog-confirm.component';
+import { MyPageProgressbarComponent } from './progressbars/my-page-progressbar/my-page-progressbar.component';
+import { MyInputTextComponent } from './my-reactive-forms/my-input-text/my-input-text.component';
+import { MyDropdownComponent } from './my-reactive-forms/my-dropdown/my-dropdown.component';
+import { MyInputNumberComponent } from './my-reactive-forms/my-input-number/my-input-number.component';
 
+// Angular Material Moduli
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,78 +27,52 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 
-import { MyDialogSimpleComponent } from './dialogs/my-dialog-simple/my-dialog-simple.component';
-import { MyDialogConfirmComponent } from './dialogs/my-dialog-confirm/my-dialog-confirm.component';
-import { MyPageProgressbarComponent } from './progressbars/my-page-progressbar/my-page-progressbar.component';
-import { MyInputTextComponent } from './my-reactive-forms/my-input-text/my-input-text.component';
-import { MyDropdownComponent } from './my-reactive-forms/my-dropdown/my-dropdown.component';
-import { MyInputNumberComponent } from './my-reactive-forms/my-input-number/my-input-number.component';
+const MATERIAL_MODULES = [
+    MatDialogModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+    MatProgressBarModule,
+    MatToolbarModule,
+    MatSortModule,
+    MatPaginatorModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatCardModule,
+    MatCheckboxModule,
+];
+
+const COMPONENTS = [
+    MyDialogSimpleComponent,
+    MyDialogConfirmComponent,
+    MyPageProgressbarComponent,
+    MyInputTextComponent,
+    MyDropdownComponent,
+    MyInputNumberComponent,
+];
 
 @NgModule({
-  declarations: [
-    MyDialogSimpleComponent,
-    MyDialogConfirmComponent,
-    MyPageProgressbarComponent,
-    MyInputTextComponent,
-    MyDropdownComponent,
-    MyInputNumberComponent,
-  ],
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    RouterModule,
-
-    // Material
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatProgressBarModule,
-    MatToolbarModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatNativeDateModule
-  ],
-  exports: [
-    // Components
-    MyDialogSimpleComponent,
-    MyDialogConfirmComponent,
-    MyPageProgressbarComponent,
-    MyInputTextComponent,
-    MyDropdownComponent,
-    MyInputNumberComponent,
-
-    // Angular
-    CommonModule,
-    ReactiveFormsModule,
-    FormsModule,
-    RouterModule,
-
-    // Material
-    MatDialogModule,
-    MatButtonModule,
-    MatIconModule,
-    MatSnackBarModule,
-    MatProgressBarModule,
-    MatToolbarModule,
-    MatSortModule,
-    MatPaginatorModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatDatepickerModule,
-    MatNativeDateModule
-  ]
+    declarations: [
+        ...COMPONENTS
+    ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule,
+        ...MATERIAL_MODULES
+    ],
+    exports: [
+        CommonModule, // Ovo eksportuje DatePipe
+        FormsModule,
+        ReactiveFormsModule,
+        RouterModule,
+        ...COMPONENTS,
+        ...MATERIAL_MODULES
+    ]
 })
 export class SharedModule {}

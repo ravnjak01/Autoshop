@@ -149,6 +149,7 @@ public partial class Program
         builder.Services.AddAuthorization();
         builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
         builder.Services.AddScoped<IEmailService, EmailService>();
+        builder.Services.AddScoped<ICartService, CartService>();
         // **Dodaj kontrolere i Swagger**
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();

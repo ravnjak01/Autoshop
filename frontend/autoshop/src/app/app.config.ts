@@ -11,7 +11,7 @@ import { importProvidersFrom } from '@angular/core';
 import { AppModule } from './app.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { DiscountModule } from './modules/administration/discount/discount.module';
-
+import { BlogModule } from './blog/blog.module';
 export const appConfig: ApplicationConfig = {
   
     providers: [
@@ -33,11 +33,12 @@ export const appConfig: ApplicationConfig = {
       multi: true
     },
 
-    // ⬇⬇⬇ OVDJE IDE importProvidersFrom ⬇⬇⬇
+  
     importProvidersFrom(
       AppModule,
       SharedModule,
-      DiscountModule
+      DiscountModule,
+      BlogModule
     )
   ]
 

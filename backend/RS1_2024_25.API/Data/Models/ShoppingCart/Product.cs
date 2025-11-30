@@ -23,24 +23,24 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
        
         public string ImageUrl { get; set; }
 
-        public bool? Active { get; set; } = true;
+        public bool Active { get; set; } = true;
 
         [StringLength(50)]
-        public string? SKU { get; set; } // Opciono, ali korisno
+        public string? SKU { get; set; } 
 
         [StringLength(100)]
-        public string Brend { get; set; } // Opciono
+        public string Brend { get; set; } 
 
-        // Strani ključ za kategoriju
+    
         public int? CategoryId { get; set; } 
 
-        // Navigation property za kategoriju (omogućava pristup objektu kategorije)
-       // public Category Category { get; set; }
+
+        public Category Category { get; set; }
 
         // Opciono: Lista URL-ova za dodatne slike
         public List<string>? AdditionalImagesUrl { get; set; } // Može se mapirati kao JSON u DB ili kao zasebna tabela
 
-        // Opciono: Ako ima recenzije
+    
         [Column(TypeName = "decimal(8, 2)")]
         public decimal ?AvgGrade { get; set; }
         public int ?NumberOfReviews { get; set; }

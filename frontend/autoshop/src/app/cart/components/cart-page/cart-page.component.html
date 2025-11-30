@@ -4,24 +4,48 @@
 </div>
 
 <div *ngIf="!isCartEmpty">
+ 
+  <h2>Your Cart</h2>
   <div *ngFor="let item of cartItems" class="cart-item">
-<img [src]="'http://localhost:7000' + item.imageUrl" alt="{{ item.productName }}" />
+    <img [src]="'http://localhost:7000' + item.imageUrl" alt="{{ item.productName }}" />
     <div class="details">
-      <p>{{ item.productName }}</p>
-      <p>{{ item.price | currency:'BAM' }}</p>
-   <div class="quantity-controls">
-  <button (click)="decreaseQuantity(item)" [disabled]="item.quantity <= 1">−</button>
-  <span>{{ item.quantity }}</span>
-  <button (click)="increaseQuantity(item)">+</button>
-</div>
+      <p class="name">{{ item.productName }}</p>
+      <p class="price">{{ item.price | currency:'BAM' }}</p>
 
-      <p>Total: {{ item.price * item.quantity | currency:'BAM' }}</p>
-          <button class="remove-btn" (click)="removeItem(item)">🗑️</button>
+      <div class="quantity-controls">
+        <button (click)="decreaseQuantity(item)" [disabled]="item.quantity <= 1">−</button>
+        <span>{{ item.quantity }}</span>
+        <button (click)="increaseQuantity(item)">+</button>
+      </div>
+
+      <p class="total">Total: {{ item.price * item.quantity | currency:'BAM' }}</p>
+
+      <div class="actions">
+        <button mat-button color="warn" (click)="removeItem(item)">🗑️ Remove</button>
+        <button mat-stroked-button color="primary" (click)="saveForLater(item)">💾 Save for later</button>
+      </div>
     </div>
   </div>
 
   <div class="cart-summary">
     <p><strong>Subtotal:</strong> {{ getTotal() | currency:'BAM' }}</p>
-    <button mat-raised-button color="accent" (click)="goToCheckout()">Go to Checkout</button>
+    <button mat-raised-button color="accent" (click)="goToCheckout()">Proceed to Checkout</button>
+  </div>
+
+  <!-- SAVED FOR LATER SECTION -->
+ <div *ngIf="(savedForLaterItems?.length ?? 0) > 0" class="saved-for-later">
+    <h2>Saved for later</h2>
+
+    <div *ngFor="let item of savedForLaterItems" class="cart-item saved-item">
+      <img [src]="'http://localhost:7000' + item.imageUrl" alt="{{ item.productName }}" />
+      <div class="details">
+        <p class="name">{{ item.productName }}</p>
+        <p class="price">{{ item.price | currency:'BAM' }}</p>
+        <div class="actions">
+          <button mat-raised-button color="accent" (click)="moveToCart(item)">Add back to cart</button>
+          <button mat-button color="warn" (click)="removeSavedItem(item)"> Remove</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

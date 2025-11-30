@@ -25,21 +25,44 @@ namespace RS1_2024_25.API.Controllers
             _userManager = userManager;
         }
 
-
-      
+        [AllowAnonymous]
         [HttpPost("add-to-cart")]
         public async Task<IActionResult> AddToCart([FromBody] AddToCartDTO request)
         {
             if (request == null || request.ProductId <= 0 || request.Quantity <= 0)
                 return BadRequest("Invalid data.");
 
-            var userId = _userManager.GetUserId(User); 
-            if (userId == null)
-                return Unauthorized();
+            // ako nije prijavljen - koristi temporary sessionId
+            var userId = _userManager.GetUserId(User);
+            string sessionId = Request.Cookies["guest_session"];
 
-            var cart = await _context.Carts
-                .Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            if (userId == null && sessionId == null)
+            {
+                // kreiraj privremeni ID gosta
+                sessionId = Guid.NewGuid().ToString();
+                Response.Cookies.Append("guest_session", sessionId, new CookieOptions
+                {
+                    Expires = DateTimeOffset.UtcNow.AddDays(7),
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.None,
+                    Secure = true
+                });
+            }
+
+          
+            Cart? cart = null;
+
+            if (userId != null)
+            {
+                cart = await _context.Carts.Include(c => c.Items)
+                                           .FirstOrDefaultAsync(c => c.UserId == userId);
+            }
+            else if (sessionId != null)
+            {
+                cart = await _context.Carts.Include(c => c.Items)
+                                           .FirstOrDefaultAsync(c => c.GuestSessionId == sessionId);
+            }
+
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId);
             if (product == null)
                 return NotFound("Product not found.");
@@ -49,53 +72,68 @@ namespace RS1_2024_25.API.Controllers
                 cart = new Cart
                 {
                     UserId = userId,
+                    GuestSessionId = sessionId,
                     Items = new List<CartItem>()
                 };
                 _context.Carts.Add(cart);
             }
 
             var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == request.ProductId);
-
             if (existingItem != null)
-            {
                 existingItem.Quantity += request.Quantity;
-                _context.CartItems.Update(existingItem);
-            }
             else
-            {
-                var newItem = new CartItem
+                cart.Items.Add(new CartItem
                 {
                     ProductId = request.ProductId,
-                    Product=product,
+                    Product = product,
                     Quantity = request.Quantity,
-                    Cart = cart
-                };
-                cart.Items.Add(newItem);
-            }
+                    Cart = cart,
+                    UserId = userId
+                });
 
             await _context.SaveChangesAsync();
-
-            return Ok(new { Message = $"{_context.Products.Find(request.ProductId)?.Name} added to the cart!", 
-            ProductId=request.ProductId});
+            return Ok(new { message = $"{product.Name} added to the cart!" });
         }
-
-       
+        [AllowAnonymous]
         [HttpGet("my-cart")]
         public async Task<IActionResult> GetMyCart()
         {
-
             var userId = _userManager.GetUserId(User);
-            if (userId == null)
-                return Unauthorized();
+            string? sessionId = Request.Cookies["guest_session"];
 
-            var cart = await _context.Carts
-                .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+    
+            if (userId == null && sessionId == null)
+                return Ok(new CartResponseDTO
+                {
+                    Items = new List<CartItemDTO>(),
+                    ItemCount = 0,
+                    Total = 0
+                });
+
+            Cart? cart = null;
+
+            if (userId != null)
+            {
+                cart = await _context.Carts
+                    .Include(c => c.Items)
+                    .ThenInclude(i => i.Product)
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
+            }
+            else if (sessionId != null)
+            {
+                cart = await _context.Carts
+                    .Include(c => c.Items)
+                    .ThenInclude(i => i.Product)
+                    .FirstOrDefaultAsync(c => c.GuestSessionId == sessionId);
+            }
 
             if (cart == null || cart.Items == null || !cart.Items.Any())
-                return Ok(new List<CartItemDTO>());
-
+                return Ok(new CartResponseDTO
+                {
+                    Items = new List<CartItemDTO>(),
+                    ItemCount = 0,
+                    Total = 0
+                });
 
             var items = cart.Items.Select(i => new CartItemDTO
             {
@@ -104,156 +142,209 @@ namespace RS1_2024_25.API.Controllers
                 ProductName = i.Product.Name,
                 Quantity = i.Quantity,
                 Price = i.Product.Price,
-                Total = i.Product.Price * i.Quantity,
-                imageUrl=i.Product.ImageUrl
+                imageUrl = i.Product.ImageUrl,
+                Total = i.Product.Price * i.Quantity
             }).ToList();
 
-            var result = cart.Items.Select(i => new CartResponseDTO
+            return Ok(new CartResponseDTO
             {
                 Items = items,
-                ItemCount=items.Sum(x => x.Quantity),
+                ItemCount = items.Sum(x => x.Quantity),
                 Total = items.Sum(x => x.Total)
-            }).ToList();
-
-            return Ok(result);
-        }
-
-        [HttpDelete("remove/{productId}")]
-        public async Task<IActionResult> RemoveFromCart(int productId)
-        {
-            var userId = _userManager.GetUserId(User);
-            if (userId == null)
-                return Unauthorized();
-
-            var cart = await _context.Carts
-                .Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-
-            if (cart == null)
-                return NotFound("Cart not found.");
-
-            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
-            if (item == null)
-                return NotFound("Product not in cart.");
-
-            _context.CartItems.Remove(item);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Message = "Product removed from cart." });
-        }
-
-
-        [HttpDelete("clear")]
-        public async Task<IActionResult> ClearCart()
-        {
-            var userId = _userManager.GetUserId(User);
-            if (userId == null)
-                return Unauthorized();
-
-            var cart = await _context.Carts
-                .Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-
-            if (cart == null)
-                return NotFound("Cart not found.");
-
-            _context.CartItems.RemoveRange(cart.Items);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Message = "Cart cleared." });
-        }
-        [HttpPost("checkout")]
-        public async Task<IActionResult> Checkout()
-        {
-            var userId = _userManager.GetUserId(User);
-            if (userId == null)
-                return Unauthorized();
-
-            var cart = await _context.Carts
-                .Include(c => c.Items)
-                .ThenInclude(i => i.Product)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
-
-            if (cart == null)
-                return NotFound("Cart not found.");
-
-            if (!cart.Items.Any())
-                return BadRequest("Cannot checkout with empty cart.");
-
-            foreach (var item in cart.Items)
-            {
-                if (item.Product.StockQuantity < item.Quantity)
-                {
-                    return BadRequest($"Insufficient stock for {item.Product.Name}. Available: {item.Product.StockQuantity}, Requested: {item.Quantity}");
-                }
-                if(item.Product.Active == false)
-                {
-                    return BadRequest($"Product {item.Product.Name} is no longer available.");
-                }
-            }
-         
-            var order = new Order
-            {
-                UserId = userId,
-                CreatedAt = DateTime.UtcNow,
-                Status = "Pending",
-                Items = cart.Items.Select(i => new OrderItem
-                {
-                    ProductId = i.ProductId,
-                    Quantity = i.Quantity,
-                    UnitPrice = i.Product.Price
-                }).ToList(),
-                TotalAmount = cart.Items.Sum(i => i.Product.Price * i.Quantity)
-            };
-
-            _context.Orders.Add(order);
-
-            foreach (var item in cart.Items)
-            {
-                item.Product.StockQuantity -= item.Quantity;
-            }
-           
-            _context.CartItems.RemoveRange(cart.Items);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new
-            {
-                Message = "Order successfully created.",
-                OrderId = order.Id,
-                Total = order.TotalAmount,
-                Status = order.Status
             });
         }
 
-        [HttpPut("update-quantity/{itemId}")]
-        public async Task<IActionResult> UpdateQuantity(int itemId, [FromBody] UpdateCartItemDTO request)
+
+       
+      
+       
+        [HttpPost("save-for-later/{productId}")]
+        public async Task<IActionResult> SaveForLater(int productId)
         {
             var userId = _userManager.GetUserId(User);
             if (userId == null)
                 return Unauthorized();
 
+            var cartItem = await _context.CartItems
+                .FirstOrDefaultAsync(i => i.ProductId == productId && i.UserId == userId);
+
+            if (cartItem == null)
+                return NotFound("Product not found in cart.");
+
+            cartItem.SavedForLater = true;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Product saved for later." });
+        }
+        [HttpPost("move-to-cart/{productId}")]
+        public async Task<IActionResult> MoveToCart(int productId)
+        {
+            var userId = _userManager.GetUserId(User);
+            var cart = await _context.Carts
+                .Include(c => c.Items)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+
+            if (cart == null) return NotFound("Cart not found");
+
+            var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+            if (item == null) return NotFound("Item not found");
+
+            item.SavedForLater = false;
+            await _context.SaveChangesAsync();
+
+            return Ok();
+        }
+        [AllowAnonymous]
+        [HttpPut("update/{itemId}")]
+        public async Task<IActionResult> UpdateQuantity(int itemId, [FromBody] UpdateCartItemDTO request)
+        {
+            var userId = _userManager.GetUserId(User);
+            string? sessionId = Request.Cookies["guest_session"];
+
+            if (request.Quantity <= 0)
+                return BadRequest("Quantity has to be higher than 0.");
+
+            if (userId == null && sessionId == null)
+                return Unauthorized("Cart not found.");
+
             var item = await _context.CartItems
                 .Include(i => i.Cart)
-                .Include(i=>i.Product)
-                .FirstOrDefaultAsync(i => i.Id == itemId && i.Cart.UserId == userId);
+                .Include(i => i.Product)
+                .FirstOrDefaultAsync(i =>
+                    i.Id == itemId &&
+                    (i.Cart.UserId == userId || i.Cart.GuestSessionId == sessionId)
+                );
 
             if (item == null)
                 return NotFound("Item not found in your cart.");
 
+         
+            if (request.Quantity > item.Product.StockQuantity)
+                return BadRequest($"On stock we have {item.Product.StockQuantity} pieces.");
 
             item.Quantity = request.Quantity;
             await _context.SaveChangesAsync();
 
-            return Ok(new
+            return Ok(new CartItemDTO
             {
-                
                 Id = item.Id,
                 ProductId = item.ProductId,
                 ProductName = item.Product.Name,
                 Price = item.Product.Price,
                 Quantity = item.Quantity,
-                ImageUrl = item.Product.ImageUrl
+                imageUrl = item.Product.ImageUrl,
+                Total = item.Product.Price * item.Quantity
+            });
+        }
+        [AllowAnonymous]
+        [HttpDelete("clear")]
+        public async Task<IActionResult> ClearCart()
+        {
+            try
+            {
+               
+                var userId = _userManager.GetUserId(User);
+                Cart? cart = null;
+
+                if (!string.IsNullOrEmpty(userId))
+                {
+                    
+                    cart = await _context.Carts
+                        .Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.UserId == userId);
+                }
+                else
+                {
+                    
+                    var guestSessionId = Request.Cookies["guest_session"];
+
+                    if (string.IsNullOrEmpty(guestSessionId))
+                    {
+                        return NotFound(new { Message = "No cart found." });
+                    }
+
+                    cart = await _context.Carts
+                        .Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.GuestSessionId == guestSessionId);
+                }
+
+                if (cart == null)
+                    return NotFound(new { Message = "Cart not found." });
+
+               
+                if (cart.Items == null || !cart.Items.Any())
+                    return Ok(new { Message = "Cart is already empty." });
+
+                _context.CartItems.RemoveRange(cart.Items);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { Message = "Cart cleared successfully." });
+            }
+            catch (Exception ex)
+            {
+          
+                Console.WriteLine($"Error clearing cart: {ex.Message}");
+                return StatusCode(500, new { Message = "Error clearing cart." });
+            }
+        }
+
+        [AllowAnonymous]
+        [HttpDelete("remove/{itemId}")]
+        public async Task<IActionResult> RemoveFromCart(int itemId)
+        {
+            var userId = _userManager.GetUserId(User);
+            string? sessionId = Request.Cookies["guest_session"];
+
+            if (userId == null && sessionId == null)
+                return Unauthorized("Cart not found.");
+
+            Cart? cart = null;
+
+            if (userId != null)
+            {
+                cart = await _context.Carts
+                    .Include(c => c.Items)
+                    .ThenInclude(i => i.Product)
+                    .FirstOrDefaultAsync(c => c.UserId == userId);
+            }
+            else if (sessionId != null)
+            {
+                cart = await _context.Carts
+                    .Include(c => c.Items)
+                    .ThenInclude(i => i.Product)
+                    .FirstOrDefaultAsync(c => c.GuestSessionId == sessionId);
+            }
+
+            if (cart == null)
+                return NotFound(new { Message = "Cart not found." });
+
+            var item = cart.Items.FirstOrDefault(i => i.Id == itemId);
+
+            if (item == null)
+                return NotFound(new { Message = "Item not found in cart." });
+
+            _context.CartItems.Remove(item);
+            await _context.SaveChangesAsync();
+
+            var remainingItems = cart.Items
+                .Where(i => i.Id != itemId) 
+                .Select(i => new CartItemDTO
+                {
+                    Id = i.Id,
+                    ProductId = i.ProductId,
+                    ProductName = i.Product.Name,
+                    Quantity = i.Quantity,
+                    Price = i.Product.Price,
+                    imageUrl = i.Product.ImageUrl,
+                    Total = i.Product.Price * i.Quantity
+                }).ToList();
+
+            return Ok(new CartResponseDTO
+            {
+                Items = remainingItems,
+                ItemCount = remainingItems.Sum(x => x.Quantity),
+                Total = remainingItems.Sum(x => x.Total),
+              
             });
         }
 
@@ -265,3 +356,7 @@ namespace RS1_2024_25.API.Controllers
 
 
 }
+
+
+
+

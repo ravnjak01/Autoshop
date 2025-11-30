@@ -86,7 +86,7 @@ checkAuth(): Observable<boolean> {
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('userName');
     localStorage.removeItem('userRoles');
-
+     localStorage.removeItem('userId');
     this.isLoggedInSubject.next(false);
     this.router.navigate(['/login']);
   }
@@ -128,6 +128,29 @@ isManager(): boolean {
     }
   }
  
+getCurrentUserId(): Observable<string | null> {
 
+    const cachedUserId = localStorage.getItem('userId');
+  if (cachedUserId) return of(cachedUserId);
+
+  const token = this.getToken();
+  if (!token) return of(null);
+
+  const headers = new HttpHeaders({
+    'Authorization': `Bearer ${token}`,
+  });
+
+  return this.httpClient
+    .get<{ id: string; username: string; email: string; roles: string[] }>('http://localhost:7000/api/user/me', { headers })
+       .pipe(
+      tap(response => {
+        if (response.id) {
+          localStorage.setItem('userId', response.id); 
+        }
+      }),
+      map(response => response.id || null),
+      catchError(() => of(null))
+    );
+}
 
 }

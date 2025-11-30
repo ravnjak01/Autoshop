@@ -15,6 +15,8 @@ import { response } from 'express';
 
 
 export class CartService {
+  private cartTotalSubject = new BehaviorSubject<number>(0);
+  cartTotal$ = this.cartTotalSubject.asObservable();
   getItems(): any {
     throw new Error('Method not implemented.');
   }
@@ -26,10 +28,10 @@ export class CartService {
 loadCart(): void {
   this.getCart().subscribe({
     next: (cartResponse) => {
-      // Ako backend vraća niz (lista od 1 elementa)
-      const cart = Array.isArray(cartResponse) ? cartResponse[0] : cartResponse;
-      const items = cart?.items || [];
+      
+      const items=cartResponse?.items || [];
       this.cartItemsSubject.next(items);
+      this.cartTotalSubject.next(cartResponse?.total || 0);
     },
     error: (err) => {
       console.error("Error during loading ", err);
@@ -70,31 +72,33 @@ addToCart(productId: number, quantity: number = 1): Observable<CartItemDTO> {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' }
       }
+    ).pipe(
+      tap(() => this.loadCart())
     );
   }
 
- 
-  
-getCart(): Observable<CartResponseDTO> {
-  return this.http.get<any>(`${this.baseUrl}/my-cart`, {withCredentials: true})
-  .pipe(
-    map((response) => {
-     
-      if (Array.isArray(response)) {
-        if (response.length > 0) {
-          return response[0];
-        } else {
-       
-          return { items: [], itemCount: 0, total: 0 };
-        }
-      }
-      
-     
-      return response;
-    })
+updateQuantity(itemId: number, quantity: number): Observable<CartItemDTO> {
+  return this.http.put<CartItemDTO>(
+    `${this.baseUrl}/update/${itemId}`,
+    { quantity },
+    { withCredentials: true }
+  ).pipe(
+    tap(() => this.loadCart())
   );
 }
-
+  
+getCart(): Observable<CartResponseDTO> {
+  return this.http.get<CartResponseDTO>(`${this.baseUrl}/my-cart`, {withCredentials: true})
+    .pipe(
+      map((response) => {
+       
+        if (!response) {
+          return { items: [], itemCount: 0, total: 0 };
+        }
+        return response;
+      })
+    );
+}
 
 getCartItems(): Observable<CartItemDTO[]> {
   return this.getCart().pipe(
@@ -113,14 +117,12 @@ getCartItems(): Observable<CartItemDTO[]> {
   }
 
 
-  getCartItemCount(): Observable<number> {
-    return new Observable(observer => {
-      this.getCart().subscribe({
-        next: (cart) => observer.next(cart.itemCount),
-        error: (err) => observer.error(err)
-      });
-    });
-  }
+ getCartItemCount(): Observable<number> {
+    return this.getCart().pipe(
+      // Koristi se map da izvuče samo 'itemCount' iz objekta korpe
+      map(cart => cart.itemCount)
+    );
+}
 
   checkout(): Observable<any> {
     return this.http.post(
@@ -134,15 +136,16 @@ getCartItems(): Observable<CartItemDTO[]> {
   }
   
   
-  updateQuantity(productId: number, quantity: number): Observable<CartItemDTO> {
-  return this.http.put<CartItemDTO>(
-    `${this.baseUrl}/update-quantity/${productId}`,
-    { quantity },
-    { withCredentials: true }
-  ).pipe(
-    tap(() => this.loadCart())
-  );
+  
+
+  saveForLater(productId: number): Observable<any> {
+  return this.http.post(`${this.baseUrl}/save-for-later/${productId}`, {}, { withCredentials: true })
+    .pipe(tap(() => this.loadCart()));
 }
 
-  
+moveToCart(productId: number): Observable<any> {
+  return this.http.post(`${this.baseUrl}/move-to-cart/${productId}`, {}, { withCredentials: true })
+    .pipe(tap(() => this.loadCart()));
+}
+
 }

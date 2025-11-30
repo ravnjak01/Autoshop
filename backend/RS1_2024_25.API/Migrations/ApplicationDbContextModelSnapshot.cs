@@ -155,6 +155,45 @@ namespace RS1_2024_25.API.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Address", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PostalCode")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("TelephoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Addresses");
+                });
+
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul1_Auth.MyAuthenticationToken", b =>
                 {
                     b.Property<DateTime>("CreatedAt")
@@ -301,6 +340,17 @@ namespace RS1_2024_25.API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("AuditLogs", (string)null);
@@ -419,8 +469,10 @@ namespace RS1_2024_25.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("GuestSessionId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
@@ -447,11 +499,19 @@ namespace RS1_2024_25.API.Migrations
                     b.Property<int>("Quantity")
                         .HasColumnType("int");
 
+                    b.Property<bool>("SavedForLater")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
 
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("CartItems");
                 });
@@ -505,6 +565,9 @@ namespace RS1_2024_25.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AdresaId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -520,6 +583,8 @@ namespace RS1_2024_25.API.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdresaId");
 
                     b.HasIndex("UserId");
 
@@ -563,7 +628,7 @@ namespace RS1_2024_25.API.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<bool?>("Active")
+                    b.Property<bool>("Active")
                         .HasColumnType("bit");
 
                     b.Property<string>("AdditionalImagesUrl")
@@ -754,6 +819,17 @@ namespace RS1_2024_25.API.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Address", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul1_Auth.MyAuthenticationToken", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
@@ -787,6 +863,62 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("BlogPost");
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.CartItem", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Order", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.Address", "Adresa")
+                        .WithMany()
+                        .HasForeignKey("AdresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Adresa");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.OrderItem", b =>
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCategory", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Category", "Category")
@@ -804,7 +936,7 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Discount");
-                });
+                }));
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCode", b =>
                 {
@@ -857,10 +989,12 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Product", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Category", null)
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>

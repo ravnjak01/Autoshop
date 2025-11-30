@@ -142,5 +142,111 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+/* --- Save for Later Section --- */
+.saved-for-later {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #ddd;
+}
+
+.saved-for-later h3 {
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+/* Save for later item layout (slično cart-item) */
+.saved-item {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  background: #fdfdfd;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.saved-item:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+/* Image style */
+.saved-item img {
+  width: 90px;
+  height: 90px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+}
+
+/* Item details */
+.saved-item .details {
+  flex: 1;
+}
+
+.saved-item .details p {
+  margin: 0.3rem 0;
+  color: #555;
+}
+
+/* Buttons in saved section */
+.saved-item button {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.saved-item button:hover {
+  background-color: #1259a6;
+}
+
+/* "Move to Cart" button (naglašeniji) */
+.saved-item button.move-btn {
+  background-color: #388e3c;
+}
+
+.saved-item button.move-btn:hover {
+  background-color: #2e7d32;
+}
+
+/* Remove button */
+.saved-item .remove-btn {
+  background: none;
+  border: none;
+  color: #c62828;
+  font-size: 1.3rem;
+  cursor: pointer;
+  margin-left: auto;
+  transition: color 0.2s ease;
+}
+
+.saved-item .remove-btn:hover {
+  color: #8e0000;
+}
+
+/* Responsive for saved section */
+@media (max-width: 600px) {
+  .saved-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .saved-item img {
+    width: 80px;
+    height: 80px;
+  }
+
+  .saved-item .details {
+    width: 100%;
+  }
+}
 
 }

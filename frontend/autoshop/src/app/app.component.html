@@ -5,6 +5,7 @@
     <li *ngIf="!isAdminPage" class="menu-item">
       <a routerLink="/products">Products</a>
     </li>
+    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administration</a></li>
     
    
     <li class="menu-item login-button-item " *ngIf="!authService.isLoggedIn()">
@@ -15,18 +16,8 @@
     </li>
    <li class="menu-item cart-button-item push-right-desno" >
   <button (click)="toggleCart()">Cart</button>
-   <cart-sidebar *ngIf="isCartOpen" class="cart-dropdown"></cart-sidebar>
+
 </li>
-<!--
-<cart-sidebar
-  *ngIf="isCartOpen"
-  (closeSidebar)="closeCart()">
-</cart-sidebar>
--->
-    <li *ngIf="!isAdminPage"  class="menu-item"><a routerLink="/blogs">Blogs</a></li> <!-- Ovdje nema uslova, uvijek je prisutno -->
- 
-    <!-- Administracija na desnoj strani, prikazuje se samo kad niste na administrativnoj stranici -->
-    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administration</a></li>
   </ul>
 
 
@@ -40,5 +31,8 @@
   </div>
 </nav>
 
-
+ <cart-sidebar
+  *ngIf="isCartOpen"
+  (closeSidebar)="closeCart()">
+</cart-sidebar>
 <router-outlet></router-outlet>

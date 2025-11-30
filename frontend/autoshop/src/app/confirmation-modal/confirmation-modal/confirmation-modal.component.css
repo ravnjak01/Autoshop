@@ -1,0 +1,103 @@
+/* --- 🧱 Pozadinski sloj (tamni overlay iza modala) --- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  /* Koristimo tamniju, ali suptilniju pozadinu */
+  background: rgba(17, 24, 39, 0.7); /* Tamno siva/crna za elegantniji izgled */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  /* Zadržavamo blur, ali ga možemo malo pojačati za dramatičniji efekt */
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* --- 📋 Sam modal --- */
+.modal {
+  background: #ffffff;
+  /* Jača zaobljenost za moderniji osećaj */
+  border-radius: 16px;
+  /* Modernija, mekša senka */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1), 0 5px 15px rgba(0, 0, 0, 0.05);
+  padding: 30px 40px; /* Malo veći padding */
+  width: 400px; /* Nešto širi modal */
+  max-width: 90%;
+  text-align: center;
+  /* Dodajemo blagi "skok" na početku animacije */
+  animation: slideInAndScale 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* --- 📝 Naslov i tekst --- */
+.modal h3 {
+  margin-top: 0;
+  font-size: 1.6rem; /* Veći naslov */
+  font-weight: 700; /* Deblji font za bolju hijerarhiju */
+  color: #1f2937; /* Tamnija, modernija crna */
+}
+
+.modal p {
+  margin: 15px 0 30px 0;
+  font-size: 1.05rem; /* Malo veći font za bolju čitljivost */
+  line-height: 1.5;
+  color: #4b5563; /* Mekša siva */
+}
+
+/* --- 🖱️ Dugmad (Actions) --- */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end; /* Dugmad idu desno (češće kod modernih modala) */
+  gap: 12px; /* Manji razmak */
+}
+
+.modal-actions button {
+  /* Uklanjamo 'flex: 1' ako želimo da dugmad budu standardne širine */
+  padding: 12px 20px; /* Viši padding */
+  border: none;
+  border-radius: 10px; /* Zaobljeniji dugmići */
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  /* Moderniji, glatki prelaz */
+  transition: all 0.3s ease;
+  /* Dodajemo blagi lift na hoveru */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Otkaži (Sekundarna akcija - često svetla ili samo border) */
+.modal-actions button:last-child {
+  /* 'Otkaži' kao sekundarna, manje naglašena akcija */
+  background: #f3f4f6; /* Svetlo siva pozadina */
+  color: #4b5563; /* Tamniji tekst */
+}
+
+.modal-actions button:last-child:hover {
+  background: #e5e7eb; /* Tamnija svetlo siva na hover */
+  transform: translateY(-1px); /* Blagi lift */
+}
+
+/* Potvrdi (Primarna akcija - naglašena boja) */
+.modal-actions button:first-child {
+  /* Modernija, vedrija zelena */
+  background: #10b981;
+  color: white;
+}
+
+.modal-actions button:first-child:hover {
+  background: #059669; /* Tamnija zelena na hover */
+  transform: translateY(-1px); /* Blagi lift */
+  /* Jača senka na hoveru */
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+/* --- 🎬 Animacije (Ažurirana jedna animacija) --- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Nova animacija: blagi skok pri ulasku */
+@keyframes slideInAndScale {
+  0% { transform: translateY(30px) scale(0.95); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}

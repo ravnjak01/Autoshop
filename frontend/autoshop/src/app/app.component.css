@@ -5,6 +5,7 @@
   padding: 10px 20px;
   background-color: #333;
   position: relative;
+  overflow: visible;
 }
 
 .main-menu {
@@ -13,6 +14,7 @@
   list-style-type: none;
   align-items: center; 
   height: 100%;
+  overflow: visible; 
 }
 
 .menu-item a {
@@ -112,6 +114,7 @@ li{
 /* Stilovi za dugme korpe u navigation baru */
 .cart-button-item {
     position: relative; /* Potrebno za pozicioniranje sidebara */
+    overflow: visible; 
 }
 
 .cart-button-item button {
@@ -133,33 +136,12 @@ li{
     background-color: #555;
 }
 
+/*
+.cart-dropdown,
 /* Osnovni stilovi za sidebar korpe */
-.cart-sidebar {
-    /* Simulira bijelu pozadinu pop-up prozora */
-    background-color: #ffffff;
-    /* Dodaje blagu sjenu za pop-up efekat */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    /* Manji padding unutar samog panela */
-    padding: 20px 15px;
-    /* Fiksna širina panela za potpunu vidljivost teksta */
-    width: 400px;
-    max-width: 100%;
-    /* Font i boja teksta - prilagoditi font ako je potrebno */
-    font-family: Arial, sans-serif;
-    color: #333333;
-    overflow-x: hidden;
-    /* Pozicioniranje ispod navbara */
-    position: absolute;
-    top: 100%; /* Pozicionira se odmah ispod navbara */
-    right: 20px; /* Poravnanje sa desne strane sa malim razmakom */
-    margin-top: 0; /* Bez razmaka jer je već ispod navbara */
-    z-index: 1000; /* Osigurava da je iznad ostalih elemenata */
-}
 
-/* Alternativno, ako želite da bude tačno ispod dugmeta Korpa */
-.cart-dropdown {
-    position: absolute;
-    top: 100%;
-    right: 0;
-    z-index: 1000;
+
+/* Skriva standardni naslov "Vaša korpa" jer ga nema na slici */
+.cart-sidebar h3 {
+    display: none; 
 }

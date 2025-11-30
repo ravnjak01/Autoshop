@@ -18,7 +18,7 @@ totalPrice: string|number = 0;
 cartItems: CartItemDTO[] = [];
  @Output() closeSidebar = new EventEmitter<void>();
 goToCart() {
-// this.closeSidebar.emit();  
+ this.closeSidebar.emit();  
   this.router.navigate(['/cart']);
 }
 
@@ -26,31 +26,31 @@ goToCart() {
     constructor(public cartService: CartService, private router: Router) {}
 
 
-     ngOnInit(): void {
+   ngOnInit() {
 
-    this.cartService.cartItems$.subscribe((items: CartItemDTO[]) => {
-      this.cartItems = items;
-    });
-    
-    this.cartService.loadCart();
-  }
+  
+  this.cartService.cartItems$.subscribe(items => {
+
+    this.cartItems = items;
+  });
+  
+  this.cartService.loadCart();
+}
 
  removeItem(item: CartItemDTO): void {
+  const itemId = item.id;
   
-  const productId=item.productId;
-  if (!productId) {
-    console.error('Error : product doesnt have productId.');
+  if (!itemId) {
+    console.error('Error: item doesnt have id.');
     return;
   }
 
-  this.cartService.removeFromCart(productId).subscribe({
+  this.cartService.removeFromCart(itemId).subscribe({
     next: () => {
-    
       console.log('Product removed:', item.productName);
       this.cartService.loadCart();
-
       
-      this.cartItems = this.cartItems.filter(i => i.productId !== productId );
+      this.cartItems = this.cartItems.filter(i => i.id !== itemId);
     },
     error: (err) => {
       console.error('Error during removing product from the cart', err);
@@ -130,8 +130,8 @@ decreaseQuantity(item: CartItemDTO): void {
       error: (err) => console.error('Error decreasing quantity', err)
     });
   } else {
-    // Ako je količina već 1, samo ne radi ništa
-    console.warn('Količina ne može biti manja od 1');
+    
+    
   }
 }
 

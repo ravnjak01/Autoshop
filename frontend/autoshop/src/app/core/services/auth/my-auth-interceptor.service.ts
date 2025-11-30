@@ -16,18 +16,18 @@ export class MyAuthInterceptor implements HttpInterceptor {
  
     const jwtToken = localStorage.getItem('jwtToken');
 
-
+    const headers: any = {};
     if (jwtToken) {
-      const cloned = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${jwtToken}`
-        }
-      });
+      headers['Authorization'] = `Bearer ${jwtToken}`;
+    }
+
+   
+     const cloned = req.clone({
+      withCredentials: true,  
+      setHeaders: headers
+    });
 
       return next.handle(cloned);
-    }
-  
-    return next.handle(req);
   }
 }
 

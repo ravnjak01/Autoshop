@@ -1,0 +1,277 @@
+/* Glavni layout */
+.checkout-page-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Lijeva sekcija: Podaci za narudžbu */
+.data-section {
+  flex: 1 1 55%;
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Desna sekcija: Detalji narudžbe */
+.details-section {
+  flex: 1 1 40%;
+  background-color: #fafafa;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+}
+
+/* Naslovi sekcija */
+.section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.dark-bg {
+  background-color: #1e293b;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+}
+
+/* Form stilovi */
+.data-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+.half-width {
+  flex: 1;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #444;
+}
+
+input {
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+  outline: none;
+}
+
+.read-only-input {
+  background-color: #f4f4f4;
+  color: #555;
+}
+
+/* Tabela sažetka narudžbe */
+.order-summary-table {
+  border-top: 2px solid #e5e5e5;
+  border-bottom: 2px solid #e5e5e5;
+  padding: 15px 0;
+  margin-bottom: 25px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+.summary-row.header-row {
+  font-weight: 600;
+  border-bottom: 1px solid #e0e0e0;
+  margin-bottom: 8px;
+}
+
+.shipping-row strong {
+  font-weight: 500;
+  color: #555;
+}
+
+/* Ukupno */
+.total-row-highlight {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 2px solid #ccc;
+  padding-top: 15px;
+  margin-top: 10px;
+}
+
+.total-amount-box {
+  text-align: right;
+}
+
+.final-total {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.vat-info {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* Plaćanje */
+.payment-options h4 {
+  font-size: 1.1rem;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.payment-method-desc {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* Dugme */
+.submit-area {
+  margin-top: 20px;
+  text-align: center;
+}
+
+button[type="submit"] {
+  background-color: #2563eb;
+  color: white;
+  font-size: 1rem;
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button[type="submit"]:hover {
+  background-color: #1e40af;
+}
+
+button[disabled] {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+.terms-text {
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 10px;
+}
+
+/* Responsivan dizajn */
+@media (max-width: 900px) {
+  .checkout-page-content {
+    flex-direction: column;
+  }
+
+  .data-section,
+  .details-section {
+    width: 100%;
+  }
+  /* Ukloni stilove labela */
+label {
+  display: none;
+}
+
+/* Poboljšaj izgled placeholdera */
+input::placeholder {
+  color: #999;
+  font-size: 0.95rem;
+}
+
+/* Ako želiš da placeholder nestane kad user kuca */
+input:focus::placeholder {
+  color: transparent;
+}
+.product-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkout-product-image {
+  width: 5px;
+  height: 5px;
+  object-fit: cover; /* da slika ne bude iskrivljena */
+  border-radius: 6px; /* blago zaobljeni uglovi, možeš izbaciti ako nećeš */
+  border: 1px solid #ddd; /* lagana ivica oko slike */
+
+}
+/* 🔹 Fullscreen overlay */
+.overlay-message {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* 🔹 Box koji sadrži poruku */
+.message-box {
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  border: 2px solid transparent;
+  animation: slideIn 0.4s ease-in-out;
+  max-width: 400px;
+}
+
+/* 🔹 Success stil */
+.message-box.success {
+  border-color: #28a745;
+  color: #155724;
+}
+
+/* 🔹 Error stil */
+.message-box.error {
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+/* 🔹 Animacije */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+}
