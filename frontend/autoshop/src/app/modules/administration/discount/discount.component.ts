@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {
   DiscountGetAllResponse,
@@ -14,11 +14,13 @@ import {DiscountEditComponent} from './discount-post-editing/discount-posts-edit
 import {DiscountCodesComponent} from './discount-code/discount-codes.component';
 import {DiscountCategoryDialogComponent} from './discount-categories/discount-category.component';
 import {DiscountProductDialogComponent} from './discount-products/discount-product.component';
+import { SharedModule } from '../../shared/shared.module';
 @Component({
   selector: 'app-discounts',
   templateUrl: 'discount.component.html',
   styleUrls: ['discount.component.css'],
-  standalone: false
+  standalone: false,
+
 })
 export class DiscountsComponent implements OnInit, AfterViewInit {
 

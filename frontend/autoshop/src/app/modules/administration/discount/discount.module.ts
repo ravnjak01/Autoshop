@@ -18,7 +18,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { DiscountsComponent } from './discount.component';
 @NgModule({
-  declarations: [
+    declarations: [
 
     DiscountsComponent,
     DiscountPostComponent,
@@ -42,4 +42,4 @@ import { DiscountsComponent } from './discount.component';
     SharedModule
   ]
 })
-export class DiscountModule {}
+export class DiscountModule { }

@@ -4,13 +4,13 @@ import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {BlogEditComponent} from '../../administration/blog-management/components/blog-posts-editing/blog-posts-editing.component';
 import { DiscountEditComponent } from '../../modules/administration/discount/discount-post-editing/discount-posts-editing.component';
 @Component({
-  selector: 'app-administration-root',
-  templateUrl: './home-page.component.html',
-  styleUrl: './home-page.component.css',
-  standalone: true,
-  imports: [
-    MatDialogModule 
-  ]
+    selector: 'app-administration-root',
+    templateUrl: './home-page.component.html',
+    styleUrl: './home-page.component.css',
+    standalone: true,
+    imports: [
+        MatDialogModule
+    ]
 })
 export class HomePageComponent {
 

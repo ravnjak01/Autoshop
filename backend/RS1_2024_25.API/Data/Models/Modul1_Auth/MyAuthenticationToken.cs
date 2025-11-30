@@ -7,6 +7,8 @@ namespace RS1_2024_25.API.Data.Models.Modul1_Auth;
 
 public class MyAuthenticationToken
 {
+    [Key]
+    public int Id { get; set; } 
     public required string Value { get; set; } // Token string
 
     public string IpAddress { get; set; } = string.Empty;// IP address of the client

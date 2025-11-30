@@ -13,7 +13,7 @@
       <input 
         type="text" 
         id="username" 
-        formControlName="username" 
+        formControlName="username" autocomplete="off"
         [ngClass]="{'is-invalid': submitted && f['username'].errors}"
       />
       <div *ngIf="submitted && f['username'].errors" class="error-message">
@@ -25,7 +25,7 @@
       <input 
         type="password" 
         id="password" 
-        formControlName="password"
+        formControlName="password" autocomplete="off"
         [ngClass]="{'is-invalid': submitted && f['password'].errors}" 
       />
       <div *ngIf="submitted && f['password'].errors" class="error-message">

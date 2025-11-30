@@ -109,7 +109,11 @@ resetPassword(data: { email: string, token: string, newPassword: string }) {
   }
 
   isAdmin(): boolean {
-  return localStorage.getItem('userRole') === 'Admin';
+  const rolesString = localStorage.getItem('userRoles');
+  if (!rolesString) return false;
+
+  const roles: string[] = JSON.parse(rolesString);
+  return roles.includes('Admin');
 }
 isManager(): boolean {
   return localStorage.getItem('userRole') === 'Manager';

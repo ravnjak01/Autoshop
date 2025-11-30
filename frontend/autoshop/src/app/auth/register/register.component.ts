@@ -6,6 +6,8 @@ import { NgForm } from '@angular/forms';
 import { MyAuthService }  from '../../core/services/auth/my-auth.service';
 import{Router, RouterModule}from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { PasswordStrengthService } from './services/password-strength.service';
+import { last } from 'rxjs';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -19,12 +21,13 @@ import { CommonModule } from '@angular/common';
 })
 export class RegisterComponent {
   registrationForm: FormGroup;
-
+  passwordStrength= 0;
   constructor(private fb: FormBuilder,private authService: MyAuthService,
-    private router: Router) {
+    private router: Router,private passwordStrengthService: PasswordStrengthService) {
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     this.registrationForm = this.fb.group({
-        fullname: ['', Validators.required],
+        firstName: ['', Validators.required],
+        lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       username: ['', Validators.required],
       password: ['', [
@@ -34,8 +37,11 @@ export class RegisterComponent {
       confirmPassword: ['', Validators.required]
     }, { validators: this.passwordMatchValidator });
 
-    this.registrationForm.get('password')?.valueChanges.subscribe(() => {
-  this.registrationForm.get('confirmPassword')?.updateValueAndValidity();
+    this.registrationForm.get('password')?.valueChanges.subscribe(value => {
+  this.registrationForm.get('confirmPassword')?.updateValueAndValidity()
+   this.passwordStrength=this.passwordStrengthService.calculatePasswordStrength(value);
+
+     console.log("Strength = ", this.passwordStrength); 
 });
 
   }
@@ -69,7 +75,8 @@ export class RegisterComponent {
    const formData=this.registrationForm.value;
 
    const registrationData = {
-    fullname: formData.fullname,
+    firstName: formData.firstName,
+    lastName: formData.lastName,
   email:formData.email, 
   username:formData.username,   
   password:formData.password,
@@ -87,4 +94,18 @@ export class RegisterComponent {
   });
     }
   }
+
+
+getStrengthLabel(strength: number): string {
+  switch (strength) {
+    case 0: return 'Very weak';
+    case 1: return 'Weak';
+    case 2: return 'Average';
+    case 3: return 'Good';
+    case 4: return 'Strong';
+    case 5: return 'Very strong';
+    default: return '';
+  }
+}
+
 }

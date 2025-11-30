@@ -196,6 +196,12 @@ namespace RS1_2024_25.API.Migrations
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul1_Auth.MyAuthenticationToken", b =>
                 {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -216,6 +222,8 @@ namespace RS1_2024_25.API.Migrations
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -461,7 +469,39 @@ namespace RS1_2024_25.API.Migrations
                     b.ToTable("DiscountProducts");
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Product", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul3_Audit.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Changes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditLogs");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -526,35 +566,20 @@ namespace RS1_2024_25.API.Migrations
 
                     b.Property<string>("Code")
                         .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Code = "ELEC",
-                            Name = "Electronics"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Code = "CLOTH",
-                            Name = "Clothing"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Code = "BOOKS",
-                            Name = "Books"
-                        });
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Order", b =>
@@ -642,7 +667,7 @@ namespace RS1_2024_25.API.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<int?>("CategoryId")
+                    b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
                     b.Property<string>("Code")
@@ -701,9 +726,8 @@ namespace RS1_2024_25.API.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
@@ -773,7 +797,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -782,7 +806,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -791,7 +815,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -800,13 +824,13 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS1_2024_25.API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -815,7 +839,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 
@@ -824,7 +848,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -835,7 +859,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -846,7 +870,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", "BlogPost")
                         .WithMany("Comments")
                         .HasForeignKey("BlogPostId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BlogPost");
@@ -857,7 +881,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", "BlogPost")
                         .WithMany("Ratings")
                         .HasForeignKey("BlogPostId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("BlogPost");
@@ -921,16 +945,16 @@ namespace RS1_2024_25.API.Migrations
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.OrderItem", b =>
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCategory", b =>
                 {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Category", "Category")
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", "Discount")
                         .WithMany("DiscountCategories")
                         .HasForeignKey("DiscountId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Category");
@@ -943,7 +967,7 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", "Discount")
                         .WithMany("DiscountCodes")
                         .HasForeignKey("DiscountId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Discount");
@@ -954,13 +978,41 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", "Discount")
                         .WithMany("DiscountProducts")
                         .HasForeignKey("DiscountId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RS1_2024_25.API.Data.Models.Modul2_Basic.Product", "Product")
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Discount");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.CartItem", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Product", "Product")
+                        .WithMany("CartItems")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Discount");
@@ -973,13 +1025,13 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Order", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Order");
@@ -992,9 +1044,26 @@ namespace RS1_2024_25.API.Migrations
                     b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", b =>
+                {
+                    b.Navigation("Comments");
+
+                    b.Navigation("Ratings");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", b =>
+                {
+                    b.Navigation("DiscountCategories");
+
+                    b.Navigation("DiscountCodes");
+
+                    b.Navigation("DiscountProducts");
                 });
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>
@@ -1012,20 +1081,9 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.BlogPost", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Product", b =>
                 {
-                    b.Navigation("Comments");
-
-                    b.Navigation("Ratings");
-                });
-
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", b =>
-                {
-                    b.Navigation("DiscountCategories");
-
-                    b.Navigation("DiscountCodes");
-
-                    b.Navigation("DiscountProducts");
+                    b.Navigation("CartItems");
                 });
 #pragma warning restore 612, 618
         }

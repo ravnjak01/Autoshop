@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { appRoutes as routes  } from './app.routes';
+import { appRoutes as routes } from './app.routes';
 
 
 // Imports za Angular Material komponente i NgxSlider
@@ -85,7 +85,7 @@ import { BlogManagementModule } from './administration/blog-management/blog-mana
    
     MyAuthService,
 
-  ],
+    ],
 
 
 
