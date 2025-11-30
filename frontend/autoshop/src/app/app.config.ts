@@ -21,7 +21,7 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideHttpClient(withInterceptorsFromDi()),
 
-    
+    // Interceptori
     {
       provide: HTTP_INTERCEPTORS,
       useClass: MyAuthInterceptor,
@@ -33,6 +33,7 @@ export const appConfig: ApplicationConfig = {
       multi: true
     },
 
+  
     importProvidersFrom(
       AppModule,
       SharedModule,
@@ -41,4 +42,6 @@ export const appConfig: ApplicationConfig = {
     )
   ]
 
+    
+    
 };

@@ -20,26 +20,26 @@ import { DiscountsComponent } from './discount.component';
 @NgModule({
     declarations: [
 
-        DiscountsComponent,
-        DiscountPostComponent,
-        DiscountEditComponent,
-        DiscountCodesComponent,
-        DiscountCodeEditComponent,
-        DiscountCategoryDialogComponent,
-        DiscountProductDialogComponent
-    ],
-    imports: [
-        CommonModule,
-        SharedModule,
-        ReactiveFormsModule,
-        MatCardModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatButtonModule,
-        MatTableModule,
-        SharedModule
-    ]
+    DiscountsComponent,
+    DiscountPostComponent,
+    DiscountEditComponent,
+    DiscountCodesComponent,
+    DiscountCodeEditComponent,
+    DiscountCategoryDialogComponent,
+    DiscountProductDialogComponent
+  ],
+  imports: [
+    CommonModule,
+    SharedModule,
+    ReactiveFormsModule,
+     MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatButtonModule,
+    MatTableModule,
+    SharedModule
+  ]
 })
 export class DiscountModule { }

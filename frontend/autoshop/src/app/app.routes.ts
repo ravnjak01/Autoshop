@@ -21,6 +21,7 @@ export const appRoutes: Routes = [
        canActivate: [AuthGuard],
   data: { isAdmin: true },
     children: [
+           //{ path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomePageComponent },
       {    path: 'product-management',

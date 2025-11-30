@@ -17,11 +17,11 @@ namespace RS1_2024_25.API.Data
 {
     public class ApplicationDbContext : IdentityDbContext<User>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
+       
         public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
@@ -38,6 +38,7 @@ namespace RS1_2024_25.API.Data
         public DbSet<DiscountProduct> DiscountProducts { get; set; }
         public DbSet<DiscountCategory> DiscountCategories { get; set; }
         public DbSet<DiscountCode> DiscountCodes { get; set; }
+
 
         #region METHODS
         protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -86,10 +87,12 @@ namespace RS1_2024_25.API.Data
                 .IsUnique();
 
             modelBuilder.Entity<DiscountCategory>()
-                .HasIndex(x => new { x.DiscountId, x.CategoryId })
-                .IsUnique();
-        }
-    }
-    #endregion
-}
+                        .HasIndex(x => new { x.DiscountId, x.CategoryId })
+                        .IsUnique();
+            // opcija kod nasljeđivanja
+            // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
 
+        }
+        #endregion
+    }
+}

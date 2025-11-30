@@ -321,6 +321,49 @@ namespace RS1_2024_25.API.Migrations
                     b.ToTable("BlogRatings");
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul3_Audit.AuditLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Changes")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EntityName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Timestamp")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserEmail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AuditLogs", (string)null);
+                });
+
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Discount", b =>
                 {
                     b.Property<int>("Id")
@@ -844,6 +887,62 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("BlogPost");
                 });
 
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.CartItem", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Cart", "Cart")
+                        .WithMany("Items")
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Order", b =>
+                {
+                    b.HasOne("RS1_2024_25.API.Data.Models.Address", "Adresa")
+                        .WithMany()
+                        .HasForeignKey("AdresaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Adresa");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.OrderItem", b =>
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCategory", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Category", "Category")
@@ -861,7 +960,7 @@ namespace RS1_2024_25.API.Migrations
                     b.Navigation("Category");
 
                     b.Navigation("Discount");
-                });
+                }));
 
             modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.DiscountCode", b =>
                 {
@@ -916,37 +1015,12 @@ namespace RS1_2024_25.API.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Cart");
+                    b.Navigation("Discount");
 
                     b.Navigation("Product");
-
-                    b.Navigation("User");
                 });
 
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.Order", b =>
-                {
-                    b.HasOne("RS1_2024_25.API.Data.Models.Address", "Adresa")
-                        .WithMany()
-                        .HasForeignKey("AdresaId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("RS1_2024_25.API.Data.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Adresa");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("RS1_2024_25.API.Data.Models.ShoppingCart.OrderItem", b =>
+            modelBuilder.Entity("RS1_2024_25.API.Data.Models.Modul2_Basic.Product", b =>
                 {
                     b.HasOne("RS1_2024_25.API.Data.Models.ShoppingCart.Order", "Order")
                         .WithMany("Items")

@@ -75,4 +75,4 @@ const COMPONENTS = [
         ...MATERIAL_MODULES
     ]
 })
-export class SharedModule { }
+export class SharedModule {}

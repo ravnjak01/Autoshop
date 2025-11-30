@@ -39,51 +39,51 @@ import { BlogManagementModule } from './administration/blog-management/blog-mana
 
 @NgModule({
 
-    declarations: [
+  declarations: [
+  
 
-
-    ],
-
-    imports: [
-        DiscountModule,
-        SharedModule,
-        BrowserModule,
-        CommonModule,
-        BrowserAnimationsModule,
+  ],
+  
+  imports: [
+       DiscountModule,
+     SharedModule,
+    BrowserModule,
+    CommonModule,
+    BrowserAnimationsModule,
         FormsModule,
-        ReactiveFormsModule,
+    ReactiveFormsModule,
+    
+    BlogModule,
+    BlogManagementModule,
+    // Router sa rutama
+    RouterModule.forRoot(routes),
+    
+    // Angular Material moduli
 
-        BlogModule,
-        BlogManagementModule,
-        // Router sa rutama
-        RouterModule.forRoot(routes),
-
-        // Angular Material moduli
-
-        NgxSliderModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatTableModule,
-        MatIconModule,
-        MatPaginatorModule,
-        MatSortModule,
-        MatCardModule,
-        MatTooltipModule,
-        MatCheckboxModule,
-        MatDialogModule,
-        MatToolbarModule,
-        MatButtonModule,
-        MatSelectModule,
+    NgxSliderModule,
+  MatFormFieldModule,
+    MatInputModule,
+    MatTableModule,
+    MatIconModule,
+    MatPaginatorModule,
+    MatSortModule,
+    MatCardModule,
+    MatTooltipModule,
+    MatCheckboxModule,
+    MatDialogModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatSelectModule,
         MatDatepickerModule,
-        MatNativeDateModule,
-
-        // Treći strani moduli
-        InfiniteScrollModule,
-        NgxSliderModule,
-    ],
-    providers: [
-
-        MyAuthService,
+    MatNativeDateModule,
+    
+    // Treći strani moduli
+    InfiniteScrollModule,
+    NgxSliderModule,  
+  ],
+  providers: [
+   
+    MyAuthService,
 
     ],
 
