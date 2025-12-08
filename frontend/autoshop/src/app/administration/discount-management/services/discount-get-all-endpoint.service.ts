@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {MyPagedRequest} from '../../core/helper/my-paged-request';
-import {MyConfig} from '../../my-config';
-import {buildHttpParams} from '../../core/helper/http-params.helper';
-import {MyBaseEndpointAsync} from '../../core/helper/my-base-endpoint-async.interface';
-import {MyPagedList} from '../../core/helper/my-paged-list';
-import {MyCacheService} from '../../core/services/cache/my-cache.service';
+import {MyPagedRequest} from '../../../core/helper/my-paged-request';
+import {MyConfig} from '../../../my-config';
+import {buildHttpParams} from '../../../core/helper/http-params.helper';
+import {MyBaseEndpointAsync} from '../../../core/helper/my-base-endpoint-async.interface';
+import {MyPagedList} from '../../../core/helper/my-paged-list';
+import {MyCacheService} from '../../../core/services/cache/my-cache.service';
 import {of} from 'rxjs';
 import {tap} from 'rxjs/operators';
 

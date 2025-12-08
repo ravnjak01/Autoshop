@@ -3,11 +3,11 @@ import {AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators} f
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   DiscountGetByIdForAdministrationService
-} from '../../../../endpoints/discount-endpoints/discount-get-id-for-administration.service';
+} from '../../services/discount-get-id-for-administration.service';
 import {
   DiscountPostUpdateOrInsertRequest,
   DiscountUpdateOrInsertEndpointService
-} from '../../../../endpoints/discount-endpoints/discount-add-edit-administration-endpoint.service';
+} from '../../services/discount-add-edit-administration-endpoint.service';
 
 function endDateAfterStartDate(control: AbstractControl): ValidationErrors | null {
   const start = control.get('startDate')?.value;
@@ -23,7 +23,7 @@ function endDateAfterStartDate(control: AbstractControl): ValidationErrors | nul
   templateUrl: './discount-posts-editing.component.html',
   styleUrls: ['./discount-posts-editing.component.css'],
   standalone: false,
-  
+
 })
 export class DiscountEditComponent implements OnInit {
   discountForm: FormGroup;

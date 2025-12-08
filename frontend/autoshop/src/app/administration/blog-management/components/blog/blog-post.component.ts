@@ -1,17 +1,13 @@
 
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
-import {BlogGetByIdForAdministrationService} from '../../../../blog/services/blog-endpoints/blog-get-id-for-administration.service';
+import { MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {BlogGetByIdForAdministrationService} from '../../services/blog-get-id-for-administration.service';
 import {Component, Inject, OnInit} from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { CommonModule } from '@angular/common';
-
 @Component({
   selector: 'app-blog-post',
   templateUrl: './blog-post.component.html',
   styleUrls: ['./blog-post.component.css'],
   standalone: false
-  
+
 })
 export class BlogPostComponent implements OnInit {
   blog: any = {}; // Object to store blog data

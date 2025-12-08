@@ -1,7 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
-import { DiscountCode, DiscountGetCodesService } from '../../../../endpoints/discount-endpoints/discount-codes-get-all-endpoint.service';
-import { DiscountCodeDeleteEndpointService } from '../../../../endpoints/discount-endpoints/discount-code-delete-administration.service';
+import { DiscountCode, DiscountGetCodesService } from '../../services/discount-codes-get-all-endpoint.service';
+import { DiscountCodeDeleteEndpointService } from '../../services/discount-code-delete-administration.service';
 import { DiscountCodeEditComponent } from './discount-code-edit/discount-code-edit.component';
 
 @Component({

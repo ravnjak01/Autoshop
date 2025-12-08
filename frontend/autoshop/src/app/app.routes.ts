@@ -12,8 +12,11 @@ import { CheckoutComponent } from './checkout/checkout/checkout.component';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
 import { ProductManagementComponent } from './administration/products/product-management/product-management.component';
 import { CategoriesComponent } from './categories/components/categories.component';
-import { BlogPostsComponent } from './blog/components/blog-posts/blog-posts.component';
-import { DiscountsComponent } from './modules/administration/discount/discount.component';
+import { DiscountsComponent } from './administration/discount-management/components/discount/discount.component';
+import {BlogPostsComponent as BlogPostsComponentsAdministration} from './administration/blog-management/components/blogs/blog-posts.component' ;
+import {BlogPostsComponent} from './blog/components/blog-posts/blog-posts.component';
+import {BlogDetailsComponent} from './blog/components/blog-post/blog-post.component';
+
 export const appRoutes: Routes = [
   {
     path: 'administration',
@@ -26,10 +29,10 @@ export const appRoutes: Routes = [
       { path: 'home', component: HomePageComponent },
       {    path: 'product-management',
   component: ProductManagementComponent,},
-       { path: 'admin/blog-posts', component: BlogPostsComponent },
+       { path: 'admin/blog-posts', component: BlogPostsComponentsAdministration },
          { path: 'admin/discount', component: DiscountsComponent},
          { path: 'admin/home-page', component: HomePageComponent },
-   
+
     ]
   },
     { path: 'home', component: HomePageComponent },
@@ -38,13 +41,15 @@ export const appRoutes: Routes = [
     loadComponent: () =>
       import('./products/components/products.component').then(c => c.ProductsComponent)
   },
+  {path: 'blogs', component: BlogPostsComponent},
+  { path: 'blog/:id', component: BlogDetailsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'forgot-password', component: ForgotPasswordComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
   { path: 'cart', component: CartPageComponent },
   { path: 'cartSide', component: CartSidebarComponent },
-  
+
   {
   path: 'checkout',
   component: CheckoutComponent,

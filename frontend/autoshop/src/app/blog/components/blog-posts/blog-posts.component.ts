@@ -5,13 +5,15 @@ import {
   BlogsGetAllService
 } from '../../services/blog-endpoints/blog-get-all-endpoint.service';
 import {Router} from '@angular/router';
-import { InfiniteScrollModule } from 'ngx-infinite-scroll';
+import {InfiniteScrollDirective, InfiniteScrollModule} from 'ngx-infinite-scroll';
+import {MatFormField} from '@angular/material/form-field';
+import {MatInput} from '@angular/material/input';
+import {DatePipe, NgForOf} from '@angular/common';
 @Component({
   selector: 'app-blog-list',
   templateUrl: './blog-posts.component.html',
-  standalone: true,
+  standalone: false,
   styleUrls: ['./blog-posts.component.css'],
-  
 })
 export class BlogPostsComponent implements OnInit {
   blogs: BlogPost[]= [];

@@ -4,7 +4,7 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   DiscountCodePostRequest,
   DiscountCodeUpdateService
-} from '../../../../../endpoints/discount-endpoints/discount-code-add-edit-administration-endpoint.service';
+} from '../../../services/discount-code-add-edit-administration-endpoint.service';
 
 @Component({
   selector: 'app-discount-code-edit',

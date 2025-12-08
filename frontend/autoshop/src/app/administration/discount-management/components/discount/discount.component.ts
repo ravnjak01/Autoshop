@@ -1,20 +1,19 @@
 import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { MatTableDataSource } from '@angular/material/table';
 import {MatPaginator} from '@angular/material/paginator';
 import {
   DiscountGetAllResponse,
   DiscountGetAllService
-} from '../../../endpoints/discount-endpoints/discount-get-all-endpoint.service';
+} from '../../services/discount-get-all-endpoint.service';
 import {MatDialog} from '@angular/material/dialog';
-import {DiscountPostComponent} from './discount-post/discount-post.component';
-import {MyDialogConfirmComponent} from '../../shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
-import {DiscountDeleteEndpointService} from '../../../endpoints/discount-endpoints/discount-delete-endpoint.service';
-import {DiscountEditComponent} from './discount-post-editing/discount-posts-editing.component';
-import {DiscountCodesComponent} from './discount-code/discount-codes.component';
-import {DiscountCategoryDialogComponent} from './discount-categories/discount-category.component';
-import {DiscountProductDialogComponent} from './discount-products/discount-product.component';
-import { SharedModule } from '../../shared/shared.module';
+import {DiscountPostComponent} from '../discount-post/discount-post.component';
+import {MyDialogConfirmComponent} from '../../../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
+import {DiscountDeleteEndpointService} from '../../services/discount-delete-endpoint.service';
+import {DiscountEditComponent} from '../discount-post-editing/discount-posts-editing.component';
+import {DiscountCodesComponent} from '../discount-code/discount-codes.component';
+import {DiscountCategoryDialogComponent} from '../discount-categories/discount-category.component';
+import {DiscountProductDialogComponent} from '../discount-products/discount-product.component';
 @Component({
   selector: 'app-discounts',
   templateUrl: 'discount.component.html',

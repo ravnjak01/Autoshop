@@ -3,10 +3,10 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   DiscountProductGetAllService,
   DiscountProducts
-} from '../../../../endpoints/discount-endpoints/discount-products-get-all-endpoint.service';
+} from '../../services/discount-products-get-all-endpoint.service';
 import {
   DiscountProductSaveService, DiscountProductsRequest
-} from '../../../../endpoints/discount-endpoints/discount-products-save-endpoint.service';
+} from '../../services/discount-products-save-endpoint.service';
 
 @Component({
   selector: 'app-discount-product-dialog',

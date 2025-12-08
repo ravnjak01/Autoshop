@@ -2,7 +2,7 @@
 import {Component} from '@angular/core';
 import {MatDialog, MatDialogModule} from '@angular/material/dialog';
 import {BlogEditComponent} from '../../administration/blog-management/components/blog-posts-editing/blog-posts-editing.component';
-import { DiscountEditComponent } from '../../modules/administration/discount/discount-post-editing/discount-posts-editing.component';
+import { DiscountEditComponent } from '../../administration/discount-management/components/discount-post-editing/discount-posts-editing.component';
 @Component({
     selector: 'app-administration-root',
     templateUrl: './home-page.component.html',
@@ -21,9 +21,9 @@ export class HomePageComponent {
   }
   addBlog() {
     const dialogRef = this.dialog.open(BlogEditComponent, {
-      width: '800px', 
-      maxHeight: '80vh', 
-      data: { blogId: 0 }, 
+      width: '800px',
+      maxHeight: '80vh',
+      data: { blogId: 0 },
     });
   }
   addDiscount() {

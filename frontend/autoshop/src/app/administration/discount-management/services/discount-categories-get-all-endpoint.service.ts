@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import {MyBaseEndpointAsync} from '../../core/helper/my-base-endpoint-async.interface';
-import {MyConfig} from '../../my-config';
+import {MyBaseEndpointAsync} from '../../../core/helper/my-base-endpoint-async.interface';
+import {MyConfig} from '../../../my-config';
 
 export interface DiscountCategories {
   categoryId: number;
