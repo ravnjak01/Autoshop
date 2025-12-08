@@ -1,0 +1,50 @@
+<mat-card class="blog-form-card">
+  <h2 *ngIf="blogId != 0">Edit Blog Post</h2>
+  <h2 *ngIf="blogId == 0">Add New Blog Post</h2>
+
+  <form (ngSubmit)="save()" [formGroup]="blogForm" enctype="multipart/form-data">
+    <!-- Title Input -->
+    <app-my-input-text
+      myControlName="title"
+      myLabel="Blog Title"
+      myPlaceholder="Enter blog title"
+    ></app-my-input-text>
+
+    <!-- Content Input -->
+    <app-my-input-text
+      myControlName="content"
+      myLabel="Blog Content"
+      myPlaceholder="Enter blog content"
+    ></app-my-input-text>
+
+    <!-- Photo Upload -->
+    <div class="photo-upload">
+      <label for="photoUpload">Upload Photo</label>
+      <input
+        id="photoUpload"
+        type="file"
+        accept="image/*"
+        (change)="onFileSelected($event)"
+      />
+    </div>
+
+    <div *ngIf="imageUrl" class="uploaded-image">
+      <img [src]="imageUrl" alt="Blog image" />
+    </div>
+
+    <!-- Published Checkbox -->
+    <mat-checkbox formControlName="isPublished">Published</mat-checkbox>
+
+    <!-- Active Checkbox -->
+    <mat-checkbox formControlName="active">Active</mat-checkbox>
+
+    <div class="form-buttons">
+      <button [disabled]="blogForm.invalid" color="primary" mat-raised-button type="submit">
+        Save
+      </button>
+      <button color="warn" mat-raised-button (click)="close()" type="button">
+        Close
+      </button>
+    </div>
+  </form>
+</mat-card>

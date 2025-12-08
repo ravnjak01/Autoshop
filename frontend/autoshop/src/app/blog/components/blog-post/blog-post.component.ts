@@ -2,7 +2,7 @@
 import { Component, OnInit } from '@angular/core';
 import {
     BlogGetByIdForAdministrationService
-} from '../../services/blog-endpoints/blog-get-id-for-administration.service';
+} from '../../../administration/blog-management/services/blog-get-id-for-administration.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BlogRatingGetByBlogIdService } from '../../services/blog-endpoints/blog-rating-get-endpoint.service';
 import {

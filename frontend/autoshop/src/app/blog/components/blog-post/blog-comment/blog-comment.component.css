@@ -1,4 +1,4 @@
-/*
+
 .blog-comments {
   width: 100%;
   max-width: 800px;
@@ -16,7 +16,7 @@ textarea {
 }
 
 .save-btn {
-  background-color: #28a745; 
+  background-color: #28a745;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -30,7 +30,7 @@ textarea {
 }
 
 .cancel-btn {
-  background-color: #dc3545; 
+  background-color: #dc3545;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -70,4 +70,3 @@ textarea {
   padding-top: 10px;
 }
 
-*/

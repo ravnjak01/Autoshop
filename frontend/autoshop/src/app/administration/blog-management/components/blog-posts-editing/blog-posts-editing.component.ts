@@ -3,18 +3,12 @@ import {Component, Inject, OnInit} from '@angular/core';
 import {
   BlogUpdateOrInsertEndpointService,
   BlogPostUpdateOrInsertRequest
-} from '../../../../blog/services/blog-endpoints/blogs-add-edit-administration-endpoint.service';
-import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+} from '../../services/blogs-add-edit-administration-endpoint.service';
+import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import {
   BlogGetByIdForAdministrationService
-} from '../../../../blog/services/blog-endpoints/blog-get-id-for-administration.service';
-import { CommonModule } from '@angular/common';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatInputModule } from '@angular/material/input';
-import { MyInputTextComponent } from '../../../../modules/shared/my-reactive-forms/my-input-text/my-input-text.component';
+} from '../../services/blog-get-id-for-administration.service';
 
 @Component({
   selector: 'app-blog-posts-edit',

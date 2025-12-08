@@ -4,18 +4,17 @@ import {MyDialogConfirmComponent} from '../../../../modules/shared/dialogs/my-di
 import {
   BlogsGetAllForAdministrationService,
   BlogsGetAllForAdministrationResponse
-} from '../../../../blog/services/blog-endpoints/blogs-get-all-for-administration-endpoint.service';
+} from '../../services/blogs-get-all-for-administration-endpoint.service';
 import {debounceTime, distinctUntilChanged, Subject} from 'rxjs';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import {BlogEditComponent} from '../blog-posts-editing/blog-posts-editing.component';
 import {MatDialog} from '@angular/material/dialog';
 import {MatPaginator} from '@angular/material/paginator';
-import {BlogDeleteEndpointService} from '../../../../blog/services/blog-endpoints/blogs-delete-endpoint.service';
-import {BlogDeactivateEndpointService} from '../../../../blog/services/blog-endpoints/blog-deactivate-endpoint.service';
+import {BlogDeleteEndpointService} from '../../services/blogs-delete-endpoint.service';
+import {BlogDeactivateEndpointService} from '../../services/blog-deactivate-endpoint.service';
 import {MyDialogSimpleComponent} from '../../../../modules/shared/dialogs/my-dialog-simple/my-dialog-simple.component';
-import {BlogPublishEndpointService} from '../../../../blog/services/blog-endpoints/blog-publish-endpoint.service';
+import {BlogPublishEndpointService} from '../../services/blog-publish-endpoint.service';
 import {BlogPostComponent} from '../blog/blog-post.component';
-import { MatButtonModule } from '@angular/material/button';
 @Component({
   selector: 'app-blog-posts',
   templateUrl: './blog-posts.component.html',

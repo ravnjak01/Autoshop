@@ -13,10 +13,9 @@ export enum MyInputTextType {
 
 @Component({
   selector: 'app-my-input-text',
-  standalone: false,
   templateUrl: './my-input-text.component.html',
   styleUrl: './my-input-text.component.css',
- 
+  standalone: false
 })
 export class MyInputTextComponent extends MyBaseFormControlComponent implements OnInit {
   @Input() myLabel!: string; // Labela za input

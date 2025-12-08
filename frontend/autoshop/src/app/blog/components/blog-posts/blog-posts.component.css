@@ -1,7 +1,7 @@
-/*.card-container {
+.card-container {
   display: flex;
-  flex-direction: column; 
-  gap: 16px; 
+  flex-direction: column;
+  gap: 16px;
 }
 
 .card {
@@ -11,13 +11,13 @@
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  margin: 0 auto; 
+  margin: 0 auto;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
 .card-image-container {
-  flex: 0 0 120px; 
+  flex: 0 0 120px;
   padding: 10px;
 }
 
@@ -64,4 +64,3 @@ mat-form-field {
   margin: 0 auto;
   margin-top: 10px;
 }
-  */

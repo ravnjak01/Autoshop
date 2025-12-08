@@ -3,11 +3,11 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   DiscountCategories,
   DiscountCategoryGetAllService
-} from '../../../../endpoints/discount-endpoints/discount-categories-get-all-endpoint.service';
+} from '../../services/discount-categories-get-all-endpoint.service';
 import {
   DiscountCategoryRequest,
   DiscountCategorySaveService
-} from '../../../../endpoints/discount-endpoints/discount-categories-save-endpoint.service';
+} from '../../services/discount-categories-save-endpoint.service';
 
 @Component({
   selector: 'app-discount-category-dialog',

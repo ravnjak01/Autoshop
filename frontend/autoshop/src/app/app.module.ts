@@ -2,9 +2,7 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { MyAuthService } from './core/services/auth/my-auth.service';
 import { SharedModule } from './modules/shared/shared.module';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MyErrorHandlingInterceptor } from './core/services/auth/my-error-handling-interceptor.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -30,34 +28,32 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { NgxSliderModule } from '@angular-slider/ngx-slider';
 
 import { BlogModule } from './blog/blog.module';
-import { DiscountModule } from './modules/administration/discount/discount.module';
 import { MatSelectModule } from '@angular/material/select';
-import { BlogPostsComponent } from './blog/components/blog-posts/blog-posts.component';
-import { DiscountsComponent } from './modules/administration/discount/discount.component';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { BlogManagementModule } from './administration/blog-management/blog-management.module';
+import {DiscountModule} from './administration/discount-management/discount-managements.module';
 
 @NgModule({
 
   declarations: [
-  
+
 
   ],
-  
+
   imports: [
-       DiscountModule,
-     SharedModule,
+    DiscountModule,
+    SharedModule,
     BrowserModule,
     CommonModule,
     BrowserAnimationsModule,
-        FormsModule,
+    FormsModule,
     ReactiveFormsModule,
-    
+
     BlogModule,
     BlogManagementModule,
     // Router sa rutama
     RouterModule.forRoot(routes),
-    
+
     // Angular Material moduli
 
     NgxSliderModule,
@@ -76,13 +72,13 @@ import { BlogManagementModule } from './administration/blog-management/blog-mana
     MatSelectModule,
         MatDatepickerModule,
     MatNativeDateModule,
-    
+
     // Treći strani moduli
     InfiniteScrollModule,
-    NgxSliderModule,  
+    NgxSliderModule,
   ],
   providers: [
-   
+
     MyAuthService,
 
     ],
