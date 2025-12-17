@@ -8,7 +8,6 @@ export interface BlogPostUpdateOrInsertRequest {
   title: string;
   content: string;
   image?: string;  // byte[] in C# can be represented as Uint8Array in TypeScript
-  author: string;  // Changed from 'author' to 'authorId' as requested
   isPublished: boolean;
   active: boolean;
 }
