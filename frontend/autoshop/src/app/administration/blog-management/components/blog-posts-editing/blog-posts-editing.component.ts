@@ -87,7 +87,6 @@ export class BlogEditComponent implements OnInit {
     const formData = new FormData();
     formData.append('title', blogPostData.title);
     formData.append('content', blogPostData.content);
-    formData.append('author', blogPostData.author);
     formData.append('isPublished', blogPostData.isPublished.toString());
     formData.append('active', blogPostData.active.toString());
 
