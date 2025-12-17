@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using RS1_2024_25.API.Services;
@@ -11,7 +13,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
 
     [Route("discount-post")]
-    public class DiscountAddForAdministration(ApplicationDbContext db, MyAuthService myAuthService): MyEndpointBaseAsync
+    public class DiscountAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<DiscountPostUpdateOrInsertRequest>
         .WithoutResult
     {
@@ -21,6 +23,8 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 
             var discount = await db.Discounts.SingleOrDefaultAsync(x => x.Id == request.ID, cancellationToken);
 
+            var userId = userManager.GetUserId(User);
+
             // Kreiranje ili ažuriranje blog posta
             if (discount == null)
             {
@@ -29,7 +33,8 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                     Name = request.Name,
                     DiscountPercentage = request.DiscountPercentage, 
                     StartDate = request.StartDate,
-                    EndDate = request.EndDate
+                    EndDate = request.EndDate,
+                    CreateUserId = userId
                 };
                 db.Discounts.Add(discount);
             }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
-using RS1_2024_25.API.Helper;
 using Microsoft.EntityFrameworkCore;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetByIdForAdministration;
 
@@ -15,7 +14,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpGet("{id}")]
         public override async Task<BlogsGetByIdForAdministrationResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
         {
-            var blog = await db.BlogPosts.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+            var blog = await db.BlogPosts.Include(b=> b.Author).SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
             if (blog == null)
                 throw new KeyNotFoundException("Blog not found");
@@ -31,7 +30,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 ID = blog.Id,
                 Title = blog.Title,
                 Content = blog.Content,
-                AuthorName = blog.Author,
+                AuthorName = blog.Author != null ? blog.Author.LastName + " " + blog.Author.FirstName : string.Empty,
                 PublishedTime = blog.PublishedDate,
                 IsPublished = blog.IsPublished,
                 Active = blog.Active,

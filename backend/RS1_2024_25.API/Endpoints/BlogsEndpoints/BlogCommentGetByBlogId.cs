@@ -15,8 +15,9 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         public override async Task<BlogCommentsByBlogIdResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
         {
             var comments = await db.BlogComments
-                .Where(c => c.BlogPostId == id)
-                .ToListAsync();  
+                                    .Include(c => c.User)
+                                    .Where(c => c.BlogPostId == id)
+                                    .ToListAsync();
 
             List<BlogCommentDto> response = new List<BlogCommentDto>();
             foreach (var c in comments)
@@ -25,7 +26,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 {
                     Id = c.Id,
                     BlogPostId = c.BlogPostId,
-                    UserId = c.UserId,
+                    Username = c.User?.UserName,
                     Content = c.Content,
                     CreatedAtAgo = GetTimeAgo(c.CreatedAt) 
                 });
@@ -60,7 +61,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         {
             public int Id { get; set; }
             public int BlogPostId { get; set; }
-            public int? UserId { get; set; }
+            public string? Username { get; set; }
             public string Content { get; set; }
             public string CreatedAtAgo { get; set; }
         }
