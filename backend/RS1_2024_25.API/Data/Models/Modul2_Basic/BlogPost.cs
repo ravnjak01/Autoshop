@@ -6,8 +6,9 @@
         public string Title { get; set; }  
         public string Content { get; set; }
         public byte[]? Image { get; set; }
-        public DateTime? PublishedDate { get; set; }  
-        public string? Author { get; set; }  //zamijeniti sa id zaposlenika
+        public DateTime? PublishedDate { get; set; }
+        public string? AuthorId { get; set; }
+        public User? Author { get; set; }
         public bool IsPublished { get; set; }  
         public bool Active { get; set; }
 

@@ -3,6 +3,7 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using RS1_2024_25.API.Helper;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.GetAllForAdministration;
+using Microsoft.EntityFrameworkCore;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
@@ -17,12 +18,13 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         {
             // Kreiranje osnovnog query-a
             var query = db.BlogPosts
+                .Include(bp => bp.Author)
                 .AsQueryable();
 
             // Primjena filtera na osnovu naziva grada
             if (!string.IsNullOrWhiteSpace(request.Q))
             {
-                query = query.Where(blog => (!string.IsNullOrEmpty(blog.Author) && blog.Author.Contains(request.Q)) ||
+                query = query.Where(blog => (blog.Author != null && blog.Author.UserName.Contains(request.Q)) ||
                     blog.Title.Contains(request.Q)
                 );
             }
@@ -32,7 +34,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             {
                 ID = blog.Id,
                 Title = blog.Title,
-                AuthorName = blog.Author,
+                AuthorName = blog.Author != null ? blog.Author.LastName + " " + blog.Author.FirstName : string.Empty,
                 PublishedTime = blog.PublishedDate,
                 IsPublished = blog.IsPublished,
                 Active = blog.Active,

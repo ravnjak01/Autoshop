@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountProductsSave;
@@ -7,7 +9,7 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountProductsSave;
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
     [Route("discounts")]
-    public class DiscountProductsSave(ApplicationDbContext db) : MyEndpointBaseAsync
+    public class DiscountProductsSave(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
     .WithRequest<DiscountProductsSaveRequest>
     .WithoutResult
     {
@@ -17,10 +19,13 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
             var existing = db.DiscountProducts.Where(x => x.DiscountId == request.DiscountId);
             db.DiscountProducts.RemoveRange(existing);
 
+            var userId = userManager.GetUserId(User);
+
             var newItems = request.ProductIds.Select(prod => new DiscountProduct
             {
                 DiscountId = request.DiscountId,
-                ProductId = prod
+                ProductId = prod,
+                LastModifiedUserId = userId
             });
 
             await db.DiscountProducts.AddRangeAsync(newItems, cancellationToken);

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using RS1_2024_25.API.Services;
@@ -10,7 +12,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
 
     [Route("blog-post")]
-    public class BlogAddForAdministration(ApplicationDbContext db, MyAuthService myAuthService): MyEndpointBaseAsync
+    public class BlogAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<BlogPostUpdateOrInsertRequest>
         .WithoutResult
     {
@@ -19,6 +21,8 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         {
 
             var blog = await db.BlogPosts.SingleOrDefaultAsync(x => x.Id == request.ID, cancellationToken);
+
+            var userId = userManager.GetUserId(User);
 
             byte[]? image = null;
             if (request.Image != null)
@@ -35,7 +39,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 {
                     Title = request.Title,
                     Content = request.Content,
-                    Author = request.Author,
+                    AuthorId = userId,
                     IsPublished = request.IsPublished,
                     PublishedDate = request.IsPublished ? DateTime.Now : null,
                     Image = image,
@@ -55,7 +59,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 }
                 blog.Title = request.Title;
                 blog.Content = request.Content;
-                blog.Author = request.Author;
+                blog.AuthorId = userId;
                 blog.IsPublished = request.IsPublished;
                 blog.Image = image ?? blog.Image; 
                 blog.Active = request.Active;
@@ -71,7 +75,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public required string Content { get; set; }
             //public string? Image { get; set;
             public IFormFile? Image { get; set; }
-            public required string Author { get; set; }//promijeniti u id
             public required bool IsPublished { get; set; }
             public required bool Active { get; set; }
         }
@@ -81,7 +84,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public required int ID { get; set; }
             public required string Title { get; set; }
             public required string Content { get; set; }
-            public required string AuthorName { get; set; }
             public DateTime? PublishedTime { get; set; }
             public bool IsPublished { get; set; }
             public bool Active { get; set; }

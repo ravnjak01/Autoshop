@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountCodeAddOrUpdateForAdministration;
@@ -8,7 +10,7 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountCodeAddOrUpdate
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
     [Route("discount-code-post")]
-    public class DiscountCodeAddOrUpdateForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
+    public class DiscountCodeAddOrUpdateForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<DiscountCodePostRequest>
         .WithoutResult
     {
@@ -18,6 +20,8 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
             var discountCode = await db.DiscountCodes
                                        .SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
+            var userId = userManager.GetUserId(User);
+
             if (discountCode == null)
             {
                 discountCode = new DiscountCode
@@ -25,7 +29,8 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                     Code = request.Code,
                     DiscountId = request.DiscountId,
                     ValidFrom = request.ValidFrom,
-                    ValidTo = request.ValidTo
+                    ValidTo = request.ValidTo,
+                    LastModifiedUserId = userId
                 };
                 db.DiscountCodes.Add(discountCode);
             }
@@ -35,6 +40,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                 discountCode.DiscountId = request.DiscountId;
                 discountCode.ValidFrom = request.ValidFrom;
                 discountCode.ValidTo = request.ValidTo;
+                discountCode.LastModifiedUserId = userId;
                 db.DiscountCodes.Update(discountCode);
             }
 

@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using RS1_2024_25.API.Services;
@@ -8,7 +10,7 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogRatingAdd;
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
     [Route("blog-rating")]
-    public class BlogRatingAdd(ApplicationDbContext db, MyAuthService myAuthService) : MyEndpointBaseAsync
+    public class BlogRatingAdd(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<BlogRatingRequest>
         .WithoutResult
     {
@@ -22,14 +24,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 return;
             }
 
-            //var userId = myAuthService.GetUserId();
-            //if (userId == null)
-            //{
-            //    Response.StatusCode = 401;
-            //    await Response.WriteAsync("Unauthorized");
-            //    return;
-            //}
-
             var blogPost = await db.BlogPosts.FindAsync(request.BlogPostId);
             if (blogPost == null)
             {
@@ -38,10 +32,12 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 return;
             }
 
+            var userId = userManager.GetUserId(User);
+
             var rating = new BlogRating
             {
                 BlogPostId = request.BlogPostId,
-                UserId = null,
+                UserId = userId,
                 Rating = request.Rating,
                 CreatedAt = DateTime.Now
             };

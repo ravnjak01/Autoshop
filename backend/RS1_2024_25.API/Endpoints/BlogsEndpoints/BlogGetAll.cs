@@ -22,7 +22,13 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             // If a search query is provided, filter the blogs by title and content (adjust as necessary)
             if (!string.IsNullOrEmpty(request.SearchQuery))
             {
-                query = query.Where(b => b.Title.Contains(request.SearchQuery) || b.Content.Contains(request.SearchQuery) || b.Author.Contains(request.SearchQuery));
+                query = query.Where(b =>
+                                    (b.Title != null && b.Title.Contains(request.SearchQuery)) ||
+                                    (b.Content != null && b.Content.Contains(request.SearchQuery)) ||
+                                    (b.Author != null && b.Author.UserName != null &&
+                                     b.Author.UserName.Contains(request.SearchQuery))
+                                );
+
             }
 
             // Apply pagination
@@ -30,11 +36,11 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 .OrderBy(b => b.PublishedDate) // Sorting by published date, adjust as needed
                 .Skip((request.PageNumber - 1) * request.PageSize) // Pagination
                 .Take(request.PageSize) // Limit the number of results
-                .Select(b => new BlogPost
+                .Select(b => new BlogPostDTO
                 {
                     Id = b.Id,
                     Title = b.Title,
-                    Author = b.Author,
+                    AuthorName = b.Author != null ?  b.Author.LastName + " " +  b.Author.FirstName : string.Empty,
                     PublishedDate = b.PublishedDate,
                     Image = b.Image
                 })
@@ -59,7 +65,15 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         public class BlogGetAllResponse
         {
             public required int TotalCount { get; set; }
-            public required List<BlogPost> Blogs { get; set; }
+            public required List<BlogPostDTO> Blogs { get; set; }
+        }
+        public class BlogPostDTO
+        {
+            public int Id { get; set; }
+            public string Title { get; set; }
+            public string AuthorName { get; set; }
+            public DateTime? PublishedDate { get; set; }
+            public byte[]? Image { get; set; }
         }
     }
 }

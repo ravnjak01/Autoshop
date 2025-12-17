@@ -11,5 +11,8 @@ namespace RS1_2024_25.API.Data.Models.Modul2_Basic
 
         public int DiscountId { get; set; }
         public Discount Discount { get; set; }
+
+        public string? LastModifiedUserId { get; set; }
+        public User? LastModifiedUser { get; set; }
     }
 }

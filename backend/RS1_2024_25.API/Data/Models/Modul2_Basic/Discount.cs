@@ -9,6 +9,9 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
 
+        public string? CreateUserId { get; set; }
+        public User? CreateUser { get; set; }
+
         public ICollection<DiscountProduct> DiscountProducts { get; set; }
         public ICollection<DiscountCategory> DiscountCategories { get; set; }
         public ICollection<DiscountCode> DiscountCodes { get; set; }
