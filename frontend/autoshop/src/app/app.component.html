@@ -5,9 +5,13 @@
     <li *ngIf="!isAdminPage" class="menu-item">
       <a routerLink="/products">Products</a>
     </li>
-    <li *ngIf="!isAdminPage" class="menu-item"><a routerLink="/administration">Administration</a></li>
-    
-   
+    <li
+      *ngIf="authService.isLoggedIn() && authService.isAdmin() && !isAdminPage"
+      class="menu-item">
+      <a routerLink="/administration">Administration</a>
+    </li>
+
+
     <li class="menu-item login-button-item " *ngIf="!authService.isLoggedIn()">
       <button (click)="goToLogin()">Login</button>
     </li>
