@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdministrationComponent } from './administration/components/administration.component';
-import { HomePageComponent } from './home/components/home-page.component';
+import { HomePageComponentAdministration } from './administration/home/components/home-page-component-administration.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { LoginComponent } from './auth/login/login.component';
 import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password';
@@ -16,6 +16,7 @@ import { DiscountsComponent } from './administration/discount-management/compone
 import {BlogPostsComponent as BlogPostsComponentsAdministration} from './administration/blog-management/components/blogs/blog-posts.component' ;
 import {BlogPostsComponent} from './blog/components/blog-posts/blog-posts.component';
 import {BlogDetailsComponent} from './blog/components/blog-post/blog-post.component';
+import {HomePageComponent} from './home/components/home-page.component';
 
 export const appRoutes: Routes = [
   {
@@ -26,12 +27,12 @@ export const appRoutes: Routes = [
     children: [
            //{ path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
       { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: HomePageComponent },
+      { path: 'home', component: HomePageComponentAdministration },
       {    path: 'product-management',
   component: ProductManagementComponent,},
        { path: 'admin/blog-posts', component: BlogPostsComponentsAdministration },
          { path: 'admin/discount', component: DiscountsComponent},
-         { path: 'admin/home-page', component: HomePageComponent },
+         { path: 'admin/home-page', component: HomePageComponentAdministration },
 
     ]
   },
