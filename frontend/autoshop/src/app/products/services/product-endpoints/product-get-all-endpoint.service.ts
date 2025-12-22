@@ -42,7 +42,7 @@ export interface ProductGetAllResponse {
   providedIn: 'root'
 })
 export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllRequest, ProductGetAllResponse>{
-  private apiUrl = `${MyConfig.api_address}/product/filter`;
+  private apiUrl = `${MyConfig.api_address}/product/filter/hh`;
 
   constructor(private httpClient: HttpClient) {
   }

@@ -32,6 +32,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { BlogManagementModule } from './administration/blog-management/blog-management.module';
 import {DiscountModule} from './administration/discount-management/discount-managements.module';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
 
@@ -41,6 +42,7 @@ import {DiscountModule} from './administration/discount-management/discount-mana
   ],
 
   imports: [
+    MatSnackBarModule,
     DiscountModule,
     SharedModule,
     BrowserModule,

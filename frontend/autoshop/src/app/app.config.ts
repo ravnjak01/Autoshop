@@ -12,6 +12,8 @@ import { AppModule } from './app.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { BlogModule } from './blog/blog.module';
 import {DiscountModule} from './administration/discount-management/discount-managements.module';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 export const appConfig: ApplicationConfig = {
 
     providers: [
@@ -38,7 +40,9 @@ export const appConfig: ApplicationConfig = {
       AppModule,
       SharedModule,
       DiscountModule,
-      BlogModule
+      BlogModule,
+      MatSnackBarModule,
+      BrowserAnimationsModule
     )
   ]
 

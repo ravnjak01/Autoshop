@@ -7,3 +7,30 @@ body {
 .registration-form input {
   border: 1px solid red !important; /* test stil */
 }
+/* Stil za Error (Crveno) */
+.snackbar-error {
+  --mdc-snackbar-container-color: #f44336;
+  --mdc-snackbar-supporting-text-color: white;
+  --mat-snack-bar-button-color: white;
+  font-weight: 500;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* Stil za Success (Zeleno) */
+.snackbar-success {
+  --mdc-snackbar-container-color: #4caf50;
+  --mdc-snackbar-supporting-text-color: white;
+  --mat-snack-bar-button-color: white;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* Stil za Info (Plavo) */
+.snackbar-info {
+  --mdc-snackbar-container-color: #2196f3;
+  --mdc-snackbar-supporting-text-color: white;
+  --mat-snack-bar-button-color: white;
+  font-weight: 500;
+  border-radius: 8px;
+}

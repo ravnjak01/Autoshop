@@ -28,7 +28,7 @@ export const appRoutes: Routes = [
       { path: '', redirectTo: 'home', pathMatch: 'full' },
       { path: 'home', component: HomePageComponent },
       {    path: 'product-management',
-  component: ProductManagementComponent,},
+  component: ProductManagementComponent},
        { path: 'admin/blog-posts', component: BlogPostsComponentsAdministration },
          { path: 'admin/discount', component: DiscountsComponent},
          { path: 'admin/home-page', component: HomePageComponent },
