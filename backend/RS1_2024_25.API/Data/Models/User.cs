@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
+using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using System.ComponentModel.DataAnnotations;
 
 namespace RS1_2024_25.API.Data.Models
@@ -12,8 +13,10 @@ namespace RS1_2024_25.API.Data.Models
 
         public string LastName { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now; 
-        
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
+        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
+
         /*
      
      Ako sistem nije zamišljen da podržava česte promjene rola i 

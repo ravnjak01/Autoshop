@@ -1,5 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RS1_2024_25.API.Data.Models.ShoppingCart
 {
@@ -52,5 +53,7 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
 
         public string? Code { get; set; }
         public DateTime? CreatedAt { get; internal set; }
+
+        public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
     }
 }
