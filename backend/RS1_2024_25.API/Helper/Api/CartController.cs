@@ -67,6 +67,19 @@ namespace RS1_2024_25.API.Controllers
             if (product == null)
                 return NotFound("Product not found.");
 
+            var existingItem = cart?.Items
+                    .FirstOrDefault(i => i.ProductId == request.ProductId);
+
+            int currentQuantityInCart = existingItem?.Quantity ?? 0;
+            int requestedTotal = currentQuantityInCart + request.Quantity;
+
+            if (requestedTotal > product.StockQuantity)
+            {
+                return BadRequest(new
+                {
+                    message = $"Only {product.StockQuantity} items available in stock."
+                });
+            }
             if (cart == null)
             {
                 cart = new Cart
@@ -78,9 +91,8 @@ namespace RS1_2024_25.API.Controllers
                 _context.Carts.Add(cart);
             }
 
-            var existingItem = cart.Items.FirstOrDefault(i => i.ProductId == request.ProductId);
             if (existingItem != null)
-                existingItem.Quantity += request.Quantity;
+                existingItem.Quantity = requestedTotal;
             else
                 cart.Items.Add(new CartItem
                 {
@@ -220,7 +232,7 @@ namespace RS1_2024_25.API.Controllers
 
          
             if (request.Quantity > item.Product.StockQuantity)
-                return BadRequest($"On stock we have {item.Product.StockQuantity} pieces.");
+                return BadRequest($"In stock we have {item.Product.StockQuantity} pieces.");
 
             item.Quantity = request.Quantity;
             await _context.SaveChangesAsync();

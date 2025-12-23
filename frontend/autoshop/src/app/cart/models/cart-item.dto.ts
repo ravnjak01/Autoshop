@@ -7,9 +7,10 @@ export interface CartItemDTO {
   productId: number;
   productName: string;
   price: number;
-  quantity: number;
+  stockQuantity: number;
+  quantity:number;
   total: number;
-  product:ProductDTO
+  product:ProductDTO;
   imageUrl:string;
 }
 

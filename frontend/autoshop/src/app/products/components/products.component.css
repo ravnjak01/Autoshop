@@ -202,3 +202,61 @@ body {
     align-items: stretch;
   }
 }
+
+/* 📦 Stilovi za stanje na lageru (Stock) */
+
+.product-info .stock {
+  font-size: 13px;
+  margin-top: 8px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Badge stil za ljepši prikaz */
+.stock-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  background-color: #e3f2fd; /* Svijetlo plava za 'ima na stanju' */
+  color: #1976d2;
+}
+
+/* Kada je malo proizvoda ostalo (opcionalno ako dodaš klasu) */
+.stock-badge.low-stock {
+  background-color: #fff3e0;
+  color: #ef6c00;
+}
+
+/* Kada nema na stanju */
+.stock-badge.out-of-stock {
+  background-color: #ffe8e8;
+  color: #d32f2f;
+  text-decoration: line-through;
+}
+
+/* Stil za onemogućeno dugme "Add to cart" */
+.product-actions button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Stil za checkbox u filteru */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-group input {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+

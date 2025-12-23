@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { CartItemDTO } from '../../models/cart-item.dto'; 
 import { Router } from '@angular/router';
+import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-snackbar-helper.service';
 
 @Component({
   selector: 'app-cart',
@@ -16,13 +17,28 @@ import { Router } from '@angular/router';
   ]
 })
 export class CartPageComponent implements OnInit {
+isIncreaseDisabled(item:any):boolean {
+if(!item)
+{
+  return true;
+}
+if(!item.product)
+{
+  return true;
+}
+
+const quantity=Number(item.quantity ?? 0);
+const stock=Number(item.product.stockQuantity ?? 0);
+
+return quantity>=stock;
+}
    cartItems: CartItemDTO[] = [];
   isCartEmpty: boolean = false;
 savedForLaterItems: CartItemDTO[] = [];
 goToCart() {
 throw new Error('Method not implemented.');
 }
-  constructor(public cartService: CartService,private router:Router) {}
+  constructor(public cartService: CartService,private router:Router,private snackbar:MySnackbarHelperService) {}
  
   ngOnInit(): void {
     this.loadCart();
@@ -49,15 +65,19 @@ loadCart(): void {
 
  increaseQuantity(item: CartItemDTO): void {
   const newQuantity = item.quantity + 1;
+  const currentQty=Number(item.quantity);
+  const stock=Number(item.product.stockQuantity);
 
-  this.cartService.updateQuantity(item.id!, newQuantity).subscribe({
-    next: (updatedItem) => {
-      item.quantity = updatedItem.quantity; 
-    },
-    error: (err) => {
-      console.error('Error during increasing quantity', err);
-    }
-  });
+  if(newQuantity<stock){
+    this.cartService.updateQuantity(item.id,newQuantity)
+    .subscribe();
+  }
+  else
+  {
+    this.snackbar.showMessage('Dostigli ste limit zaliha', 'error');
+  }
+
+ 
 }
 
 decreaseQuantity(item: CartItemDTO): void {

@@ -18,24 +18,24 @@ import {BlogPostsComponent} from './blog/components/blog-posts/blog-posts.compon
 import {BlogDetailsComponent} from './blog/components/blog-post/blog-post.component';
 import {HomePageComponent} from './home/components/home-page.component';
 
-export const appRoutes: Routes = [
-  {
-    path: 'administration',
-    component: AdministrationComponent,
-       canActivate: [AuthGuard],
-  data: { isAdmin: true },
-    children: [
-           //{ path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: HomePageComponentAdministration },
-      {    path: 'product-management',
-  component: ProductManagementComponent},
-       { path: 'admin/blog-posts', component: BlogPostsComponentsAdministration },
-         { path: 'admin/discount', component: DiscountsComponent},
-         { path: 'admin/home-page', component: HomePageComponentAdministration },
+  export const appRoutes: Routes = [
+    {
+      path: 'administration',
+      component: AdministrationComponent,
+        canActivate: [AuthGuard],
+    data: { isAdmin: true },
+      children: [
+            //{ path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
+        { path: '', redirectTo: 'home', pathMatch: 'full' },
+        { path: 'home', component: HomePageComponentAdministration },
+        {    path: 'product-management',
+    component: ProductManagementComponent},
+        { path: 'admin/blog-posts', component: BlogPostsComponentsAdministration },
+          { path: 'admin/discount', component: DiscountsComponent},
+          { path: 'admin/home-page', component: HomePageComponentAdministration },
 
-    ]
-  },
+      ]
+    },
     { path: 'home', component: HomePageComponent },
 {
       path: 'products',

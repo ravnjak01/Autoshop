@@ -1,13 +1,12 @@
 import { Component, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, map, Observable, tap } from 'rxjs';
+import { BehaviorSubject, catchError, EMPTY, map, Observable, tap } from 'rxjs';
 import {  CartItemDTO  } from '../models/cart-item.dto'
 import { AddToCartDTO } from '../models/add-to-cart.dto';
 import { UpdateCartItemDTO } from '../models/update-cart.dto';
 import { CartResponseDTO } from '../models/cart-response.dto';
 import { CurrencyPipe } from '@angular/common';
-import { response } from 'express';
-
+import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 @Injectable({
   providedIn: 'root',
   
@@ -24,7 +23,7 @@ export class CartService {
 
     private cartItemsSubject = new BehaviorSubject<CartItemDTO[]>([]);
   cartItems$ = this.cartItemsSubject.asObservable();
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,private snackbar:MySnackbarHelperService) { }
 loadCart(): void {
   this.getCart().subscribe({
     next: (cartResponse) => {
@@ -46,7 +45,15 @@ addToCart(productId: number, quantity: number = 1): Observable<CartItemDTO> {
       { productId, quantity },
       { withCredentials: true }
     ).pipe(
-     tap(() => this.loadCart())
+     tap((response) => {
+      
+      const name=response.productName;
+  
+  this.snackbar.showMessage(`Product added to the cart`,'success');
+
+      this.loadCart();
+     })
+     
     );
 }
 
@@ -83,7 +90,14 @@ updateQuantity(itemId: number, quantity: number): Observable<CartItemDTO> {
     { quantity },
     { withCredentials: true }
   ).pipe(
-    tap(() => this.loadCart())
+    tap(() => this.loadCart()),
+    catchError((err)=>{
+      console.log('Kompletna greška:', err);
+      const message=err.error?.message || err.error ||'Not enough on the stock';
+      this.snackbar.showMessage(message,'error');
+
+      throw err;
+    })
   );
 }
   

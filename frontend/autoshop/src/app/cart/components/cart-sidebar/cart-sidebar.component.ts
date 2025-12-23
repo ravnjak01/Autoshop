@@ -108,6 +108,10 @@ goToCart() {
 }
 
 increaseQuantity(item: CartItemDTO): void {
+  if(item.quantity>=item.stockQuantity)
+  {
+    return; 
+  }
   const newQuantity = item.quantity + 1;
 
   this.cartService.updateQuantity(item.id!, newQuantity).subscribe({

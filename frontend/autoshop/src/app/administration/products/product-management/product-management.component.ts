@@ -4,6 +4,10 @@ import { ProductCreateDTO, ProductDTO, ProductUpdateDTO } from '../../../cart/mo
 import { ProductService } from '../../../products/services/product.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import {MySnackbarHelperService} from '../../../modules/shared/snackbars/my-snackbar-helper.service'
+import { MatDialog } from '@angular/material/dialog';
+import { MyDialogConfirmComponent } from '../../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
+import { title } from 'process';
 
 @Component({
   selector: 'app-product-management',
@@ -33,7 +37,9 @@ cancelEdit(): void {
 
   constructor(
     private productService: ProductService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar:MySnackbarHelperService,
+    private dialog:MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -129,13 +135,12 @@ selectImage(img: string) {
 
     this.productService.addProduct(newProduct).subscribe({
       next: () => {
- 
+        this.snackBar.showMessage('Product added!','success');
         this.loadProducts();
         this.productForm.reset({ active: true }); 
       },
       error: (err) => {
-        console.error('Greška pri dodavanju proizvoda:', err);
-      }
+  this.snackBar.showMessage('Form not correctly filled','error')      }
     });
   }
 
@@ -168,7 +173,7 @@ selectImage(img: string) {
 
     this.productService.updateProduct(updatedProduct.id, updatedProduct).subscribe({
       next: () => {
-        console.log('Product updated!');
+this.snackBar.showMessage('Changes successfully saved!','success')
         this.isEditing = false;
         this.selectedProduct = null;
         this.loadProducts();
@@ -182,9 +187,19 @@ selectImage(img: string) {
 
 
   deleteProduct(id: number): void {
-    if (!confirm('Are you sure you want to delete the product')) return;
+    const dialogRef=this.dialog.open(MyDialogConfirmComponent,{
 
-    this.productService.deleteProduct(id).subscribe({
+      width:'350px',
+      data:{
+        title:'Are you sure',
+        message:'Do you really want to delete this product?',
+        confirmButtonText: 'Delete'
+      }
+    });
+    dialogRef.afterClosed().subscribe(result=>{
+      if(result)
+      {
+  this.productService.deleteProduct(id).subscribe({
       next: () => {
        
         this.loadProducts();
@@ -193,5 +208,8 @@ selectImage(img: string) {
         
       }
     });
+      }
+    });
+  
   }
 }

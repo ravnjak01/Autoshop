@@ -1,10 +1,34 @@
-button[color="warn"] {
-  background-color: #f44336; /* Red background */
-  color: white;
-  margin-left: 5px;
+/* Kontejner za dugmad */
+.mat-mdc-dialog-actions {
+  justify-content: center !important; /* Centriranje dugmadi */
+  padding-top: 20px !important;
+  gap: 15px !important; /* Razmak između dugmadi */
 }
 
-button[color="warn"]:hover {
-  background-color: #d32f2f; /* Darker red on hover */
-  border-color: #d32f2f; /* Change border to match the hover color */
+/* Zajednički stil za oba dugmeta */
+.mat-mdc-dialog-actions button {
+  min-width: 120px !important;
+  height: 40px !important;
+  text-transform: none !important; /* Da ne budu sva velika slova */
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  border-radius: 4px !important;
 }
+
+/* "Cancel" dugme (Sivo) */
+.btn-cancel {
+  font-family: 'Poppins', sans-serif !important;
+  background-color: #c1c1c1 !important;
+  color: white !important;
+}
+
+/* "Delete" dugme (Roze/Crveno) */
+.btn-delete {
+  font-family: 'Poppins', sans-serif !important;
+  background-color: #ff1a5e !important;
+  color: white !important;
+}
+
+/* Hover efekti */
+.btn-cancel:hover { background-color: #a8a8a8 !important; }
+.btn-delete:hover { background-color: #e6004c !important; }

@@ -1,5 +1,25 @@
-<h1>Administracija</h1>
-<!-- Root content za admin -->
-<div class="admin-container">
-  <router-outlet></router-outlet> <!-- ovdje se prikazuju child rute -->
+<div class="admin-layout">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <h2>Autoshop Admin</h2>
+    </div>
+    <nav class="sidebar-nav">
+      <button routerLink="home" routerLinkActive="active">
+        <span class="icon">🏠</span> Dashboard
+      </button>
+      <button routerLink="product-management" routerLinkActive="active">
+        <span class="icon">📦</span> Upravljanje proizvodima
+      </button>
+      <button routerLink="admin/discount" routerLinkActive="active">
+        <span class="icon">💰</span> Popusti i Akcije
+      </button>
+      <button routerLink="admin/blog-posts" routerLinkActive="active">
+        <span class="icon">📝</span> Blog Postovi
+      </button>
+    </nav>
+  </aside>
+
+  <main class="content-area">
+    <router-outlet></router-outlet>
+  </main>
 </div>

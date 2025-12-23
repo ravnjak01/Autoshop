@@ -9,5 +9,6 @@
         public int Quantity { get; set; }
         public decimal Total { get; set; }
         public string? imageUrl { get; set; }
+        public int StockQuantity { get; set; }
     }
 }

@@ -14,7 +14,9 @@ export class MyDialogConfirmComponent {
     @Inject(MAT_DIALOG_DATA) public data: { title: string; message: string, confirmButtonText: string }
   ) {
   }
-
+onNoClick(): void {
+    this.dialogRef.close(false);
+  }
   onConfirm(): void {
     this.dialogRef.close(true); // Vraća true kada korisnik potvrdi
   }

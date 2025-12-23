@@ -1,5 +1,5 @@
 <div class="product-management-container">
-  <h2>Admin - Managing products</h2>
+  <h2>Managing products</h2>
 
   <div class="product-form">
     <h3>{{ isEditing ? 'Edit product' : 'Add new product' }}</h3>
@@ -63,7 +63,7 @@
 
           <div class="button-group">
             <button type="submit" [disabled]="productForm.invalid" class="btn btn-primary">
-              {{ isEditing ? 'Save changes' : 'Add the product' }}
+              {{ isEditing ? 'Save changes' : 'Add  product' }}
             </button>
             <button type="button" (click)="cancelEdit()" *ngIf="isEditing" class="btn btn-warning">
               Cancel

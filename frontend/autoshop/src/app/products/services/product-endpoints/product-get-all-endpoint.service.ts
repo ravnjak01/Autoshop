@@ -19,6 +19,8 @@ export interface ProductGetAllRequest {
   sortBy?: string; 
   pageNumber?: number;
 pageSize?: number;
+stockQuantity?:boolean;
+
 }
 export interface Product {
   id: number;
@@ -31,7 +33,7 @@ export interface Product {
   category: Category;
   imageUrl: string;
 brend: string;
-  
+  stockQuantity:number;
 }
 
 export interface ProductGetAllResponse {

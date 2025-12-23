@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ProductService } from '../services/product.service';
 import { MyAuthService } from '../../core/services/auth/my-auth.service'
+import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 @Component({
   selector: 'app-product-list',
   templateUrl: './products.component.html',
@@ -51,7 +52,8 @@ export class ProductsComponent implements OnInit {
      private categoriesGetAllService: CategoryGetAllService,
     private cartService: CartService,
     private productService: ProductService,
-    private authService: MyAuthService
+    private authService: MyAuthService,
+    private snackbar:MySnackbarHelperService
   ) {}
 
   productForm!: FormGroup;
@@ -68,7 +70,8 @@ export class ProductsComponent implements OnInit {
     categoryId: [null],
     minPrice: [0, Validators.min(0)],
     maxPrice: [1000, Validators.min(0)],
-    sortBy: ['createdDateDesc']
+    sortBy: ['createdDateDesc'],
+    stockQuantity:[false]
   });
 
   this.loadCategories();
@@ -113,7 +116,8 @@ onSubmit(): void {
     maxPrice: this.filterForm.value.maxPrice,
     sortBy: this.filterForm.value.sortBy,
     pageNumber: 1,
-    pageSize:50
+    pageSize:50,
+    stockQuantity:this.filterForm.value.stockQuantity
   };
 
  
@@ -132,8 +136,7 @@ onSubmit(): void {
 
  addToCart(productId: number): void {
   this.cartService.addToCart(productId, 1).subscribe({
-    next: () => alert('Product added to cart!'),
-    error: (err) => console.error('Error during adding the product', err)
+    error: (err) => {this.snackbar.showMessage('Unfortunately ,this product isnt awailable in the wanted quantity.')}
   });
 }
  
