@@ -38,6 +38,7 @@ namespace RS1_2024_25.API.Data
         public DbSet<DiscountProduct> DiscountProducts { get; set; }
         public DbSet<DiscountCategory> DiscountCategories { get; set; }
         public DbSet<DiscountCode> DiscountCodes { get; set; }
+        public DbSet<Favorite> Favorites { get; set; }
 
 
         #region METHODS
@@ -89,6 +90,20 @@ namespace RS1_2024_25.API.Data
             modelBuilder.Entity<DiscountCategory>()
                         .HasIndex(x => new { x.DiscountId, x.CategoryId })
                         .IsUnique();
+
+            modelBuilder.Entity<Favorite>()
+               .HasIndex(f => new { f.UserId, f.ProductId })
+               .IsUnique();
+
+            modelBuilder.Entity<Favorite>()
+                .HasOne(f => f.User)
+                .WithMany(u => u.Favorites)
+                .HasForeignKey(f => f.UserId);
+
+            modelBuilder.Entity<Favorite>()
+                .HasOne(f => f.Product)
+                .WithMany(p => p.Favorites)
+                .HasForeignKey(f => f.ProductId);
             // opcija kod nasljeđivanja
             // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
 
