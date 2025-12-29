@@ -260,3 +260,41 @@ body {
   height: 18px;
 }
 
+
+.product-card {
+  position: relative;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.favorite-btn i {
+  color: red;
+  font-size: 14px;
+}
+
+
+.favorite-btn i {
+  transition: transform .2s ease;
+}
+
+.favorite-btn i:active {
+  transform: scale(1.3);
+}
+
