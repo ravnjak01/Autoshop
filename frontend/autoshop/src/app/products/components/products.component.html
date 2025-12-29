@@ -35,6 +35,17 @@
 
     <div class="product-grid">
       <div *ngFor="let product of products" class="product-card">
+        <button *ngIf="authService.isLoggedIn()"
+          class="favorite-btn"
+          (click)="toggleFavorite(product)">
+
+          <i
+            class="fa-heart"
+            [class.fa-solid]="product.isFavorite"
+            [class.fa-regular]="!product.isFavorite">
+          </i>
+
+        </button>
 
         <!-- Slika proizvoda -->
         <div class="product-image">
@@ -47,7 +58,7 @@
   <p class="brand"><strong>Brand:</strong> {{ product.brend }}</p>
   <p class="description">{{ product.description }}</p>
   <p class="price">{{ product.price }} KM</p>
-  
+
   <div class="stock">
     <span class="stock-badge" [ngClass]="{'out-of-stock': product.stockQuantity === 0}">
       {{ product.stockQuantity > 0 ? product.stockQuantity + ' na stanju' : 'Nema na stanju' }}
@@ -68,7 +79,7 @@
 
 
         <!-- Dugme za dodavanje u korpu (ako nije admin) -->
-       
+
 
       </div>
     </div>

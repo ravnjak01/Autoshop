@@ -16,7 +16,7 @@ export interface ProductGetAllRequest {
   categoryIds?: number[];
   minPrice?: number;
   maxPrice?: number;
-  sortBy?: string; 
+  sortBy?: string;
   pageNumber?: number;
 pageSize?: number;
 stockQuantity?:boolean;
@@ -34,6 +34,7 @@ export interface Product {
   imageUrl: string;
 brend: string;
   stockQuantity:number;
+  isFavorite: boolean;
 }
 
 export interface ProductGetAllResponse {
@@ -60,7 +61,7 @@ export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllR
 
 
     let params = buildHttpParams(cleanRequest);
-    
+
      if (categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0) {
       categoryIds.forEach((id: number) => {
         if (id != null && id > 0) { // Provjeri da nije null/undefined
@@ -68,7 +69,7 @@ export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllR
         }
       });
     }
-  
+
     return this.httpClient.get<ProductGetAllResponse>(`${this.apiUrl}`, {params}).pipe(
       tap(function () {}));
   }
