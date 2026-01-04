@@ -1,0 +1,230 @@
+/* 🌐 Globalni stilovi */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.favorite-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* 🔍 Filter sekcija */
+/* Filter sekcija */
+.filter-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 30px;
+  max-width: 1200px;
+  margin-right: auto;
+  width: 20%;
+}
+
+/* Forma */
+.filter-section form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: center;
+}
+
+.filter-section select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  flex: 1 1 200px; /* fleksibilno da zauzima prostor */
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.filter-section select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.4);
+  outline: none;
+}
+
+
+
+/* Responsive prilagodba */
+@media (max-width: 768px) {
+  .filter-section form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+
+/* 🧩 Lista proizvoda */
+.favorite-list h2 {
+  margin-bottom: 20px;
+}
+
+/* Grid layout za proizvode */
+.favorite-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+/* 🃏 Kartica proizvoda */
+.favorite-card {
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.favorite-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+
+.favorite-image {
+  width: 100%;
+  height: 200px; /* fiksna visina kartice */
+  overflow: hidden;
+  border-radius: 8px 8px 0 0;
+  background-color: #f0f0f0; /* fallback pozadina */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favorite-image img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* cijela slika se vidi, proporcije se čuvaju */
+}
+
+
+/* Info o proizvodu */
+.favorite-info {
+  padding: 15px;
+  flex-grow: 1;
+}
+
+.favorite-info h3 {
+  font-size: 18px;
+  margin: 0 0 8px;
+  color: #222;
+}
+
+.favorite-info .brand {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.favorite-info .description {
+  font-size: 14px;
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.favorite-info .price {
+  font-weight: bold;
+  font-size: 16px;
+  color: #007bff;
+}
+
+/* Dugme za akcije */
+.favorite-actions {
+  padding: 10px 15px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: center;
+}
+
+.favorite-actions button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.favorite-actions button:hover {
+  background-color: #1e7e34;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* Stil za onemogućeno dugme "Add to cart" */
+.favorite-actions button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Stil za checkbox u filteru */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-group input {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+}
+
+
+.favorite-card {
+  position: relative;
+}
+
+.favorite-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.favorite-btn i {
+  color: red;
+  font-size: 14px;
+}
+
+
+.favorite-btn i {
+  transition: transform .2s ease;
+}
+
+.favorite-btn i:active {
+  transform: scale(1.3);
+}
+

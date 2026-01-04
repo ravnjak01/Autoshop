@@ -1,7 +1,7 @@
 <nav class="navbar">
   <ul class="main-menu">
     <li class="menu-item home-item"><a routerLink="/home">Home</a></li>
-    
+
     <li class="menu-item about-item"><a routerLink="/about">About us</a></li>
 
     <li *ngIf="!isAdminPage" class="menu-item">
@@ -24,9 +24,13 @@
       <button (click)="onLogout()">Odjavi se</button>
     </li>
    <li class="menu-item cart-button-item push-right-desno" >
-  <button (click)="toggleCart()">Cart</button>
-
-</li>
+      <button (click)="toggleCart()">Cart</button>
+    </li>
+    <li
+      *ngIf="authService.isLoggedIn() && !isAdminPage"
+      class="menu-item">
+      <a routerLink="/favorites">Favorites</a>
+    </li>
   </ul>
 
 
