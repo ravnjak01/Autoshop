@@ -13,6 +13,9 @@ import { Router } from '@angular/router';
 })
 
 export class CartSidebarComponent  {
+onImageError($event: ErrorEvent,_t6: CartItemDTO) {
+throw new Error('Method not implemented.');
+}
   isCartOpen = false;
 totalPrice: string|number = 0;
 cartItems: CartItemDTO[] = [];
