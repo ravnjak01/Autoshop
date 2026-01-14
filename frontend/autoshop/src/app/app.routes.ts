@@ -17,6 +17,7 @@ import {BlogPostsComponent as BlogPostsComponentsAdministration} from './adminis
 import {BlogPostsComponent} from './blog/components/blog-posts/blog-posts.component';
 import {BlogDetailsComponent} from './blog/components/blog-post/blog-post.component';
 import {HomePageComponent} from './home/components/home-page.component';
+import {FavoritesComponent} from './favorites/components/favorite.component';
 
   export const appRoutes: Routes = [
     {
@@ -57,7 +58,8 @@ import {HomePageComponent} from './home/components/home-page.component';
   canActivate: [AuthGuard]
 },
 {path:'confirmation-modal',component:ConfirmationModalComponent},
-{path:'categories',component:CategoriesComponent},
+{path:'categories',component:CategoriesComponent}, {path:'favorites',component:FavoritesComponent},
+
     { path: '', redirectTo: 'home', pathMatch: 'full' },
-  { path: '**', redirectTo: 'home' }
+  { path: '**', redirectTo: 'home' },
 ];

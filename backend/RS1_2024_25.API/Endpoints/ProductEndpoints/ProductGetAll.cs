@@ -1,16 +1,14 @@
-﻿using Duende.IdentityServer.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
-using RS1_2024_25.API.Data.Models.ShoppingCart;
 using RS1_2024_25.API.Helper.Api;
-using static Duende.IdentityServer.Models.IdentityResources;
-using System.Globalization;
+using Microsoft.AspNetCore.Identity;
+using RS1_2024_25.API.Data.Models;
 
 namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 {
     [Route("product")]
-    public class ProductGetAll(ApplicationDbContext db) : MyEndpointBaseAsync
+    public class ProductGetAll(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<ProductGetAllRequest>
         .WithResult<ProductGetAllResponse>
     {
@@ -106,7 +104,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
      
             var totalCount = await query.CountAsync(cancellationToken);
 
-         
+            var userId = userManager.GetUserId(User);
+
             var products = await query
                 .AsNoTracking()
                 .Skip((request.PageNumber - 1) * request.PageSize)
@@ -127,7 +126,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                     NumberOfReviews = p.NumberOfReviews,
                     StockQuantity = p.StockQuantity,
                     Code = p.Code,
-                    CreatedAt = p.CreatedAt
+                    CreatedAt = p.CreatedAt,
+                    IsFavorite = p.Favorites.FirstOrDefault(f => f.UserId == userId) != null ? true : false
                 })
                 .ToListAsync(cancellationToken);
 
@@ -203,5 +203,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public int? StockQuantity { get; set; }
         public string? Code { get; set; }
         public DateTime? CreatedAt { get; set; }
+        public bool IsFavorite { get; set; }
     }
 }

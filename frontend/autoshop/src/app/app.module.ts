@@ -33,6 +33,7 @@ import { InfiniteScrollModule } from 'ngx-infinite-scroll';
 import { BlogManagementModule } from './administration/blog-management/blog-management.module';
 import {DiscountModule} from './administration/discount-management/discount-managements.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import {FavoriteModule} from './favorites/favorite.module';
 
 @NgModule({
 
@@ -78,6 +79,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
     // Treći strani moduli
     InfiniteScrollModule,
     NgxSliderModule,
+    FavoriteModule
   ],
   providers: [
 

@@ -1,0 +1,62 @@
+<div class="favorite-page">
+
+  <!--  Filter sekcija -->
+  <section class="filter-section">
+    <form [formGroup]="filterForm">
+      <select formControlName="sortBy">
+        <option value="newest">Latest</option>
+        <option value="oldest">Oldest</option>
+        <option value="nameasc">A - Z</option>
+        <option value="namedesc">Z - A</option>
+      </select>
+    </form>
+  </section>
+
+  <hr />
+
+  <!-- 🧩 Lista proizvoda -->
+  <section class="favorite-list">
+    <h2>Favorites</h2>
+
+    <div class="favorite-grid">
+      <div *ngFor="let favorite of favorites" class="favorite-card">
+        <button *ngIf="authService.isLoggedIn()"
+                class="favorite-btn"
+                (click)="toggleFavorite(favorite.productId)">
+
+          <i
+            class="fa-heart fa-solid">
+          </i>
+
+        </button>
+
+        <!-- Slika proizvoda -->
+        <div class="favorite-image">
+          <img [src]=" favorite.imageUrl" [alt]="favorite.name" />
+        </div>
+
+        <!-- Informacije o proizvodu -->
+        <div class="favorite-info">
+          <h3>{{ favorite.name }}</h3>
+          <p class="brand"><strong>Brand:</strong> {{ favorite.brend }}</p>
+          <p class="description">{{ favorite.description }}</p>
+          <p class="price">{{ favorite.price }} KM</p>
+
+        </div>
+
+        <div class="favorite-actions" *ngIf="!isAdmin">
+          <button
+            mat-raised-button
+            color="primary"
+            [disabled]="!favorite.active"
+            (click)="addToCart(favorite.productId)"><!--product id-->
+            Add to cart
+          </button>
+
+        </div>
+        <!-- dodati logiku ako nije aktivno da pise da proizvod vise nije na stanju-->
+      </div>
+    </div>
+  </section>
+
+</div>
