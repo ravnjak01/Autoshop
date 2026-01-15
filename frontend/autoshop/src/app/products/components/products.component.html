@@ -2,8 +2,10 @@
 
   <!--  Filter sekcija -->
   <section class="filter-section">
+    <h2>Filter</h2>
+
     <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
-      <input type="text" formControlName="searchQuery" placeholder="Search products..." />
+      <input type="text" formControlName="searchQuery" placeholder="Search products..." class="search-input"/>
 
       <select formControlName="categoryId">
         <option [value]="null">All categories</option>
@@ -18,16 +20,19 @@
       </div>
 
       <select formControlName="sortBy">
-        <option value="createdDateDesc">Latest</option>
-        <option value="priceAsc">Price - ascending</option>
-        <option value="priceDesc">Price - Descending</option>
+        <option value="datedesc">Latest</option>
+        <option value="dateasc">Oldest</option>
+
+        <option value="priceasc">Price – Low to High</option>
+        <option value="pricedesc">Price – High to Low</option>
+
+        <option value="nameasc">Name A–Z</option>
+        <option value="namedesc">Name Z–A</option>
       </select>
 
       <button type="submit">Apply filter</button>
     </form>
   </section>
-
-  <hr />
 
   <!-- 🧩 Lista proizvoda -->
   <section class="product-list">
@@ -54,28 +59,21 @@
 
         <!-- Informacije o proizvodu -->
         <div class="product-info">
-  <h3>{{ product.name }}</h3>
-  <p class="brand"><strong>Brand:</strong> {{ product.brend }}</p>
-  <p class="description">{{ product.description }}</p>
-  <p class="price">{{ product.price }} KM</p>
+          <span class="category-badge">{{ product.categoryName }}</span>
+          <h3>{{ product.name }}</h3>
+          <p class="brand"><strong>Brand:</strong> {{ product.brend }}</p>
+          <p class="price">{{ product.price }} KM</p>
+        </div>
 
-  <div class="stock">
-    <span class="stock-badge" [ngClass]="{'out-of-stock': product.stockQuantity === 0}">
-      {{ product.stockQuantity > 0 ? product.stockQuantity + ' na stanju' : 'Nema na stanju' }}
-    </span>
-  </div>
-</div>
-
-<div class="product-actions" *ngIf="!isAdmin">
- <button
-  mat-raised-button
-  color="primary"
-  [disabled]="product.stockQuantity === 0"
-  (click)="addToCart(product.id)">
-  Add to cart
-</button>
-
-</div>
+        <div class="product-actions" *ngIf="!isAdmin">
+           <button
+            mat-raised-button
+            color="primary"
+            [disabled]="product.stockQuantity === 0"
+            (click)="addToCart(product.id)">
+            Add to cart
+          </button>
+        </div>
 
 
         <!-- Dugme za dodavanje u korpu (ako nije admin) -->

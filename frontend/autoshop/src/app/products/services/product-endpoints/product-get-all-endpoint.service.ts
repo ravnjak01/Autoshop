@@ -18,10 +18,9 @@ export interface ProductGetAllRequest {
   maxPrice?: number;
   sortBy?: string;
   pageNumber?: number;
-pageSize?: number;
-stockQuantity?:boolean;
-
+  pageSize?: number;
 }
+
 export interface Product {
   id: number;
   name: string;
@@ -30,9 +29,9 @@ export interface Product {
   price: number;
   createdAt: string;
   categoryId?: number;
-  category: Category;
+  categoryName: string;
   imageUrl: string;
-brend: string;
+  brend: string;
   stockQuantity:number;
   isFavorite: boolean;
 }
@@ -45,7 +44,7 @@ export interface ProductGetAllResponse {
   providedIn: 'root'
 })
 export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllRequest, ProductGetAllResponse>{
-  private apiUrl = `${MyConfig.api_address}/product/filter/`;
+  private apiUrl = `${MyConfig.api_address}/products`;
 
   constructor(private httpClient: HttpClient) {
   }

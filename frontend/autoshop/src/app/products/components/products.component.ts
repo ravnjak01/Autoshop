@@ -27,7 +27,7 @@ import {FavoriteToggleEndpointService} from '../services/product-endpoints/favor
 })
 export class ProductsComponent implements OnInit {
   searchQuery: string = '';
-  sortBy: string = 'createdDateDesc';
+  sortBy: string = 'datedesc';
   selectedCategoryIds: number[] = [];
   categories: Category[] = [];
   products: Product[] = [];
@@ -74,9 +74,9 @@ export class ProductsComponent implements OnInit {
       categoryId: [null],
       minPrice: [0, Validators.min(0)],
       maxPrice: [1000, Validators.min(0)],
-      sortBy: ['createdDateDesc'],
+      sortBy: ['datedesc'],
       stockQuantity: [false]
-    });
+    })
 
     this.loadCategories();
     this.loadProducts();
@@ -119,8 +119,7 @@ export class ProductsComponent implements OnInit {
       maxPrice: this.filterForm.value.maxPrice,
       sortBy: this.filterForm.value.sortBy,
       pageNumber: 1,
-      pageSize: 50,
-      stockQuantity: this.filterForm.value.stockQuantity
+      pageSize: 10,
     };
 
 
