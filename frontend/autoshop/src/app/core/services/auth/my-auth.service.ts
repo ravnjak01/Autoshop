@@ -87,6 +87,8 @@ checkAuth(): Observable<boolean> {
     localStorage.removeItem('userName');
     localStorage.removeItem('userRoles');
      localStorage.removeItem('userId');
+     localStorage.removeItem('jwtToken');
+
     this.isLoggedInSubject.next(false);
     this.router.navigate(['/login']);
   }

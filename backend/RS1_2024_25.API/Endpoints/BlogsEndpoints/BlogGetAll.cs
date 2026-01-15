@@ -4,15 +4,17 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetAll;
 using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
+    [Authorize]
     [Route("blogposts")]
     public class BlogGetAll(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<BlogGetAllRequest>
         .WithResult<BlogGetAllResponse>
     {
-
+        
         [HttpGet("filter")]
         public override async Task<BlogGetAllResponse> HandleAsync([FromQuery] BlogGetAllRequest request, CancellationToken cancellationToken = default)
         {
