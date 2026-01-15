@@ -7,12 +7,12 @@ using RS1_2024_25.API.Data.Models;
 
 namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 {
-    [Route("product")]
+    [Route("products")]
     public class ProductGetAll(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<ProductGetAllRequest>
         .WithResult<ProductGetAllResponse>
     {
-        [HttpGet("filter")]
+        [HttpGet()]
         public override async Task<ProductGetAllResponse> HandleAsync(
             [FromQuery] ProductGetAllRequest request,
             CancellationToken cancellationToken = default)
@@ -23,6 +23,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 
             var query = db.Products
                 .Include(p => p.Category)
+                .Where(p => p.Active && p.StockQuantity > 0)
                 .AsQueryable();
 
    
@@ -32,7 +33,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 query = query.Where(p =>
                     p.Name.ToLower().Contains(searchLower) ||
                     (p.Code != null && p.Code.ToLower().Contains(searchLower)) ||
-                    (p.SKU != null && p.SKU.ToLower().Contains(searchLower)));
+                    (p.SKU != null && p.SKU.ToLower().Contains(searchLower)) ||
+                    (p.Brend != null && p.Brend.ToLower().Contains(searchLower)));
             }
 
       
@@ -41,13 +43,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 query = query.Where(p =>
                     request.CategoryIds.Contains(p.CategoryId));
                    
-            }
-
-        
-            if (!string.IsNullOrWhiteSpace(request.Brand))
-            {
-                var brandLower = request.Brand.ToLower();
-                query = query.Where(p => p.Brend.ToLower().Contains(brandLower));
             }
 
       
@@ -60,32 +55,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             {
                 query = query.Where(p => p.Price <= request.MaxPrice.Value);
             }
-
-           
-            if (request.IsActive.HasValue)
-            {
-                query = query.Where(p => p.Active == request.IsActive.Value);
-            }
-
-        
-            if (request.InStock == true)
-            {
-                query = query.Where(p => p.StockQuantity > 0);
-            }
-
-          
-
-          
-            if (request.CreatedAfter.HasValue)
-            {
-                query = query.Where(p => p.CreatedAt >= request.CreatedAfter.Value);
-            }
-
-            if (request.CreatedBefore.HasValue)
-            {
-                query = query.Where(p => p.CreatedAt <= request.CreatedBefore.Value);
-            }
-
           
             query = (request.SortBy?.ToLower()) switch
             {
@@ -93,11 +62,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 "pricedesc" => query.OrderByDescending(p => p.Price).ThenBy(p => p.Name),
                 "nameasc" => query.OrderBy(p => p.Name),
                 "namedesc" => query.OrderByDescending(p => p.Name),
-                "ratingdesc" => query.OrderByDescending(p => p.AvgGrade).ThenBy(p => p.Name),
-                "ratingasc" => query.OrderBy(p => p.AvgGrade).ThenBy(p => p.Name),
                 "dateasc" => query.OrderBy(p => p.CreatedAt).ThenBy(p => p.Name),
                 "datedesc" => query.OrderByDescending(p => p.CreatedAt).ThenBy(p => p.Name),
-                "popularitydesc" => query.OrderByDescending(p => p.NumberOfReviews).ThenBy(p => p.Name),
                 _ => query.OrderByDescending(p => p.CreatedAt).ThenBy(p => p.Name)
             };
 
@@ -122,8 +88,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                     Brend = p.Brend,
                     CategoryId = p.CategoryId,
                     CategoryName = p.Category != null ? p.Category.Name : null,
-                    AvgGrade = p.AvgGrade,
-                    NumberOfReviews = p.NumberOfReviews,
                     StockQuantity = p.StockQuantity,
                     Code = p.Code,
                     CreatedAt = p.CreatedAt,
@@ -156,14 +120,9 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 
        
         public List<int>? CategoryIds { get; set; }
-        public string? Brand { get; set; }
         public decimal? MinPrice { get; set; }
         public decimal? MaxPrice { get; set; }
-        public bool? IsActive { get; set; }
-        public bool? InStock { get; set; }
         public decimal? MinRating { get; set; }
-        public DateTime? CreatedAfter { get; set; }
-        public DateTime? CreatedBefore { get; set; }
 
         
         public string? SortBy { get; set; }
@@ -198,8 +157,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public string? Brend { get; set; }
         public int? CategoryId { get; set; }
         public string? CategoryName { get; set; }
-        public decimal? AvgGrade { get; set; }
-        public int? NumberOfReviews { get; set; }
         public int? StockQuantity { get; set; }
         public string? Code { get; set; }
         public DateTime? CreatedAt { get; set; }

@@ -46,10 +46,6 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
 
         public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
-        [Column(TypeName = "decimal(8, 2)")]
-        public decimal ?AvgGrade { get; set; }
-        public int ?NumberOfReviews { get; set; }
-
 
         public string? Code { get; set; }
         public DateTime? CreatedAt { get; internal set; }
