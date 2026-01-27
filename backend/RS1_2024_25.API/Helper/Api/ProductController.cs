@@ -95,7 +95,7 @@ namespace RS1_2024_25.API.Helper.Api
 
 
             if (_context.OrderItems.Any(o => o.ProductId == id))
-                return BadRequest("Ne možete obrisati proizvod koji je dio neke narudžbe.");
+                return BadRequest("Cant delete product thats already part of the order.");
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
