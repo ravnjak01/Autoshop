@@ -299,3 +299,39 @@ body {
   z-index: 2;
 }
 
+/* Promo info na vrhu stranice */
+.promo-info {
+  background-color: #ffeb3b;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Badge popust na kartici */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #f4c430;
+  color: #1a1a1a;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 3;
+}
+
+/* Precrtana cijena za globalni popust */
+.old-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-right: 8px;
+}
+
+.new-price {
+  font-weight: bold;
+  color: #007bff;
+}
+
+

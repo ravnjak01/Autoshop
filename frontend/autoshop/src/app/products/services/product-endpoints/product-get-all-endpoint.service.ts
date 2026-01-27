@@ -24,20 +24,18 @@ export interface ProductGetAllRequest {
 export interface Product {
   id: number;
   name: string;
-  code: string;
-  description: string;
   price: number;
-  createdAt: string;
-  categoryId?: number;
+  priceAfterGlobalDiscount?: number; // nova cijena nakon globalnog popusta
+  badgeDiscountPercentage?: number;
   categoryName: string;
   imageUrl: string;
   brend: string;
-  stockQuantity:number;
   isFavorite: boolean;
 }
 
 export interface ProductGetAllResponse {
   products: Product[];
+  promoCode?: string;
 }
 
 @Injectable({

@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Category, Product, ProductGetAllRequest, ProductGetAllResponse, ProductsGetAllService } from '../services/product-endpoints/product-get-all-endpoint.service';
 import { CategoryGetAllService } from '../services/category-endpoints/category-get-all-endpoint.service';
-import { Options } from '@angular-slider/ngx-slider';
 import { CartService } from '../../cart/services/cart.service';
 import { FormsModule, ReactiveFormsModule,FormBuilder,FormGroup,Validators } from '@angular/forms';
 import { NgxSliderModule  } from '@angular-slider/ngx-slider';
@@ -28,24 +27,16 @@ import {FavoriteToggleEndpointService} from '../services/product-endpoints/favor
 export class ProductsComponent implements OnInit {
   searchQuery: string = '';
   sortBy: string = 'datedesc';
-  selectedCategoryIds: number[] = [];
   categories: Category[] = [];
   products: Product[] = [];
   minPrice: number = 0;
   maxPrice: number = 1500;
   editing = false;
   isAdmin = false;
-  successMessage: string | null = null;
+  promoCode?: string;
+
 
   filterForm!: FormGroup;
-  sliderOptions: Options = {
-    floor: 0,
-    ceil: 1000,
-    step: 10,
-    translate: (value: number): string => {
-      return `${value} KM`;
-    }
-  };
 
 
   constructor(
@@ -171,6 +162,7 @@ export class ProductsComponent implements OnInit {
     this.productsGetAllService.handleAsync(request).subscribe({
       next: (response: ProductGetAllResponse) => {
         this.products = response.products;
+        this.promoCode = response.promoCode;
       },
       error: (err) => console.error('Error loading products', err)
     });
