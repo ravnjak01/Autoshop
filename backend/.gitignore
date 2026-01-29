@@ -1,74 +1,39 @@
-#word
-# Privremeni Word fajlovi
-~$*
-*.tmp
-*.asd
-*.wbk
+## [ SIGURNOST - LOZINKE I TAJNE ]
+# Blokira fajlove u kojima se najčešće nalaze lozinke
+appsettings.Development.json
+appsettings.Local.json
+*.env
+*.dev.env
+# Ako želiš sakriti i glavni appsettings (preporučeno), makni ljestve ispred donjeg reda:
+# appsettings.json
 
-
-# Visual Studio
+## [ .NET SPECIFIČNO ]
+# Blokira kompajlirani kod (bin i obj se nalaze unutar tvog .csproj foldera)
+[Bb]in/
+[Oo]bj/
+# Fajlovi koje kreira Visual Studio prilikom rada
 .vs/
 *.user
-*.suo
 *.userosscache
 *.sln.docstates
+*.suo
 
-# C# Build
-bin/
-obj/
+## [ PRIVREMENI FAJLOVI (CONFLICTS & BACKUP) ]
+# Ovo rješava tvoj problem sa ApplicationDbContext backup fajlovima
+*_BASE_*.cs
+*_LOCAL_*.cs
+*_REMOTE_*.cs
+*_BACKUP_*.cs
+*.tmp
+*.bak
+*.log
 
-# Visual Studio Code
+## [ ALATI I IDE ]
 .vscode/
-history/
-*.code-workspace
-
-# WebStorm
 .idea/
-*.iml
+*.swp
 
-# Angular specific files
+## [ FRONTEND (Ako ga ikada dodaš u podfolder) ]
 node_modules/
 dist/
-tmp/
-temp/
-
-# Compiled output
-out-tsc/
-built/
-build/
-
-# Dependencies
-package-lock.json
-yarn.lock
-
-# Angular specific environment files
-src/environments/environment*.ts
-
-# Log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# System Files
-.DS_Store
-Thumbs.db
-
-# Angular cache and coverage
 .angular/
-coverage/
-
-# IDE backup files
-*.swp
-*.bak
-*.tmp
-*.log
-*.pid
-
-# Temporary local files
-*.log
-
-# Privremeni fajlovi generisani tokom Git merga (Konflikti)
-RS1_2024_25.API/Data/ApplicationDbContext_BASE_*.cs
-RS1_2024_25.API/Data/ApplicationDbContext_LOCAL_*.cs
-RS1_2024_25.API/Data/ApplicationDbContext_REMOTE_*.cs
-RS1_2024_25.API/Data/ApplicationDbContext_BACKUP_*.cs
