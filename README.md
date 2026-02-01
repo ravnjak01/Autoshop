@@ -22,6 +22,7 @@ while administrators can manage inventory and orders.
 2. Install .NET dependencies  
 3. Install Angular dependencies  
 4. Run backend and frontend servers
+5. Generate data through 'dataseedgenerateendpoint' on swagger
 
 ## Notes
 - This project is in active development  
