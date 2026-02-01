@@ -16,6 +16,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.StaticFiles;
 
 public partial class Program
 {
@@ -170,11 +171,19 @@ public partial class Program
             var services = scope.ServiceProvider;
             await SeedRolesAsync(services);
             await SeedAdminUserAsync(services);
-            await RS1_2024_25.API.Data.Seed.DatabaseSeeder.SeedCategoriesAsync(services);
+            
         }
 
-        app.UseRouting();
+        
+
+        var provider = new FileExtensionContentTypeProvider();
+        provider.Mappings[".webp"] = "image/webp";
         app.UseCors("AllowFrontendAndSwagger");
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            ContentTypeProvider = provider
+        });
+        app.UseRouting();
         app.UseAuthentication();   
         app.UseAuthorization();
 
@@ -186,7 +195,6 @@ public partial class Program
         });
       
         app.UseMiddleware<AuditLogMiddleware>();
-        app.UseStaticFiles();
 
         // **Dodaj rute**
         app.MapControllers();

@@ -8,7 +8,7 @@ using RS1_2024_25.API.Data.Models;
 namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 {
     [Route("product")]
-    public class ProductGetAll(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
+    public class ProductGetAll(ApplicationDbContext db, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<ProductGetAllRequest>
         .WithResult<ProductGetAllResponse>
     {
@@ -105,6 +105,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             var totalCount = await query.CountAsync(cancellationToken);
 
             var userId = userManager.GetUserId(User);
+            var httpContext = httpContextAccessor.HttpContext!;
+            var baseUrl= $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
             var products = await query
                 .AsNoTracking()
@@ -116,7 +118,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                     Name = p.Name,
                     Price = p.Price,
                     Description = p.Description,
-                    ImageUrl = p.ImageUrl,
+                    ImageUrl = p.ImageUrl !=null ? $"{baseUrl}{p.ImageUrl}":null,
                     Active = p.Active,
                     SKU = p.SKU,
                     Brend = p.Brend,

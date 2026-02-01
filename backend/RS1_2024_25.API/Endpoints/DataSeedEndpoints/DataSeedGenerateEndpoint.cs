@@ -58,35 +58,66 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
 
         if (!db.BlogComments.Any())
         {
-            db.BlogComments.AddRange(
-                    new BlogComment { BlogPostId = 1, Content = "Odličan post!", CreatedAt = DateTime.Now },
-                    new BlogComment { BlogPostId = 1, Content = "Zanimljiv tekst, hvala!", CreatedAt = DateTime.Now},
-                    new BlogComment { BlogPostId = 2, Content = "Slažem se sa prethodnim komentarima.", CreatedAt = DateTime.Now }
-                );
-            db.SaveChanges();
-        }
+            // Dohvatamo sve postojeće Blog postove iz baze
+            var postovi = db.BlogPosts.ToList();
 
+            if (postovi.Any())
+            {
+                // Uzimamo ID prvog posta (umjesto 1)
+                var prviId = postovi[0].Id;
+
+                db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Odličan post!", CreatedAt = DateTime.Now });
+                db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Zanimljiv tekst, hvala!", CreatedAt = DateTime.Now });
+
+                // Ako imamo barem dva posta, dodajemo komentar i na drugi (umjesto 2)
+                if (postovi.Count > 1)
+                {
+                    var drugiId = postovi[1].Id;
+                    db.BlogComments.Add(new BlogComment { BlogPostId = drugiId, Content = "Slažem se sa prethodnim komentarima.", CreatedAt = DateTime.Now });
+                }
+
+                db.SaveChanges();
+            }
+        }
         if (!db.BlogRatings.Any())
         {
-            db.BlogRatings.AddRange(
-                    new BlogRating { BlogPostId = 1, Rating = 5, CreatedAt = DateTime.Now },
-                    new BlogRating { BlogPostId = 1, Rating = 4, CreatedAt = DateTime.Now },
-                    new BlogRating { BlogPostId = 2, Rating = 3, CreatedAt = DateTime.Now }
-                );
-            db.SaveChanges();
+            var postovi = db.BlogPosts.ToList();
+
+            if (postovi.Any())
+            {
+                var prviId = postovi[0].Id;
+
+                db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 5, CreatedAt = DateTime.Now });
+                db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 4, CreatedAt = DateTime.Now });
+
+                if (postovi.Count > 1)
+                {
+                    var drugiId = postovi[1].Id;
+                    db.BlogRatings.Add(new BlogRating { BlogPostId = drugiId, Rating = 3, CreatedAt = DateTime.Now });
+                }
+
+                db.SaveChanges();
+            }
         }
 
         if (!db.Categories.Any())
         {
             var categories = new List<Category>
-            {
-                new Category { Name = "Gume", Code = "CAT001" },
-                new Category { Name = "Akumulatori", Code = "CAT002" },
-                new Category { Name = "Oprema/Kozmetika", Code = "CAT003" },
-                new Category { Name = "Autopatosnice", Code = "CAT004" },
-                new Category { Name = "Podmetači za gepek", Code = "CAT005" },
-                new Category { Name = "Alu felge", Code = "CAT006" }
-            };
+    {
+        new Category { Name = "Gume", Code = "CAT001" },
+        new Category { Name = "Akumulatori", Code = "CAT002" },
+        new Category { Name = "Oprema/Kozmetika", Code = "CAT003" },
+        new Category { Name = "Autopatosnice", Code = "CAT004" },
+        new Category { Name = "Podmetači za gepek", Code = "CAT005" },
+        new Category { Name = "Alu felge", Code = "CAT006" },
+        new Category { Name = "Ulje i tekućine", Code = "CAT007" },
+        new Category { Name = "Sistem ovjesa", Code = "CAT008" },
+        new Category { Name = "Kočioni sistem", Code = "CAT009" },
+        new Category { Name = "Sistem paljenja", Code = "CAT010" },
+        new Category { Name = "Transmisija", Code = "CAT011" },
+        new Category { Name = "Filteri", Code = "CAT012" },
+        new Category { Name = "Dijelovi motora", Code = "CAT013" }
+    };
 
             db.Categories.AddRange(categories);
             db.SaveChanges();
@@ -94,86 +125,194 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
 
         if (!db.Products.Any())
         {
+
+            var sveKat = db.Categories.ToList();
+
+            // 2. Umjesto ID-a, koristi First ili Find da nađeš CIJELI OBJEKAT
+            var katAkumulatori = sveKat.FirstOrDefault(c => c.Code == "CAT002");
+            var katUlje = sveKat.FirstOrDefault(c => c.Code == "CAT007");
+            var katGume = sveKat.FirstOrDefault(c => c.Code == "CAT001");
+            var katOvjes = sveKat.FirstOrDefault(c => c.Code == "CAT008");
+            var katPaljenje = sveKat.FirstOrDefault(c => c.Code == "CAT010");
+            var katKocnice = sveKat.FirstOrDefault(c => c.Code == "CAT009");
+            var katTransmisija = sveKat.FirstOrDefault(c => c.Code == "CAT011");
+            var katFilteri = sveKat.FirstOrDefault(c => c.Code == "CAT012");
+            var katDijeloviMotora = sveKat.FirstOrDefault(c => c.Code == "CAT013");
+            var katOprema = sveKat.FirstOrDefault(c => c.Code == "CAT003");
+            var katUljeTekucine = sveKat.FirstOrDefault(c => c.Code == "CAT007");
+            var katPatosnice = sveKat.FirstOrDefault(c => c.Code == "CAT004");
+            var katPodmetaci = sveKat.FirstOrDefault(c => c.Code == "CAT005");
+            var katFelge = sveKat.FirstOrDefault(c => c.Code == "CAT006");
+
+
             db.Products.AddRange(
                 new Product
                 {
-                    Name = "Motorno ulje",
-                    Code = "ENG001",
-                    Description = "Visokokvalitetno sintetičko motorno ulje.",
+                    Name = "Akumulator Exide Premium 77Ah",
+                    Code = "ACC-EX77",
+                    SKU = "EXIDE-77-P",
+                    Description = "Visokokvalitetni akumulator snage 77Ah i 760A startne struje.",
+                    Price = 185.50m,
+                    StockQuantity = 15,
+                    Category = katAkumulatori, 
+                    Brend = "Exide",
+                    ImageUrl = "/images/products/car_battery.jpg",
+                    Active = true,
+                    CreatedAt = DateTime.Now
+                },
+                new Product
+                {
+                    Name = "Castrol Edge 5W-30",
+                    Code = "COL-121",
+                    SKU = "OLE-5-P",
+                    Description = "Vrhunsko sintetičko motorno ulje.",
                     Price = 50.00m,
-                    CategoryId = 3
+                    StockQuantity = 20,
+                    Category = katUljeTekucine, 
+                    Brend = "Castrol",
+                    ImageUrl = "/images/products/castrol_oil.jpg",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Kočione pločice",
-                    Code = "BRK002",
-                    Description = "Izdržljive kočione pločice za sve modele automobila.",
-                    Price = 75.00m,
-                    CategoryId = 3
+                    Name = "Michelin Pilot Sport 5",
+                    Code = "TRE-I22",
+                    SKU = "TIRE-77-A",
+                    Description = "Gume vrhunskih performansi.",
+                    Price = 250.00m,
+                    StockQuantity = 18,
+                    Category= katGume,
+                    Brend = "Michelin",
+                    ImageUrl = "/images/products/michelin_tire.jpg",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Akumulator",
-                    Code = "BAT003",
-                    Description = "Dugotrajni akumulator visokih performansi.",
+                    Name = "Bilstein B6 Amortizer",
+                    Code = "SUS-B6-01",
+                    SKU = "BIL-B6-VAF",
+                    Description = "Plinski amortizeri visokih performansi.",
                     Price = 120.00m,
-                    CategoryId = 2
+                    StockQuantity = 8,
+                    Category = katOvjes,
+                    Brend = "Bilstein",
+                    ImageUrl = "/images/products/shock_absorbers.webp",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Guma",
-                    Code = "TIR004",
-                    Description = "Cjelogodišnja guma s odličnim prianjanjem.",
-                    Price = 100.00m,
-                    CategoryId = 1
+                    Name = "NGK Iridium IX Svjećice",
+                    Code = "IGN-NGK-IX",
+                    SKU = "NGK-7092-B",
+                    Description = "Iridijumske svjećice vrhunske kvalitete.",
+                    Price = 15.50m,
+                    StockQuantity = 100,
+                    Category = katPaljenje,
+                    Brend = "NGK",
+                    ImageUrl = "/images/products/ngk.jpg",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Svjećice",
-                    Code = "SPK005",
-                    Description = "Svjećice visokih performansi za bolju paljenje.",
-                    Price = 30.00m,
-                    CategoryId = 3
+                    Name = "Brembo Max Kočioni Diskovi",
+                    Code = "BRK-BM-05",
+                    SKU = "BRE-DISK-V1",
+                    Description = "Visokokvalitetni ventilirajući diskovi.",
+                    Price = 145.00m,
+                    StockQuantity = 12,
+                    Category = katKocnice,
+                    Brend = "Brembo",
+                    ImageUrl = "/images/products/brembo_disk.jpg",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Filter zraka",
-                    Code = "AIR006",
-                    Description = "Filter zraka visoke učinkovitosti za čišći unos zraka.",
-                    Price = 25.00m,
-                    CategoryId = 3
+                    Name = "ZF Set za servis mjenjača",
+                    Code = "GRB-ZF-8HP",
+                    SKU = "ZF-GA8HP-KIT",
+                    Description = "Originalni set za servis automatskog mjenjača.",
+                    Price = 350.00m,
+                    StockQuantity = 5,
+                    Category = katTransmisija,
+                    Brend = "ZF",
+                    ImageUrl = "/images/products/gearbox.webp",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Metlice brisača",
-                    Code = "WIP007",
-                    Description = "Izdržljive metlice brisača za jasnu vidljivost.",
-                    Price = 20.00m,
-                    CategoryId = 3
+                    Name = "Filter zraka Mann-Filter",
+                    Code = "FLT-AIR-001",
+                    SKU = "MANN-C30005",
+                    Description = "Vrhunski filter zraka.",
+                    Price = 25.50m,
+                    StockQuantity = 45,
+                    Category = katFilteri,
+                    Brend = "Mann-Filter",
+                    ImageUrl = "/images/products/filter_zraka.jpg",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Žarulje za farove",
-                    Code = "HLB008",
-                    Description = "Svijetle žarulje za farove za bolju vožnju noću.",
-                    Price = 40.00m,
-                    CategoryId = 3
+                    Name = "Brtva glave motora Elring",
+                    Code = "ENG-GASK-001",
+                    SKU = "ELR-735.450",
+                    Description = "Visokokvalitetna brtva glave motora.",
+                    Price = 85.00m,
+                    StockQuantity = 12,
+                    Category = katDijeloviMotora,
+                    Brend = "Elring",
+                    ImageUrl = "/images/products/head_gasket.webp",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Vosak za auto",
-                    Code = "WAX009",
-                    Description = "Premium vosak za auto za sjajnu završnicu.",
-                    Price = 15.00m,
-                    CategoryId = 3
+                    Name = "Sonax Ceramic Spray",
+                    Code = "KOZ-SNX-001",
+                    SKU = "SONAX-257-400",
+                    Description = "Keramički premaz u spreju.",
+                    Price = 35.00m,
+                    StockQuantity = 25,
+                    Category = katOprema,
+                    Brend = "Sonax",
+                    ImageUrl = "/images/products/sonax_sprej.jpg",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 },
                 new Product
                 {
-                    Name = "Navlaka za auto",
-                    Code = "COV010",
-                    Description = "Zaštitna navlaka za auto za sve vremenske uvjete.",
-                    Price = 60.00m,
-                    CategoryId = 3
+                    Name = "AMC Glava motora",
+                    Code = "ENG-CH-908",
+                    SKU = "AMC-908711",
+                    Description = "Nova aluminijska glava motora.",
+                    Price = 1250.00m,
+                    StockQuantity = 2,
+                    Category = katDijeloviMotora,
+                    Brend = "AMC",
+                    ImageUrl = "/images/products/cylinder_head.webp",
+                    Active = true,
+                    CreatedAt = DateTime.Now
+                },
+                new Product
+                {
+                    Name = "Antifriz Febi G12++",
+                    Code = "LIQ-ANT-012",
+                    SKU = "FEBI-37400-5L",
+                    Description = "Rashladni koncentrat.",
+                    Price = 45.00m,
+                    StockQuantity = 30,
+                    Category = katUljeTekucine,
+                    Brend = "Febi Bilstein",
+                    ImageUrl = "/images/products/antifreeze.webp",
+                    Active = true,
+                    CreatedAt = DateTime.Now
                 }
             );
             db.SaveChanges();
@@ -181,6 +320,8 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
 
         if (!db.Discounts.Any())
         {
+
+
             db.Discounts.Add(new Discount
             {
                 Name = "Proljetna Akcija",
@@ -194,14 +335,15 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
         if (!db.DiscountProducts.Any())
         {
             db.DiscountProducts.AddRange(
-                new DiscountProduct { DiscountId = 1, ProductId = 1002 },
-                new DiscountProduct { DiscountId = 1, ProductId = 1003 }
-                );
+                new DiscountProduct { DiscountId = 1, ProductId = 1 }, 
+                new DiscountProduct { DiscountId = 1, ProductId = 2 }  
+            );
             db.SaveChanges();
         }
 
         if (!db.DiscountCategories.Any())
         {
+
             db.DiscountCategories.AddRange(
                 new DiscountCategory { DiscountId = 1, CategoryId = 1 },
                 new DiscountCategory { DiscountId = 1, CategoryId = 2 }
