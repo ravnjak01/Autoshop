@@ -38,6 +38,11 @@ export class ProductsComponent implements OnInit {
 
   filterForm!: FormGroup;
 
+  currentPage = 1;
+  pageSize = 12;
+  hasNextPage = true;
+  isLoading = false;
+
 
   constructor(
     private fb: FormBuilder,
@@ -70,9 +75,26 @@ export class ProductsComponent implements OnInit {
     })
 
     this.loadCategories();
-    this.loadProducts();
 
+    this.loadProducts(true);
+
+    window.addEventListener('scroll', this.onScroll.bind(this));
   }
+
+  ngOnDestroy(): void {
+    // 🔥 INFINITE SCROLL – cleanup
+    window.removeEventListener('scroll', this.onScroll.bind(this));
+  }
+
+  onScroll(): void {
+    const reachedBottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+
+    if (reachedBottom) {
+      this.loadProducts();
+    }
+  }
+
 
   editProduct(): void {
     this.editing = true;
@@ -88,42 +110,13 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
-    const {minPrice, maxPrice} = this.filterForm.value;
-
-
+    const { minPrice, maxPrice } = this.filterForm.value;
     if (minPrice > maxPrice) {
       alert('Minimal cannot be higher that maximum.');
       return;
     }
 
-    const {categoryId} = this.filterForm.value;
-    let categoryIds: number[] = [];
-    if (categoryId && categoryId > 0) {
-      categoryIds = [categoryId];
-    }
-
-
-    const filterRequest: ProductGetAllRequest = {
-      searchQuery: this.filterForm.value.searchQuery,
-      categoryIds: categoryIds.length > 0 ? categoryIds : undefined,
-      minPrice: this.filterForm.value.minPrice,
-      maxPrice: this.filterForm.value.maxPrice,
-      sortBy: this.filterForm.value.sortBy,
-      pageNumber: 1,
-      pageSize: 10,
-    };
-
-
-    this.productsGetAllService.handleAsync(filterRequest).subscribe({
-      next: (response) => {
-        this.products = response.products;
-
-      },
-      error: (err) => {
-        console.error('Error during filtering:', err);
-        alert('Error occured during the process of filtering.');
-      }
-    });
+    this.loadProducts(true);
   }
 
   addToCart(productId: number): void {
@@ -140,31 +133,44 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  loadProducts(): void {
-    if (this.filterForm.invalid) return;
+  loadProducts(reset: boolean = false): void {
+    if (this.isLoading || (!this.hasNextPage && !reset)) return;
 
-    const {categoryId} = this.filterForm.value;
-    let categoryIds: number[] = [];
-    if (categoryId && categoryId > 0) {
-      categoryIds = [categoryId];
+    if (reset) {
+      this.currentPage = 1;
+      this.products = [];
+      this.hasNextPage = true;
     }
+
+    this.isLoading = true;
+
     const request: ProductGetAllRequest = {
       searchQuery: this.filterForm.value.searchQuery,
-      categoryIds: this.filterForm.value.categoryId ? [this.filterForm.value.categoryId] : [],
+      categoryIds: this.filterForm.value.categoryId
+        ? [this.filterForm.value.categoryId]
+        : [],
       minPrice: this.filterForm.value.minPrice,
       maxPrice: this.filterForm.value.maxPrice,
       sortBy: this.filterForm.value.sortBy,
-      pageNumber: 1,
-      pageSize: 50
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize
     };
-
 
     this.productsGetAllService.handleAsync(request).subscribe({
       next: (response: ProductGetAllResponse) => {
-        this.products = response.products;
+
+        this.products = [...this.products, ...response.products];
+
         this.promoCode = response.promoCode;
+
+        this.hasNextPage = response.products.length === this.pageSize;
+
+        this.currentPage++;
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error loading products', err)
+      error: () => {
+        this.isLoading = false;
+      }
     });
   }
 
