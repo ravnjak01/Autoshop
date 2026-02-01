@@ -51,10 +51,5 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
         public DateTime? CreatedAt { get; internal set; }
 
         public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
-
-        public int? NumberOfReviews { get; set; }
-        public decimal? AvgGrade { get; set; }
-
-
     }
 }
