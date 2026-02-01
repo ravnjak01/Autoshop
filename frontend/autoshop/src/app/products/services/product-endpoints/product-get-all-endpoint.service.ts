@@ -18,34 +18,31 @@ export interface ProductGetAllRequest {
   maxPrice?: number;
   sortBy?: string;
   pageNumber?: number;
-pageSize?: number;
-stockQuantity?:boolean;
-
+  pageSize?: number;
 }
+
 export interface Product {
   id: number;
   name: string;
-  code: string;
-  description: string;
   price: number;
-  createdAt: string;
-  categoryId?: number;
-  category: Category;
+  priceAfterGlobalDiscount?: number; // nova cijena nakon globalnog popusta
+  badgeDiscountPercentage?: number;
+  categoryName: string;
   imageUrl: string;
-brend: string;
-  stockQuantity:number;
+  brend: string;
   isFavorite: boolean;
 }
 
 export interface ProductGetAllResponse {
   products: Product[];
+  promoCode?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllRequest, ProductGetAllResponse>{
-  private apiUrl = `${MyConfig.api_address}/product/filter/`;
+  private apiUrl = `${MyConfig.api_address}/products`;
 
   constructor(private httpClient: HttpClient) {
   }

@@ -8,10 +8,15 @@ body {
 }
 
 .products-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
+   display: grid;
+   grid-template-columns: 20% 1fr;
+   gap: 24px;
+
+   max-width: 1500px;
+   margin: 0 auto;
+   padding: 20px;
+   align-items: start;
+ }
 
 /* 🔍 Filter sekcija */
 /* Filter sekcija */
@@ -20,21 +25,31 @@ body {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  margin-bottom: 30px;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
+
+  position: sticky;
+  top: 20px;
+
+  height: fit-content;
+}
+
+.filter-section h2 {
+  margin-top: 0;
 }
 
 /* Forma */
 .filter-section form {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   gap: 15px;
-  align-items: center;
 }
 
 /* Inputi i select */
+.filter-section input:not(.search-input),
+.filter-section select,
+.filter-section button {
+  width: 100%;
+}
+
 .filter-section input[type="text"],
 .filter-section input[type="number"],
 .filter-section select {
@@ -42,7 +57,6 @@ body {
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
-  flex: 1 1 200px; /* fleksibilno da zauzima prostor */
   transition: border-color 0.3s, box-shadow 0.3s;
 }
 
@@ -84,6 +98,14 @@ body {
 
 /* Responsive prilagodba */
 @media (max-width: 768px) {
+  .products-page {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-section {
+    position: static;
+  }
+
   .filter-section form {
     flex-direction: column;
     align-items: stretch;
@@ -145,31 +167,29 @@ body {
 /* Info o proizvodu */
 .product-info {
   padding: 15px;
+  position: relative;
   flex-grow: 1;
 }
 
 .product-info h3 {
   font-size: 18px;
-  margin: 0 0 8px;
+  margin: 0 0 0px;
   color: #222;
 }
 
 .product-info .brand {
   font-size: 14px;
   color: #666;
-  margin-bottom: 8px;
-}
-
-.product-info .description {
-  font-size: 14px;
-  margin-bottom: 12px;
-  color: #555;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 .product-info .price {
   font-weight: bold;
   font-size: 16px;
   color: #007bff;
+  margin-bottom: 0;
+  margin-top: 10px;
 }
 
 /* Dugme za akcije */
@@ -201,40 +221,6 @@ body {
     flex-direction: column;
     align-items: stretch;
   }
-}
-
-/* 📦 Stilovi za stanje na lageru (Stock) */
-
-.product-info .stock {
-  font-size: 13px;
-  margin-top: 8px;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-/* Badge stil za ljepši prikaz */
-.stock-badge {
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  background-color: #e3f2fd; /* Svijetlo plava za 'ima na stanju' */
-  color: #1976d2;
-}
-
-/* Kada je malo proizvoda ostalo (opcionalno ako dodaš klasu) */
-.stock-badge.low-stock {
-  background-color: #fff3e0;
-  color: #ef6c00;
-}
-
-/* Kada nema na stanju */
-.stock-badge.out-of-stock {
-  background-color: #ffe8e8;
-  color: #d32f2f;
-  text-decoration: line-through;
 }
 
 /* Stil za onemogućeno dugme "Add to cart" */
@@ -289,7 +275,6 @@ body {
   font-size: 14px;
 }
 
-
 .favorite-btn i {
   transition: transform .2s ease;
 }
@@ -297,4 +282,56 @@ body {
 .favorite-btn i:active {
   transform: scale(1.3);
 }
+
+.category-badge {
+  position: absolute;
+  top: -40px;
+  right: 0;
+
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 400;
+
+  color: #fff;
+  background-color: #5496de;
+  border-radius: 999px;
+
+  z-index: 2;
+}
+
+/* Promo info na vrhu stranice */
+.promo-info {
+  background-color: #ffeb3b;
+  padding: 10px 15px;
+  margin-bottom: 15px;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* Badge popust na kartici */
+.discount-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #f4c430;
+  color: #1a1a1a;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-weight: bold;
+  z-index: 3;
+}
+
+/* Precrtana cijena za globalni popust */
+.old-price {
+  text-decoration: line-through;
+  color: #888;
+  margin-right: 8px;
+}
+
+.new-price {
+  font-weight: bold;
+  color: #007bff;
+}
+
 
