@@ -1,7 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Category, Product, ProductGetAllRequest, ProductGetAllResponse, ProductsGetAllService } from '../services/product-endpoints/product-get-all-endpoint.service';
 import { CategoryGetAllService } from '../services/category-endpoints/category-get-all-endpoint.service';
-import { Options } from '@angular-slider/ngx-slider';
 import { CartService } from '../../cart/services/cart.service';
 import { FormsModule, ReactiveFormsModule,FormBuilder,FormGroup,Validators } from '@angular/forms';
 import { NgxSliderModule  } from '@angular-slider/ngx-slider';
@@ -27,25 +26,22 @@ import {FavoriteToggleEndpointService} from '../services/product-endpoints/favor
 })
 export class ProductsComponent implements OnInit {
   searchQuery: string = '';
-  sortBy: string = 'createdDateDesc';
-  selectedCategoryIds: number[] = [];
+  sortBy: string = 'datedesc';
   categories: Category[] = [];
   products: Product[] = [];
   minPrice: number = 0;
   maxPrice: number = 1500;
   editing = false;
   isAdmin = false;
-  successMessage: string | null = null;
+  promoCode?: string;
+
 
   filterForm!: FormGroup;
-  sliderOptions: Options = {
-    floor: 0,
-    ceil: 1000,
-    step: 10,
-    translate: (value: number): string => {
-      return `${value} KM`;
-    }
-  };
+
+  currentPage = 1;
+  pageSize = 12;
+  hasNextPage = true;
+  isLoading = false;
 
 
   constructor(
@@ -74,14 +70,31 @@ export class ProductsComponent implements OnInit {
       categoryId: [null],
       minPrice: [0, Validators.min(0)],
       maxPrice: [1000, Validators.min(0)],
-      sortBy: ['createdDateDesc'],
+      sortBy: ['datedesc'],
       stockQuantity: [false]
-    });
+    })
 
     this.loadCategories();
-    this.loadProducts();
 
+    this.loadProducts(true);
+
+    window.addEventListener('scroll', this.onScroll.bind(this));
   }
+
+  ngOnDestroy(): void {
+    // 🔥 INFINITE SCROLL – cleanup
+    window.removeEventListener('scroll', this.onScroll.bind(this));
+  }
+
+  onScroll(): void {
+    const reachedBottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 200;
+
+    if (reachedBottom) {
+      this.loadProducts();
+    }
+  }
+
 
   editProduct(): void {
     this.editing = true;
@@ -97,43 +110,13 @@ export class ProductsComponent implements OnInit {
       return;
     }
 
-    const {minPrice, maxPrice} = this.filterForm.value;
-
-
+    const { minPrice, maxPrice } = this.filterForm.value;
     if (minPrice > maxPrice) {
       alert('Minimal cannot be higher that maximum.');
       return;
     }
 
-    const {categoryId} = this.filterForm.value;
-    let categoryIds: number[] = [];
-    if (categoryId && categoryId > 0) {
-      categoryIds = [categoryId];
-    }
-
-
-    const filterRequest: ProductGetAllRequest = {
-      searchQuery: this.filterForm.value.searchQuery,
-      categoryIds: categoryIds.length > 0 ? categoryIds : undefined,
-      minPrice: this.filterForm.value.minPrice,
-      maxPrice: this.filterForm.value.maxPrice,
-      sortBy: this.filterForm.value.sortBy,
-      pageNumber: 1,
-      pageSize: 50,
-      stockQuantity: this.filterForm.value.stockQuantity
-    };
-
-
-    this.productsGetAllService.handleAsync(filterRequest).subscribe({
-      next: (response) => {
-        this.products = response.products;
-
-      },
-      error: (err) => {
-        console.error('Error during filtering:', err);
-        alert('Error occured during the process of filtering.');
-      }
-    });
+    this.loadProducts(true);
   }
 
   addToCart(productId: number): void {
@@ -150,30 +133,44 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  loadProducts(): void {
-    if (this.filterForm.invalid) return;
+  loadProducts(reset: boolean = false): void {
+    if (this.isLoading || (!this.hasNextPage && !reset)) return;
 
-    const {categoryId} = this.filterForm.value;
-    let categoryIds: number[] = [];
-    if (categoryId && categoryId > 0) {
-      categoryIds = [categoryId];
+    if (reset) {
+      this.currentPage = 1;
+      this.products = [];
+      this.hasNextPage = true;
     }
+
+    this.isLoading = true;
+
     const request: ProductGetAllRequest = {
       searchQuery: this.filterForm.value.searchQuery,
-      categoryIds: this.filterForm.value.categoryId ? [this.filterForm.value.categoryId] : [],
+      categoryIds: this.filterForm.value.categoryId
+        ? [this.filterForm.value.categoryId]
+        : [],
       minPrice: this.filterForm.value.minPrice,
       maxPrice: this.filterForm.value.maxPrice,
       sortBy: this.filterForm.value.sortBy,
-      pageNumber: 1,
-      pageSize: 50
+      pageNumber: this.currentPage,
+      pageSize: this.pageSize
     };
-
 
     this.productsGetAllService.handleAsync(request).subscribe({
       next: (response: ProductGetAllResponse) => {
-        this.products = response.products;
+
+        this.products = [...this.products, ...response.products];
+
+        this.promoCode = response.promoCode;
+
+        this.hasNextPage = response.products.length === this.pageSize;
+
+        this.currentPage++;
+        this.isLoading = false;
       },
-      error: (err) => console.error('Error loading products', err)
+      error: () => {
+        this.isLoading = false;
+      }
     });
   }
 

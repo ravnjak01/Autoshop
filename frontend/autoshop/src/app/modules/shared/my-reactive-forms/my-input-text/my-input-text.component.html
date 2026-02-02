@@ -1,21 +1,25 @@
+<div [formGroup]="formGroup">
 
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>{{ myLabel }}</mat-label>
-  <input
-    [formControl]="formControl"
-    [id]="myId"
-    [placeholder]="myPlaceholder"
-    [type]="myType"
-    matInput
-  />
+  <mat-form-field appearance="outline" class="full-width">
 
+    <mat-label *ngIf="myLabel">
+      {{ myLabel }}
+    </mat-label>
 
-  <mat-error *ngIf="formControl.invalid && (formControl.touched || formControl.dirty)">
-    <ng-container *ngIf="formControl.errors as errors">
-      <ng-container *ngFor="let errorKey of getErrorKeys(errors)">
-        <small>{{ getErrorMessage(errorKey, errors[errorKey]) }}</small>
+    <input
+      matInput
+      [id]="myId"
+      [type]="myType"
+      [placeholder]="myPlaceholder"
+      [formControl]="formControl"
+    />
+
+    <mat-error *ngIf="formControl?.invalid && formControl?.touched">
+      <ng-container *ngFor="let error of getErrorKeys(formControl.errors)">
+        {{ getErrorMessage(error, formControl.errors?.[error]) }}
       </ng-container>
-    </ng-container>
+    </mat-error>
 
-  </mat-error>
-</mat-form-field>
+  </mat-form-field>
+
+</div>

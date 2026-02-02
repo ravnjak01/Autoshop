@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
-    [Authorize]
     [Route("blogposts")]
     public class BlogGetAll(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<BlogGetAllRequest>

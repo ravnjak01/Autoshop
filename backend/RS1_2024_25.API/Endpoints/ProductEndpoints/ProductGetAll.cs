@@ -7,17 +7,30 @@ using RS1_2024_25.API.Data.Models;
 
 namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 {
-    [Route("product")]
-    public class ProductGetAll(ApplicationDbContext db, UserManager<User> userManager,IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
+    [Route("products")] 
+    public class ProductGetAll(ApplicationDbContext db, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<ProductGetAllRequest>
         .WithResult<ProductGetAllResponse>
     {
-        [HttpGet("filter")]
+        [HttpGet]
         public override async Task<ProductGetAllResponse> HandleAsync(
             [FromQuery] ProductGetAllRequest request,
             CancellationToken cancellationToken = default)
         {
-       
+            var now = DateTime.Now;
+
+            var globalDiscount = await db.Discounts
+                .Where(d => d.StartDate <= now && d.EndDate >= now)
+                .OrderByDescending(d => d.DiscountPercentage)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var globalDiscountPercentage = globalDiscount?.DiscountPercentage ?? 0;
+
+            var promoCode = await db.DiscountCodes
+               .Where(d => d.ValidFrom <= now && d.ValidTo >= now)
+               .Select(d => d.Code)
+               .FirstOrDefaultAsync(cancellationToken);
+
             request.PageNumber = Math.Max(1, request.PageNumber);
             request.PageSize = Math.Clamp(request.PageSize, 1, 100);
 
@@ -25,68 +38,44 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 .Include(p => p.Category)
                 .AsQueryable();
 
-   
+            // Ako  zahtjeva samo aktivne i one na stanju,
+            // query = query.Where(p => p.Active && p.StockQuantity > 0);
+
+            // 4
             if (!string.IsNullOrWhiteSpace(request.SearchQuery))
             {
                 var searchLower = request.SearchQuery.Trim().ToLower();
                 query = query.Where(p =>
                     p.Name.ToLower().Contains(searchLower) ||
                     (p.Code != null && p.Code.ToLower().Contains(searchLower)) ||
-                    (p.SKU != null && p.SKU.ToLower().Contains(searchLower)));
+                    (p.SKU != null && p.SKU.ToLower().Contains(searchLower)) ||
+                    (p.Brend != null && p.Brend.ToLower().Contains(searchLower)));
             }
 
-      
             if (request.CategoryIds?.Any() == true)
             {
-                query = query.Where(p =>
-                    request.CategoryIds.Contains(p.CategoryId));
-                   
+                query = query.Where(p => request.CategoryIds.Contains(p.CategoryId));
             }
 
-        
             if (!string.IsNullOrWhiteSpace(request.Brand))
             {
                 var brandLower = request.Brand.ToLower();
                 query = query.Where(p => p.Brend.ToLower().Contains(brandLower));
             }
 
-      
             if (request.MinPrice.HasValue && request.MinPrice.Value >= 0)
-            {
                 query = query.Where(p => p.Price >= request.MinPrice.Value);
-            }
 
             if (request.MaxPrice.HasValue && request.MaxPrice.Value >= 0)
-            {
                 query = query.Where(p => p.Price <= request.MaxPrice.Value);
-            }
 
-           
             if (request.IsActive.HasValue)
-            {
                 query = query.Where(p => p.Active == request.IsActive.Value);
-            }
 
-        
             if (request.InStock == true)
-            {
                 query = query.Where(p => p.StockQuantity > 0);
-            }
 
-          
-
-          
-            if (request.CreatedAfter.HasValue)
-            {
-                query = query.Where(p => p.CreatedAt >= request.CreatedAfter.Value);
-            }
-
-            if (request.CreatedBefore.HasValue)
-            {
-                query = query.Where(p => p.CreatedAt <= request.CreatedBefore.Value);
-            }
-
-          
+            // 5. SORTING (Spojeno)
             query = (request.SortBy?.ToLower()) switch
             {
                 "priceasc" => query.OrderBy(p => p.Price).ThenBy(p => p.Name),
@@ -94,42 +83,51 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 "nameasc" => query.OrderBy(p => p.Name),
                 "namedesc" => query.OrderByDescending(p => p.Name),
                 "ratingdesc" => query.OrderByDescending(p => p.AvgGrade).ThenBy(p => p.Name),
-                "ratingasc" => query.OrderBy(p => p.AvgGrade).ThenBy(p => p.Name),
                 "dateasc" => query.OrderBy(p => p.CreatedAt).ThenBy(p => p.Name),
                 "datedesc" => query.OrderByDescending(p => p.CreatedAt).ThenBy(p => p.Name),
-                "popularitydesc" => query.OrderByDescending(p => p.NumberOfReviews).ThenBy(p => p.Name),
                 _ => query.OrderByDescending(p => p.CreatedAt).ThenBy(p => p.Name)
             };
 
-     
             var totalCount = await query.CountAsync(cancellationToken);
-
             var userId = userManager.GetUserId(User);
             var httpContext = httpContextAccessor.HttpContext!;
-            var baseUrl= $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
+            var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
             var products = await query
                 .AsNoTracking()
                 .Skip((request.PageNumber - 1) * request.PageSize)
                 .Take(request.PageSize)
-                .Select(p => new ProductDto
+                .Select(p => new
                 {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    Description = p.Description,
-                    ImageUrl = p.ImageUrl !=null ? $"{baseUrl}{p.ImageUrl}":null,
-                    Active = p.Active,
-                    SKU = p.SKU,
-                    Brend = p.Brend,
-                    CategoryId = p.CategoryId,
-                    CategoryName = p.Category != null ? p.Category.Name : null,
-                    AvgGrade = p.AvgGrade,
-                    NumberOfReviews = p.NumberOfReviews,
-                    StockQuantity = p.StockQuantity,
-                    Code = p.Code,
-                    CreatedAt = p.CreatedAt,
-                    IsFavorite = p.Favorites.FirstOrDefault(f => f.UserId == userId) != null ? true : false
+                    Product = p,
+                    CategoryDiscount = db.DiscountCategories
+                        .Where(dc => dc.CategoryId == p.CategoryId)
+                        .Select(dc => dc.Discount.DiscountPercentage).FirstOrDefault(),
+                    ProductDiscount = db.DiscountProducts
+                        .Where(dp => dp.ProductId == p.Id)
+                        .Select(dp => dp.Discount.DiscountPercentage).FirstOrDefault()
+                })
+                .Select(x => new ProductDto
+                {
+                    Id = x.Product.Id,
+                    Name = x.Product.Name,
+                    Price = x.Product.Price,
+                    Description = x.Product.Description,
+                    ImageUrl = x.Product.ImageUrl != null ? $"{baseUrl}{x.Product.ImageUrl}" : null,
+                    Active = x.Product.Active,
+                    SKU = x.Product.SKU,
+                    Brend = x.Product.Brend,
+                    CategoryId = x.Product.CategoryId,
+                    CategoryName = x.Product.Category != null ? x.Product.Category.Name : null,
+                    AvgGrade = x.Product.AvgGrade,
+                    NumberOfReviews = x.Product.NumberOfReviews,
+                    StockQuantity = x.Product.StockQuantity,
+                    Code = x.Product.Code,
+                    CreatedAt = x.Product.CreatedAt,
+                    IsFavorite = x.Product.Favorites.Any(f => f.UserId == userId),
+
+                    PriceAfterGlobalDiscount = x.Product.Price - (x.Product.Price * globalDiscountPercentage / 100),
+                    BadgeDiscountPercentage = x.CategoryDiscount + x.ProductDiscount
                 })
                 .ToListAsync(cancellationToken);
 
@@ -141,22 +139,17 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 PageSize = request.PageSize,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize),
                 HasNextPage = request.PageNumber < (int)Math.Ceiling(totalCount / (double)request.PageSize),
-                HasPreviousPage = request.PageNumber > 1
+                HasPreviousPage = request.PageNumber > 1,
+                PromoCode = promoCode
             };
         }
     }
 
-  
     public class ProductGetAllRequest
     {
-     
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 20;
-   
-
         public string? SearchQuery { get; set; }
-
-       
         public List<int>? CategoryIds { get; set; }
         public string? Brand { get; set; }
         public decimal? MinPrice { get; set; }
@@ -166,28 +159,21 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public decimal? MinRating { get; set; }
         public DateTime? CreatedAfter { get; set; }
         public DateTime? CreatedBefore { get; set; }
-
-        
         public string? SortBy { get; set; }
-      
     }
-
 
     public class ProductGetAllResponse
     {
         public required List<ProductDto> Products { get; set; }
-
-
-    
         public int TotalCount { get; set; }
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
         public int TotalPages { get; set; }
         public bool HasNextPage { get; set; }
         public bool HasPreviousPage { get; set; }
+        public string? PromoCode { get; set; }
     }
 
- 
     public class ProductDto
     {
         public int Id { get; set; }
@@ -206,5 +192,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public string? Code { get; set; }
         public DateTime? CreatedAt { get; set; }
         public bool IsFavorite { get; set; }
+        public decimal? PriceAfterGlobalDiscount { get; set; }
+        public decimal? BadgeDiscountPercentage { get; set; }
     }
 }
