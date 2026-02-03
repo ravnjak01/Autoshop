@@ -2,7 +2,7 @@
   <h2 class="page-title">Discount Management</h2>
   <div class="button-container">
     <button class="add" color="primary" mat-raised-button (click)="openDiscountPostForm($event, undefined)" matTooltip="New Discount">
-      <mat-icon>add</mat-icon>
+      <i class="fa-solid fa-plus"></i>
     </button>
   </div>
 </div>
@@ -58,21 +58,21 @@
       <div class="action-buttons">
         <!-- Add your edit/delete buttons here -->
         <button mat-icon-button color="primary" matTooltip="Edit" (click)="openDiscountPostForm($event, discount.id)">
-          <mat-icon>edit</mat-icon>
+          <i class="fa-solid fa-pen"></i>
         </button>
         <button mat-icon-button color="warn" matTooltip="Delete" (click)="openMyConfirmDialog(discount.id, $event)">
-          <mat-icon>delete</mat-icon>
+          <i class="fa-solid fa-trash"></i>
         </button>
         <button mat-icon-button color="accent" matTooltip="Manage Codes" (click)="openDiscountCodesDialog(discount.id, $event)">
-          <mat-icon>code</mat-icon>
+          <i class="fa-solid fa-code"></i>
         </button>
         <button mat-icon-button color="primary" matTooltip="Manage Categories"
                 (click)="openCategoryDialog(discount, $event)">
-          <mat-icon>category</mat-icon>
+          <i class="fa-solid fa-tags"></i>
         </button>
         <button mat-icon-button color="primary" matTooltip="Manage Products"
                 (click)="openProductDialog(discount, $event)">
-          <mat-icon>inventory_2</mat-icon>
+          <i class="fa-solid fa-boxes-stacked"></i>
         </button>
       </div>
     </mat-cell>
