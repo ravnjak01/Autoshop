@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data.DTOs;
-using RS1_2024_25.API.Data.Models.Modul1_Auth.Services;
 using Microsoft.AspNetCore.Http;
 using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
@@ -55,14 +54,28 @@ namespace RS1_2024_25.API.Helper.Api
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                
+                int strengthScore = _authService.GetPasswordStrengthScore(model.Password);
 
-            if (!result.Succeeded)
-                return BadRequest(result.Errors);
+                string feedbackMessage = strengthScore switch
+                {
+                    4 => "Great password! Your account is fully secured.",
+                    3 => "Password is accepted, but you can upgrade with a special character.",
+                    _ => "Password is accepted,but we recommend you to make a stronger one in the future"
+                };
 
-          
-            await _userManager.AddToRoleAsync(user, "Customer");
+                
+                return Ok(new
+                {
+                    Message = "Registration  successful!",
+                    PasswordStrength = strengthScore,
+                    Advice = feedbackMessage
+                });
+            }
 
-            return Ok(new { message = "Registration successful" });
+            return BadRequest(result.Errors);
         }
 
         [AllowAnonymous]

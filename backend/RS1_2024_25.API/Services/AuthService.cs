@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using RS1_2024_25.API.Data.Models;
 using System.Threading.Tasks;
 
-namespace RS1_2024_25.API.Data.Models.Modul1_Auth.Services
+namespace RS1_2024_25.API.Services
 {
     public class AuthService
     {
@@ -42,6 +43,19 @@ namespace RS1_2024_25.API.Data.Models.Modul1_Auth.Services
             Console.WriteLine($"Kreiranje uspjelo: {result.Succeeded}");
 
             return result.Succeeded;
+        }
+
+        public int GetPasswordStrengthScore(string password)
+        {
+            if (string.IsNullOrWhiteSpace(password)) return 0;
+
+            int score = 0;
+            if (password.Length >= 8) score++;      
+            if (password.Any(char.IsUpper)) score++; 
+            if (password.Any(char.IsDigit)) score++; 
+            if (password.Any(ch => !char.IsLetterOrDigit(ch))) score++; 
+
+            return score; 
         }
 
     }

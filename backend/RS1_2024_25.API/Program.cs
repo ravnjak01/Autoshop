@@ -1,14 +1,12 @@
 
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
-using RS1_2024_25.API.Data.Models.Modul1_Auth.Services;
+using RS1_2024_25.API.Services;
 using RS1_2024_25.API.Data.Middleware;
 using RS1_2024_25.API.Helper;
 using RS1_2024_25.API.Helper.Auth;
-using RS1_2024_25.API.Services;
 using RS1_2024_25.API.SignalRHubs;
 using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using Microsoft.OpenApi.Models;
@@ -143,9 +141,11 @@ public partial class Program
         });
 
         // **Dodaj servise**
-        builder.Services.AddScoped<AuthService>();
+        builder.Services.AddScoped<RS1_2024_25.API.Services.MyAuthService>();
+        builder.Services.AddScoped<RS1_2024_25.API.Services.AuthService>();
+
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-        builder.Services.AddTransient<MyAuthService>();
+        builder.Services.AddTransient<RS1_2024_25.API.Services.MyAuthService>();
         builder.Services.AddTransient<MyTokenGenerator>();
         builder.Services.AddSignalR();
         builder.Services.AddAuthorization();
