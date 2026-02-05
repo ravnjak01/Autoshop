@@ -30,21 +30,12 @@ export class DiscountGetAllService implements MyBaseEndpointAsync<DiscountGetAll
   constructor(private httpClient: HttpClient, private cacheService: MyCacheService) {
   }
 
-  handleAsync(request: DiscountGetAllRequest, useCache: boolean = false, cacheTTL: number = 300000) {
+  handleAsync(request: DiscountGetAllRequest) {
 
     const cacheKey = `${request.q || ''}-${request.pageNumber || 1}-${request.pageSize || 10}`;
-    // Provjeri da li postoji keširana verzija
-    if (useCache && this.cacheService.has(cacheKey)) {
-      let data = this.cacheService.get<MyPagedList<DiscountGetAllResponse>>(cacheKey)!;
-      return of(data);
-    }
+
 
     const params = buildHttpParams(request);  // Use the helper function here
-    return this.httpClient.get<MyPagedList<DiscountGetAllResponse>>(`${this.apiUrl}`, {params}).pipe(
-      tap((data) => {
-        if (useCache) {
-          this.cacheService.set(cacheKey, data, cacheTTL);
-        }
-      }));
+    return this.httpClient.get<MyPagedList<DiscountGetAllResponse>>(`${this.apiUrl}`, {params});
   }
 }

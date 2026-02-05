@@ -47,7 +47,7 @@
   appearance: none; /* Uklanja podrazumevane stilove dugmeta specifične za pretraživač */
 }
 .logout-button-item button{
-color: white;
+color: red;
   text-decoration: none;
   padding: 8px 16px;
   border-radius: 5px;

@@ -1,5 +1,6 @@
 .discount-detail p {
   margin: 5px 0;
+  text-align: left;
 }
 img {
   max-height: 300px;

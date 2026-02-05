@@ -28,24 +28,13 @@ export interface BlogsGetAllForAdministrationResponse {
 export class BlogsGetAllForAdministrationService implements MyBaseEndpointAsync<BlogsGetAllForAdministrationRequest, MyPagedList<BlogsGetAllForAdministrationResponse>> {
   private apiUrl = `${MyConfig.api_address}/administration/blogposts/filter`;
 
-  constructor(private httpClient: HttpClient, private cacheService: MyCacheService) {
+  constructor(private httpClient: HttpClient) {
   }
 
-  handleAsync(request: BlogsGetAllForAdministrationRequest, useCache: boolean = false, cacheTTL: number = 300000) {
+  handleAsync(request: BlogsGetAllForAdministrationRequest) {
 
-    const cacheKey = `${request.q || ''}-${request.pageNumber || 1}-${request.pageSize || 10}`;
-    // Provjeri da li postoji keširana verzija
-    if (useCache && this.cacheService.has(cacheKey)) {
-      let data = this.cacheService.get<MyPagedList<BlogsGetAllForAdministrationResponse>>(cacheKey)!;
-      return of(data);
-    }
 
     const params = buildHttpParams(request);  // Use the helper function here
-    return this.httpClient.get<MyPagedList<BlogsGetAllForAdministrationResponse>>(`${this.apiUrl}`, {params}).pipe(
-      tap((data) => {
-        if (useCache) {
-          this.cacheService.set(cacheKey, data, cacheTTL);
-        }
-      }));
+    return this.httpClient.get<MyPagedList<BlogsGetAllForAdministrationResponse>>(`${this.apiUrl}`, {params});
   }
 }

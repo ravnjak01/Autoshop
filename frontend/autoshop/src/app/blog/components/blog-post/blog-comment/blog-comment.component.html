@@ -1,21 +1,44 @@
-<!-- This is the HTML template for the registration component. It includes a form for user registration with fields for full name, username, email, and password. The form uses Angular's reactive forms for validation and data binding. -->
-
 <div class="blog-comments">
-  <div class="comment-input">
-    <textarea [(ngModel)]="newCommentContent" placeholder="Input your comment..."></textarea>
 
-    <button class="save-btn" (click)="addComment()">Save</button>
-    <button class="cancel-btn" (click)="clearComment()">Cancel</button>
+  <!-- ADD COMMENT -->
+  <div class="comment-box">
+    <h3 class="comment-title">Leave a comment</h3>
+
+    <textarea
+      class="comment-input"
+      placeholder="Write your comment..."
+      [(ngModel)]="newCommentContent">
+    </textarea>
+
+    <div class="comment-actions">
+      <button class="comment-btn cancel" (click)="clearComment()">Cancel</button>
+      <button
+        class="comment-btn submit"
+        [disabled]="!newCommentContent?.trim()"
+        (click)="addComment()">
+        Post
+      </button>
+    </div>
   </div>
 
- Comment List
-  <div *ngFor="let comment of comments" class="comment">
-    <div class="comment-header">
-      <span class="comment-user">{{ comment.anonymousName || 'Anonimus' }}</span>
-      <span class="comment-time">{{ comment.createdAtAgo }}</span>
+  <!-- COMMENT LIST -->
+  <div class="comment-list">
+
+    <div *ngFor="let comment of comments" class="comment">
+      <div class="comment-header">
+        <span class="comment-user">{{ comment.username || 'Anonymous' }}</span>
+        <span class="comment-time">{{ comment.createdAtAgo }}</span>
+      </div>
+
+      <div class="comment-content">
+        {{ comment.content }}
+      </div>
     </div>
-    <div class="comment-content">
-      <p>{{ comment.content }}</p>
+
+    <div *ngIf="comments.length === 0" class="no-comments">
+      No comments yet. Be the first one 🙂
     </div>
+
   </div>
+
 </div>

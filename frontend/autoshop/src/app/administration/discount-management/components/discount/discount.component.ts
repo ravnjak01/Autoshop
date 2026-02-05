@@ -29,18 +29,21 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   private searchSubject: Subject<string> = new Subject();
+  readonly DEFAULT_PAGE_SIZE = 5;
+
   constructor(
     private discountGetService: DiscountGetAllService,
     private dialog: MatDialog,
     private discountDeleteService: DiscountDeleteEndpointService) {}
-
   ngOnInit(): void {
     this.initSearchListener();
-    this.fetchDiscounts();
   }
 
   ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
+
+    this.fetchDiscounts('', 1, this.DEFAULT_PAGE_SIZE);
+
     this.paginator.page.subscribe(() => {
       const filterValue = this.dataSource.filter || '';
       this.fetchDiscounts(filterValue, this.paginator.pageIndex + 1, this.paginator.pageSize);
@@ -52,20 +55,25 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe((filterValue) => {
+      this.paginator.pageIndex = 0;
+
       this.fetchDiscounts(filterValue, 1, this.paginator.pageSize);
     });
   }
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.paginator.pageIndex = 0;
     this.searchSubject.next(filterValue);
   }
 
   fetchDiscounts(filter: string = '', page: number = 1, pageSize: number = 5): void {
+    const resolvedPageSize =
+      pageSize ??
+      this.paginator?.pageSize ??
+      this.DEFAULT_PAGE_SIZE;
+
     this.discountGetService.handleAsync(
-      { q: filter, pageNumber: page, pageSize: pageSize },
-      true
+      { q: filter, pageNumber: page, pageSize: resolvedPageSize }
     ).subscribe({
       next: (data) => {
         this.dataSource.data = data.dataItems;
@@ -106,7 +114,7 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
   openMyConfirmDialog(id: number, event: MouseEvent) {
     event.stopPropagation();
     const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
-      width: '350px',
+      width: '450px',
       data: {
         title: 'Confirm deleting',
         message: 'Are you sure you want to delete this'
@@ -126,7 +134,7 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
 
   openDiscountModal(id: number) {
     const dialogRef = this.dialog.open(DiscountPostComponent, {
-      width: '600px',
+      width: '500px',
       data: { discountId: id}, // Pass blogId if editing, 0 for new blog
     });
 

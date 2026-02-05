@@ -1,6 +1,6 @@
 
 <h2 mat-dialog-title>{{ blog.title }}</h2>
-<mat-dialog-content>
+<mat-dialog-content class="scrollable-content">
   <div class="blog-detail">
     <p><strong>Author:</strong> {{ blog.authorName }}</p>
     <p><strong>Published:</strong> {{ blog.publishedTime ? (blog.publishedTime | date: 'short') : 'Not Published' }}</p>

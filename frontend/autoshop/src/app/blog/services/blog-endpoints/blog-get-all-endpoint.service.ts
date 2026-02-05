@@ -15,7 +15,7 @@ export interface BlogGetAllRequest {
 export interface BlogPost{
   id: number;
   title: string;
-  author: string | null;
+  authorName: string | null;
   publishedDate: Date;
   image: string | null;
 }

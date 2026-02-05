@@ -10,8 +10,7 @@ export interface BlogCommentsByBlogIdResponse {
 export interface BlogCommentDto {
   id: number;
   blogPostId: number;
-  userId?: number;
-  anonymousName?: string;
+  username?: string;
   content: string;
   createdAtAgo: string;
 }

@@ -30,6 +30,8 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   private searchSubject: Subject<string> = new Subject();
 
+  readonly DEFAULT_PAGE_SIZE = 5;
+
   constructor(
     private blogGetService: BlogsGetAllForAdministrationService,
     private blogDeleteService: BlogDeleteEndpointService,
@@ -41,7 +43,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.initSearchListener();
-    this.fetchBlogs();
   }
 
   initSearchListener(): void {
@@ -56,6 +57,8 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(): void { // Bind sorting to the table
     this.dataSource.paginator = this.paginator; // Bind paginator to the table
 
+    this.fetchBlogs('', 1, this.DEFAULT_PAGE_SIZE);
+
     // Listen for paginator changes
     this.paginator.page.subscribe(() => {
       const filterValue = this.dataSource.filter || '';
@@ -64,18 +67,21 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   }
 
   fetchBlogs(filter: string = '', page: number = 1, pageSize: number = 5): void {
+    const resolvedPageSize =
+      pageSize ??
+      this.paginator?.pageSize ??
+      this.DEFAULT_PAGE_SIZE;
+
     this.blogGetService.handleAsync(
       {
         q: filter,
         pageNumber: page,
-        pageSize: pageSize
-      },
-      true,
+        pageSize: resolvedPageSize
+      }
     ).subscribe({
       next: (data: any) => {
         // Update data source and paginator
-        this.dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>(data.dataItems);
-        this.dataSource.paginator = data.paginator;
+        this.dataSource.data = data.dataItems;
         this.paginator.pageIndex = data.currentPage - 1; // Backend page is 1-based, paginator is 0-based
         this.paginator.pageSize = data.pageSize;
         this.paginator.length = data.totalCount;
@@ -134,7 +140,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
     const dialogRef = this.dialog.open(MyDialogSimpleComponent, {
       width: '350px',
       data: {
-        title: 'Uspjeh',
+        title: 'Success',
         message: text
       }
     });
@@ -148,10 +154,10 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   openMyConfirmDialog(id: number, event: MouseEvent) {
     event.stopPropagation();
     const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
-      width: '350px',
+      width: '450px',
       data: {
         title: 'Confirm deleting',
-        message: 'Are you sure you want to delete this'
+        message: 'Are you sure you want to delete this?'
       }
     });
 
@@ -180,7 +186,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
 
   openBlogModal(id: number) {
     const dialogRef = this.dialog.open(BlogPostComponent, {
-      width: '600px',
+      width: '700px',
       data: { blogId: id}, // Pass blogId if editing, 0 for new blog
     });
 
