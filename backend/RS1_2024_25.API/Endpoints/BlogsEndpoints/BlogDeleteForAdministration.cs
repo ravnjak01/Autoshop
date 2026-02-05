@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
-using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
@@ -15,13 +14,16 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpDelete("{id}")]
         public override async Task HandleAsync(int id, CancellationToken cancellationToken = default)
         {
-            var blog = await db.BlogPosts.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+            var blog = await db.BlogPosts
+                .Include(b => b.Comments)
+                .Include(b => b.Ratings)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
             if (blog == null)
                 throw new KeyNotFoundException("Blog not found");
 
             db.Remove(blog);
-            await db.SaveChangesAsync(cancellationToken);
+            await db.SaveChangesAsync();
         }
     }
 }

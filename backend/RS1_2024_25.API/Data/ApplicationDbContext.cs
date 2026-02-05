@@ -91,6 +91,36 @@ namespace RS1_2024_25.API.Data
                         .HasIndex(x => new { x.DiscountId, x.CategoryId })
                         .IsUnique();
 
+            modelBuilder.Entity<DiscountCategory>()
+                .HasOne(x => x.Discount)
+                .WithMany(x => x.DiscountCategories)
+                .HasForeignKey(x => x.DiscountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DiscountCode>()
+                .HasOne(x => x.Discount)
+                .WithMany(x => x.DiscountCodes)
+                .HasForeignKey(x => x.DiscountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<DiscountProduct>()
+                .HasOne(x => x.Discount)
+                .WithMany(x => x.DiscountProducts)
+                .HasForeignKey(x => x.DiscountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<BlogPost>()
+                .HasMany(b => b.Comments)
+                .WithOne(c => c.BlogPost)
+                .HasForeignKey(c => c.BlogPostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<BlogPost>()
+                .HasMany(b => b.Ratings)
+                .WithOne(c => c.BlogPost)
+                .HasForeignKey(c => c.BlogPostId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Favorite>()
                .HasIndex(f => new { f.UserId, f.ProductId })
                .IsUnique();

@@ -15,7 +15,11 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
         [HttpDelete("{id}")]
         public override async Task HandleAsync(int id, CancellationToken cancellationToken = default)
         {
-            var discount = await db.Discounts.SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
+            var discount = await db.Discounts
+                .Include(d => d.DiscountCategories)
+                .Include(d => d.DiscountCodes)
+                .Include(d => d.DiscountProducts)
+                .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
             if (discount == null)
                 throw new KeyNotFoundException("Discount not found");
