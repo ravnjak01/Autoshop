@@ -20,10 +20,7 @@
     <li class="menu-item login-button-item " *ngIf="!authService.isLoggedIn()">
       <button (click)="goToLogin()">Login</button>
     </li>
-    <li class="menu-item logout-button-item " *ngIf="isUserLoggedIn">
-      <button (click)="onLogout()">Odjavi se</button>
-    </li>
-   <li class="menu-item cart-button-item push-right-desno" >
+    <li class="menu-item cart-button-item push-right-desno" >
       <button (click)="toggleCart()">Cart</button>
     </li>
     <li
@@ -31,17 +28,10 @@
       class="menu-item">
       <a routerLink="/favorites">Favorites</a>
     </li>
+    <li class="menu-item logout-button-item " *ngIf="isUserLoggedIn">
+      <button (click)="onLogout()">Odjavi se</button>
+    </li>
   </ul>
-
-
-
-  <div *ngIf="isAdminPage" class="admin-menu">
-    <ul class="admin-submenu">
-      <li class="submenu-item"><a routerLink="/administration/admin/blog-posts">Blogs</a></li>
-      <li class="submenu-item"><a routerLink="/administration/admin/discount">Discounts</a></li>
-      <!-- dodajte ostale opcije administracije -->
-    </ul>
-  </div>
 </nav>
 
  <cart-sidebar

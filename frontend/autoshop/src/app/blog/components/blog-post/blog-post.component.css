@@ -1,75 +1,137 @@
+/* =========================
+   BLOG WRAPPER
+========================= */
+
 .blog-detail {
-  max-width: 800px;
+  max-width: 850px;
   margin: 40px auto;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  background: #fff;
-  font-family: 'Arial', sans-serif;
-  position: relative;
+  padding: 30px 25px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  font-family: Arial, sans-serif;
 }
+
+/* =========================
+   TITLE
+========================= */
 
 .blog-title {
-  font-size: 28px;
-  font-weight: bold;
+  font-size: 30px;
+  font-weight: 700;
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
+  color: #222;
 }
 
+/* =========================
+   IMAGE
+========================= */
+
 .image-container {
-  width: 100%;
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .blog-image {
   max-width: 100%;
-  height: auto;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+/* =========================
+   CONTENT
+========================= */
 
 .content {
   font-size: 16px;
-  line-height: 1.6;
+  line-height: 1.8;
+  color: #333;
   text-align: justify;
+  margin-bottom: 30px;
+  white-space: pre-wrap;
+}
+
+/* =========================
+   AUTHOR INFO
+========================= */
+
+.author-container {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 12px;
   margin-bottom: 20px;
 }
 
-.author-container {
-  border-top: 1px solid #ddd;
-  padding-top: 10px;
-  margin-top: 10px;
-}
-
 .author-info {
+  display: flex;
+  justify-content: space-between;
   font-size: 14px;
-  color: #555;
+  color: #666;
 }
 
-.author-info p {
-  margin: 5px 0;
-}
+/* =========================
+   RATING
+========================= */
 
 .rating-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 15px;
+  margin-bottom: 30px;
 }
 
 .star-rating {
-  font-size: 24px;
+  font-size: 26px;
   color: #ccc;
+  cursor: pointer;
+  user-select: none;
 }
 
+.star-rating .star {
+  margin-right: 4px;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.star-rating .star:hover {
+  transform: scale(1.15);
+}
+
+/* popunjene zvijezde */
 .star-rating .filled {
-  color: gold;
+  color: #ffcc00; /* tvoja zlatna */
 }
 
+/* prosječna ocjena */
 .rating {
   font-size: 18px;
   font-weight: bold;
   color: #ffcc00;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .blog-detail {
+    padding: 20px;
+  }
+
+  .blog-title {
+    font-size: 24px;
+  }
+
+  .author-info {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .rating-container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
 }

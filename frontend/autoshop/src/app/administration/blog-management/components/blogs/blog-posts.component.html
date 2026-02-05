@@ -4,7 +4,7 @@
   <!-- Button to create a new blog post aligned to the right -->
   <div class="button-container">
     <button class = "add" color="primary" mat-raised-button (click)="openBlogPostForm($event, undefined)" matTooltip="New Blog Post">
-      <mat-icon>add</mat-icon>
+      <i class="fa-solid fa-plus"></i>
     </button>
   </div>
 </div>
@@ -48,19 +48,18 @@
   <ng-container matColumnDef="actions">
     <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
     <mat-cell *matCellDef="let blog">
-       Using flexbox to align buttons in the same row
       <div class="action-buttons">
         <button color="success" mat-button (click)="publish(blog.id, $event)" matTooltip="{{ blog.isPublished ? 'Unpublish' : 'Publish' }}" >
-          <mat-icon>{{ blog.isPublished ? 'publish' : 'pause_circle_filled' }}</mat-icon>
+          <i class="fa-solid" [class.fa-upload]="!blog.isPublished" [class.fa-pause]="blog.isPublished"></i>
         </button>
         <button color="primary" mat-button (click)="openBlogPostForm($event, blog.id)" matTooltip="Edit">
-          <mat-icon>edit</mat-icon>
+          <i class="fa-solid fa-pen"></i>
         </button>
         <button color="warning" mat-button (click)="deactivate(blog.id, $event)" matTooltip="{{ blog.active ? 'Deactivate' : 'Activate' }}">
-          <mat-icon>{{ blog.active ? 'block' : 'check_circle' }}</mat-icon>
+          <i class="fa-solid" [class.fa-ban]="blog.active" [class.fa-check]="!blog.active"></i>
         </button>
         <button color="warn" mat-button (click)="openMyConfirmDialog(blog.id, $event)" matTooltip="Delete">
-          <mat-icon>delete</mat-icon>
+          <i class="fa-solid fa-trash"></i>
         </button>
       </div>
     </mat-cell>

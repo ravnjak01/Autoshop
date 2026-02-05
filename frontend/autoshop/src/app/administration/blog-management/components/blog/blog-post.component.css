@@ -6,3 +6,12 @@ img {
   max-height: 300px;
   object-fit: contain;
 }
+
+mat-dialog-content {
+  text-align: left;
+}
+
+.scrollable-content {
+  max-height: 65vh;       /* 🔥 kontrola visine */
+  overflow-y: auto !important;
+}
