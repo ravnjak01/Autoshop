@@ -10,6 +10,7 @@ import { ProductService } from '../services/product.service';
 import { MyAuthService } from '../../core/services/auth/my-auth.service'
 import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 import {FavoriteToggleEndpointService} from '../services/product-endpoints/favorites-toggle-endpoint.service';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-product-list',
@@ -74,6 +75,21 @@ export class ProductsComponent implements OnInit {
       stockQuantity: [false]
     })
 
+    this.filterForm.valueChanges
+      .pipe(
+        debounceTime(400),          // ⏱️ čeka da korisnik prestane kucati
+        distinctUntilChanged()      // 🔁 ne poziva API ako je isto
+      )
+      .subscribe(values => {
+
+        if (values.minPrice > values.maxPrice) {
+          return;
+        }
+
+        this.loadProducts(true); // reset + nova pretraga
+      });
+
+
     this.loadCategories();
 
     this.loadProducts(true);
@@ -102,21 +118,6 @@ export class ProductsComponent implements OnInit {
 
   cancelEdit(): void {
     this.editing = false;
-  }
-
-  onSubmit(): void {
-    if (this.filterForm.invalid) {
-      alert('Molimo ispravite greške u formi prije pretrage.');
-      return;
-    }
-
-    const { minPrice, maxPrice } = this.filterForm.value;
-    if (minPrice > maxPrice) {
-      alert('Minimal cannot be higher that maximum.');
-      return;
-    }
-
-    this.loadProducts(true);
   }
 
   addToCart(productId: number): void {
