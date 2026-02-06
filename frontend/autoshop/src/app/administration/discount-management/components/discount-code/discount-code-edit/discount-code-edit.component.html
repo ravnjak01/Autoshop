@@ -20,6 +20,11 @@
       <input matInput [matDatepicker]="toPicker" formControlName="validTo">
       <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
       <mat-datepicker #toPicker></mat-datepicker>
+      <mat-error
+        *ngIf="codeForm.hasError('invalidDateRange') && codeForm.get('validTo')?.touched"
+      >
+        Valid To must be later than Valid From.
+      </mat-error>
     </mat-form-field>
 
     <div class="form-buttons">

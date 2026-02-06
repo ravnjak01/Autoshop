@@ -5,6 +5,8 @@ import {
   DiscountCodePostRequest,
   DiscountCodeUpdateService
 } from '../../../services/discount-code-add-edit-administration-endpoint.service';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
 
 @Component({
   selector: 'app-discount-code-edit',
@@ -28,7 +30,10 @@ export class DiscountCodeEditComponent implements OnInit {
       discountId: [0, Validators.required],
       validFrom: [new Date(), Validators.required],
       validTo: [new Date(), Validators.required]
-    });
+    },
+      {
+        validators: dateRangeValidator
+      });
   }
 
   ngOnInit(): void {
@@ -74,3 +79,20 @@ export class DiscountCodeEditComponent implements OnInit {
     this.dialogRef.close();
   }
 }
+
+export const dateRangeValidator: ValidatorFn = (
+  control: AbstractControl
+): ValidationErrors | null => {
+
+  const validFrom = control.get('validFrom')?.value;
+  const validTo = control.get('validTo')?.value;
+
+  if (!validFrom || !validTo) {
+    return null;
+  }
+
+  const from = new Date(validFrom);
+  const to = new Date(validTo);
+
+  return to >= from ? null : { invalidDateRange: true };
+};

@@ -28,6 +28,14 @@
         <input type="number" formControlName="maxPrice" />
       </div>
 
+      <div
+        class="error-text"
+        *ngIf="filterForm.hasError('invalidPriceRange') &&
+         (filterForm.get('minPrice')?.touched || filterForm.get('maxPrice')?.touched)"
+      >
+        Max price must be greater than or equal to min price.
+      </div>
+
       <select formControlName="sortBy">
         <option value="datedesc">Latest</option>
         <option value="dateasc">Oldest</option>
