@@ -4,7 +4,7 @@
   <section class="filter-section">
     <h2>Filter</h2>
 
-    <form [formGroup]="filterForm" (ngSubmit)="onSubmit()">
+    <form [formGroup]="filterForm">
 
       <input
         type="text"
@@ -36,8 +36,6 @@
         <option value="nameasc">Name A–Z</option>
         <option value="namedesc">Name Z–A</option>
       </select>
-
-      <button type="submit">Apply filter</button>
     </form>
   </section>
 
@@ -46,11 +44,12 @@
 
     <!-- 🟡 PROMO KOD (IZNAD PRODUKATA) -->
     <div class="promo-info" *ngIf="promoCode">
-      Promo kod: <strong>{{ promoCode }}</strong>
+      Promo code: <strong>{{ promoCode }}</strong>
       <div style="font-size: 13px; font-weight: 400; margin-top: 4px;">
-        Iskoristite promo kod prilikom kupovine i ostvarite dodatni popust.
+        Use the promo code at checkout to get an additional discount.
       </div>
     </div>
+
 
     <h2>Products</h2>
 
