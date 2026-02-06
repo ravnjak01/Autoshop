@@ -11,6 +11,21 @@ import { MyAuthService } from '../../core/services/auth/my-auth.service'
 import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 import {FavoriteToggleEndpointService} from '../services/product-endpoints/favorites-toggle-endpoint.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+
+export const priceRangeValidator: ValidatorFn = (
+  control: AbstractControl
+): ValidationErrors | null => {
+
+  const minPrice = control.get('minPrice')?.value;
+  const maxPrice = control.get('maxPrice')?.value;
+
+  if (minPrice === null || maxPrice === null) {
+    return null;
+  }
+
+  return maxPrice >= minPrice ? null : { invalidPriceRange: true };
+};
 
 @Component({
   selector: 'app-product-list',
@@ -71,9 +86,11 @@ export class ProductsComponent implements OnInit {
       categoryId: [null],
       minPrice: [0, Validators.min(0)],
       maxPrice: [1000, Validators.min(0)],
-      sortBy: ['datedesc'],
-      stockQuantity: [false]
-    })
+      sortBy: ['datedesc']
+    },
+      {
+        validators: priceRangeValidator
+      })
 
     this.filterForm.valueChanges
       .pipe(
