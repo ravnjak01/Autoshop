@@ -32,6 +32,11 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 image = memoryStream.ToArray();
 
             }
+
+            if(string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Content))
+            {
+                throw new ArgumentNullException("Tile or Content is null");
+            }
             // Kreiranje ili ažuriranje blog posta
             if (blog == null)
             {

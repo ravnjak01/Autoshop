@@ -22,6 +22,18 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 
             var userId = userManager.GetUserId(User);
 
+            if(string.IsNullOrEmpty(request.Code) || 
+                request.DiscountId == null || request.DiscountId == 0 ||
+                request.ValidFrom == null || request.ValidTo == null)
+            {
+                throw new ArgumentNullException("Filled the required fields");
+            }
+
+            if(request.ValidTo < request.ValidFrom)
+            {
+                throw new Exception("End date must be grater than start date");
+            }
+
             if (discountCode == null)
             {
                 discountCode = new DiscountCode

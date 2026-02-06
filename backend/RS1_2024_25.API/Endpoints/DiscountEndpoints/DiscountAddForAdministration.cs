@@ -25,6 +25,18 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 
             var userId = userManager.GetUserId(User);
 
+            if(string.IsNullOrWhiteSpace(request.Name) || 
+                request.DiscountPercentage == null || request.DiscountPercentage == 0 ||
+                request.StartDate == null || request.EndDate == null)
+            {
+                throw new ArgumentNullException("Filled the required fields");
+            }
+
+            if (request.EndDate < request.StartDate)
+            {
+                throw new Exception("End date must be grater than start date");
+            }
+
             // Kreiranje ili ažuriranje blog posta
             if (discount == null)
             {

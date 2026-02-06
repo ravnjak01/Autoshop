@@ -4,6 +4,7 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using Microsoft.AspNetCore.Identity;
 using RS1_2024_25.API.Data.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 {
@@ -17,6 +18,13 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             [FromQuery] ProductGetAllRequest request,
             CancellationToken cancellationToken = default)
         {
+            if(request.MinPrice.HasValue && request.MinPrice.Value >= 0 &&
+                request.MaxPrice.HasValue && request.MaxPrice.Value >= 0 && 
+                request.MaxPrice.Value < request.MinPrice.Value)
+            {
+                throw new Exception("Max price must be grater than min price");
+            }
+
             var now = DateTime.Now;
 
             var globalDiscount = await db.Discounts
