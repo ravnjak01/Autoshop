@@ -5,12 +5,9 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Services;
 using RS1_2024_25.API.Data.Middleware;
-using RS1_2024_25.API.Helper;
 using RS1_2024_25.API.Helper.Auth;
 using RS1_2024_25.API.SignalRHubs;
-using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.FileProviders;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
@@ -169,6 +166,12 @@ public partial class Program
         using (var scope = app.Services.CreateScope())
         {
             var services = scope.ServiceProvider;
+
+            var dbContext = services.GetRequiredService<ApplicationDbContext>();
+
+            // Kreira bazu ako ne postoji i primijeni sve migracije
+            await dbContext.Database.MigrateAsync();
+
             await SeedRolesAsync(services);
             await SeedAdminUserAsync(services);
             
