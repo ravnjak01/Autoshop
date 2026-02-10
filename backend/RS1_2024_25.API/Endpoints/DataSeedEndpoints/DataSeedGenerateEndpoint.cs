@@ -30,14 +30,28 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 {
                     Title = "I dalje najviše uvozimo dizele, zašto ih bh. vozači toliko vole?",
                     Content = " Golf Dvojka je jedan od najvećih krivaca zašto bosanskohercegovački vozači najviše vjeruju polovnim dizelašima. Taj trend nikad nije sišao s kursa, čak i u nepogodno vrijeme za njihovu nabavku, ali i izuzetno skupo održavanje.\r\n\r\n\r\nKada kupuju polovni auto, bh. vozači u 80-90 posto slučajeva po \"defaultu\" ne misle ni o čemu drugo, nego o dizelu. Pretpostavimo da je druga odluka da to bude Volkswagen.\r\n\r\nVolkswagen Golf II je omasovio pristup dizelima kao svetoj kravi, zbog čega i danas mnogi od njih donose prvo odluku da kupovina polovnog vozila mora biti dizel. \r\n\r\nProsječan bh. kupac voli se uklopiti u budžet od 10-12 hiljada KM. Aktuelni euro 5 standard omogućava nabavku dizela za te novce, ali računajte da su to već 15 godina stari automobili. To potvrđuje i statistika prvi put registrovanih uvezenih automobila.",
+                    Image = await System.IO.File.ReadAllBytesAsync(
+                        Path.Combine(Directory.GetCurrentDirectory(), 
+                        "wwwroot", 
+                        "images", 
+                        "blogs", 
+                        "golf2.webp")
+                        ),
                     PublishedDate = DateTime.Now,
                     IsPublished = false,
-                    Active = true,
+                    Active = true
                 },
                 new BlogPost()
                 {
                     Title = "Kako je propao Mercedesov taksi program? Radnički karakter više ne ide uz premium imidž",
                     Content = "Podsjećamo da su fabrička Mercedesova taksi vozila sa ugrađenim taksimetrom i brojnim specifičnim prepravkama, koje su imale za cilj da ojačaju dijelove izložene ubrzanom habanju u uslovima taksi prevoza, sa proizvodne trake u Stuttgartu prvi put sišla 1896. godine. Bila je to pionirska ideja koju niko nije uspio da nadmaši do današnjih dana.\r\n\r\nMercedes taksi postao je obilježje prestiža, te najbolje moguće usluge u ovoj automobilskoj uslužnoj djelatnosti, ali i veoma dobra pokretna reklama za njemački brend. Zahvaljujući veoma kvalitetnim limuzinama proizvedenim između sedamdesetih i devedesetih godina prošlog vijeka Mercedes je dobio epitet nepoderivog i neuništivog, što se bilo dragocjeno nasljedstvo, ali i značajan kredit za modele iz 21. vijeka koji se nisu proslavili po ovom pitanju.",
+                    Image = await System.IO.File.ReadAllBytesAsync(
+                        Path.Combine(Directory.GetCurrentDirectory(),
+                        "wwwroot",
+                        "images",
+                        "blogs",
+                        "mercedes-taxi.jpg")
+                        ),
                     PublishedDate = DateTime.Now,
                     IsPublished = true,
                     Active = true
@@ -320,14 +334,12 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
 
         if (!db.Discounts.Any())
         {
-
-
             db.Discounts.Add(new Discount
             {
                 Name = "Proljetna Akcija",
                 DiscountPercentage = 10,
-                StartDate = new DateTime(2025, 4, 1),
-                EndDate = new DateTime(2025, 6, 1)
+                StartDate = new DateTime(2026, 4, 1),
+                EndDate = new DateTime(2026, 6, 1)
             });
             db.SaveChanges();
         }
@@ -354,12 +366,20 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
         if (!db.DiscountCodes.Any())
         {
             db.DiscountCodes.AddRange(
-                new DiscountCode { DiscountId = 1, Code = "PROLJECE5" },
-                new DiscountCode { DiscountId = 1, Code = "AUTO10" }
+                new DiscountCode { DiscountId = 1, Code = "PROLJECE5", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(3) },
+                new DiscountCode { DiscountId = 1, Code = "AUTO10", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(5) }
                 );
             db.SaveChanges();
         }
 
+        if(!db.DiscountCategories.Any())
+        {
+            db.DiscountCategories.AddRange(
+                new DiscountCategory { DiscountId = 1, CategoryId = 1 },
+                new DiscountCategory { DiscountId = 1, CategoryId = 2 }
+                );
+            db.SaveChanges();
+        }
         return "Data generation completed successfully.";
     }
 }
