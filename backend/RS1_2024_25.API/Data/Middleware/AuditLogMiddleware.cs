@@ -1,4 +1,6 @@
-﻿using RS1_2024_25.API.Data.Models.Modul3_Audit;
+﻿using Microsoft.AspNetCore.Identity;
+using RS1_2024_25.API.Data.Models;
+using RS1_2024_25.API.Data.Models.Modul3_Audit;
 using System.Text;
 using System.Text.Json;
 
@@ -29,9 +31,13 @@ namespace RS1_2024_25.API.Data.Middleware
 
             var changedValue = await GetChangedValues(request).ConfigureAwait(false);
 
+            var userManager = context.RequestServices.GetRequiredService<UserManager<User>>();
+            var user = await userManager.GetUserAsync(context.User);
+            var email = user?.Email;
+
             var auditLog = new AuditLog
             {
-                UserEmail = "email@gmail.com", 
+                UserEmail = email ?? "Guest", 
                 EntityName = controllerName,
                 Action = request.Method,
                 Timestamp = DateTime.UtcNow,
