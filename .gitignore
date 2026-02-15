@@ -109,6 +109,4 @@ coverage/
 *.log
 
 # Ignoriraj README fajlove
-README.md
 frontend/README.md
-README.md
