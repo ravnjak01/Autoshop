@@ -66,6 +66,14 @@ Passwords do not match.
 
 
   <button type="submit" [disabled]="registrationForm.invalid">Register</button>
+  <div *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched">
+  <small *ngIf="registrationForm.get('email')?.errors?.['required']" style="color: red;">
+    Email is required.
+  </small>
+  <small *ngIf="registrationForm.get('email')?.errors?.['email']" style="color: red;">
+   {{ 'Enter valid format (like. ime@auto.com)' }}
+  </small>
+</div>
 </form>
 
 <p>Already have an account? <a routerLink="/login">Back to login</a></p>
