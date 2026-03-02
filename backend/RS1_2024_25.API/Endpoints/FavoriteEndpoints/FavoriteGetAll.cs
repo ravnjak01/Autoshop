@@ -1,14 +1,16 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Duende.IdentityModel;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
-using RS1_2024_25.API.Helper.Api;
-using Microsoft.AspNetCore.Identity;
 using RS1_2024_25.API.Data.Models;
+using RS1_2024_25.API.Helper.Api;
 
 namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
 {
     [Route("favorite")]
-    public class FavoriteGetAll(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
+    public class FavoriteGetAll(ApplicationDbContext db, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<FavoriteGetAllRequest>
         .WithResult<FavoriteGetAllResponse>
     {
@@ -22,7 +24,7 @@ namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
             request.PageSize = Math.Clamp(request.PageSize, 1, 100);
 
             var userId = userManager.GetUserId(User);
-            
+
             var query = db.Favorites
                 .Include(f => f.Product)
                 .Where(f => f.UserId == userId)
@@ -39,6 +41,9 @@ namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
 
             var totalCount = await query.CountAsync(cancellationToken);
 
+            var httpContext = httpContextAccessor.HttpContext!;
+            var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
+
             var favorites = await query
                 .AsNoTracking()
                 .Skip((request.PageNumber - 1) * request.PageSize)
@@ -50,8 +55,8 @@ namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
                     Name = f.Product.Name,
                     Price = f.Product.Price,
                     Description = f.Product.Description,
-                    ImageUrl = f.Product.ImageUrl,
-                    Active = f.Product.Active && f.Product.StockQuantity > 0, 
+                    ImageUrl = f.Product.ImageUrl != null ? $"{baseUrl}{f.Product.ImageUrl}" : string.Empty,
+                    Active = f.Product.Active && f.Product.StockQuantity > 0,
                     Brend = f.Product.Brend
                 })
                 .ToListAsync(cancellationToken);
@@ -69,13 +74,13 @@ namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
         }
     }
 
-  
+
     public class FavoriteGetAllRequest
     {
         public int PageNumber { get; set; } = 1;
         public int PageSize { get; set; } = 20;
         public string? SortBy { get; set; }
-      
+
     }
 
 
@@ -90,7 +95,7 @@ namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
         public bool HasPreviousPage { get; set; }
     }
 
- 
+
     public class FavoriteDto
     {
         public int Id { get; set; }
