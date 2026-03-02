@@ -15,13 +15,16 @@ namespace RS1_2024_25.API.Services
 
         public async Task<bool> RegisterUser(string username, string email, string password, string firstname,string lastname)
         {
-            Console.WriteLine($"Pokusaj registracije: username={username}, email={email}");
+
+            if (!IsValidEmail(email))
+            {
+                return false; 
+            }
+
 
             var existingUserByEmail = await _userManager.FindByEmailAsync(email);
             var existingUserByUsername = await _userManager.FindByNameAsync(username);
 
-            Console.WriteLine($"Postojeci email: {(existingUserByEmail != null)}");
-            Console.WriteLine($"Postojeci username: {(existingUserByUsername != null)}");
 
             if (existingUserByEmail != null || existingUserByUsername != null)
                 return false;
@@ -38,9 +41,7 @@ namespace RS1_2024_25.API.Services
             var result = await _userManager.CreateAsync(user, password);
             foreach (var error in result.Errors)
             {
-                Console.WriteLine($"Greška: {error.Code} - {error.Description}");
             }
-            Console.WriteLine($"Kreiranje uspjelo: {result.Succeeded}");
 
             return result.Succeeded;
         }
@@ -56,6 +57,22 @@ namespace RS1_2024_25.API.Services
             if (password.Any(ch => !char.IsLetterOrDigit(ch))) score++; 
 
             return score; 
+        }
+
+
+        public bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email)) return false;
+
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
     }
