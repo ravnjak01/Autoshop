@@ -21,7 +21,6 @@ button{
   font-size: 12px;
   border: 1px solid transparent;
   transition: background-color 0.3s, border-color 0.3s;
-  min-width: 44px;
   height: 30px;
 }
 
@@ -206,7 +205,7 @@ table {
 /* Dugmad u akcijama */
 .action-buttons {
   display: flex;
-  gap: 6px;
+  gap: 1px;
   justify-content: center;
   flex-wrap: nowrap;
 }
