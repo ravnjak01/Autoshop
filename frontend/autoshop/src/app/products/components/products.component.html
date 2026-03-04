@@ -131,6 +131,14 @@
             </span>
 
           </p>
+
+          <div *ngIf="product.stockQuantity > 0; else outOfStock">
+                     In stock ({{ product.stockQuantity }})
+        </div>
+
+          <ng-template #outOfStock>
+          <span class="text-danger">Out of stock</span>
+          </ng-template>
         </div>
 
         <!-- 🛒 ACTIONS -->

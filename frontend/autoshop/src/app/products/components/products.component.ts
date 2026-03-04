@@ -42,7 +42,7 @@ export class ProductsComponent implements OnInit {
   filterForm!: FormGroup;
 
   currentPage = 1;
-  pageSize = 12;
+  pageSize = 10;
   hasNextPage = true;
   isLoading = false;
 

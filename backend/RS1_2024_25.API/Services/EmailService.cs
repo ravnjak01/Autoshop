@@ -13,11 +13,13 @@ public class EmailService : IEmailService
         _emailSettings = emailSettings.Value;
     }
 
-  
-    public async Task SendResetPasswordEmail(string toEmail, string resetLink)
+
+    public async Task SendResetPasswordEmail(string toEmail, string resetLink, CancellationToken cancellationToken)
     {
         try
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var mail = new MailMessage
             {
                 From = new MailAddress(_emailSettings.From),
@@ -33,15 +35,20 @@ public class EmailService : IEmailService
                 EnableSsl = true
             };
 
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // NAPOMENA: SmtpClient.SendMailAsync ne podržava Token. 
             await smtp.SendMailAsync(mail);
+        }
+        catch (OperationCanceledException)
+        {
+            Console.WriteLine("Slanje emaila je otkazano.");
+            throw; 
         }
         catch (Exception ex)
         {
-
             Console.WriteLine("Email slanje nije uspjelo: " + ex.Message);
-            Console.WriteLine("Detalji greške: " + ex.ToString());
             throw new InvalidOperationException("Greška pri slanju emaila", ex);
-            
         }
     }
 

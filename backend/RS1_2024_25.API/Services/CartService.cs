@@ -12,13 +12,15 @@ namespace RS1_2024_25.API.Services
     {
 
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<Cart> _logger;
 
-        public CartService(ApplicationDbContext context)
+        public CartService(ApplicationDbContext context, ILogger<Cart> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
-        public async Task AddToCartAsync(string? userId, AddToCartDTO request)
+        public async Task AddToCartAsync(string? userId, AddToCartDTO request,CancellationToken cancellationToken)
         {
             var product = await _context.Products
                 .FirstOrDefaultAsync(p => p.Id == request.ProductId && p.Active);
@@ -66,12 +68,12 @@ namespace RS1_2024_25.API.Services
             // Smanji količinu proizvoda na lageru
             product.StockQuantity -= request.Quantity;
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
         }
 
 
 
-        public async Task MergeGuestCartWithUser(string? userId, string? guestSessionId)
+        public async Task MergeGuestCartWithUser(string? userId, string? guestSessionId,CancellationToken cancellationToken)
         {
             try
             {
@@ -80,6 +82,7 @@ namespace RS1_2024_25.API.Services
 
                 var guestCart = await _context.Carts
                     .Include(c => c.Items)
+                    .ThenInclude(p=>p.Product)
                     .FirstOrDefaultAsync(c => c.GuestSessionId == guestSessionId);
 
                 if (guestCart == null)
@@ -89,7 +92,7 @@ namespace RS1_2024_25.API.Services
                 if (!guestCart.Items.Any())
                 {
                     _context.Carts.Remove(guestCart);
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(cancellationToken);
                     return;
                 }
 
@@ -108,7 +111,7 @@ namespace RS1_2024_25.API.Services
                         item.UserId = userId;
                     }
 
-                    await _context.SaveChangesAsync();
+                    await _context.SaveChangesAsync(cancellationToken);
                     return;
                 }
 
@@ -122,9 +125,11 @@ namespace RS1_2024_25.API.Services
 
                     if (existingItem != null)
                     {
-                
-                        existingItem.Quantity += guestItem.Quantity;
-                     
+                        int totalRequested = existingItem.Quantity + guestItem.Quantity;
+                        int stock = guestItem.Product?.StockQuantity ?? totalRequested;
+
+                        existingItem.Quantity = Math.Min(totalRequested, stock);
+      
                         _context.CartItems.Remove(guestItem);
                     }
                     else
@@ -137,12 +142,12 @@ namespace RS1_2024_25.API.Services
 
                
                 _context.Carts.Remove(guestCart);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in MergeGuestCartWithUser: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+
+                _logger.LogError(ex, "Error merging guest cart with user cart for userId {UserId} and guestSessionId {GuestSessionId}", userId, guestSessionId);
                 // Ne baci exception - neka login prođe čak i ako merge ne uspije
             }
         }

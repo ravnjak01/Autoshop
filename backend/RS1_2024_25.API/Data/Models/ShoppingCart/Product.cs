@@ -17,7 +17,7 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
         [Column(TypeName = "decimal(18, 2)")] 
         public decimal Price { get; set; }
 
-        public int? StockQuantity { get; set; } = 0; 
+        public int StockQuantity { get; set; } = 0; 
 
         [StringLength(4000)] 
         public string Description { get; set; }
@@ -28,7 +28,7 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
         public bool Active { get; set; } = true;
 
         [StringLength(50)]
-        public string? SKU { get; set; } 
+        public string SKU { get; set; } 
 
         [StringLength(100)]
         public string Brend { get; set; }

@@ -9,10 +9,10 @@ namespace RS1_2024_25.API.Services
     {
         
    
-        Task AddToCartAsync( string? userId, AddToCartDTO request);
+        Task AddToCartAsync( string? userId, AddToCartDTO request,CancellationToken cancellationToken);
 
         // Metoda za spajanje anonimne (guest) korpe sa trajnom korpom prijavljenog korisnika.
-        Task MergeGuestCartWithUser(string? userId, string? guestSessionId);
+        Task MergeGuestCartWithUser(string? userId, string? guestSessionId,CancellationToken cancellationToken);
 
     }
 }

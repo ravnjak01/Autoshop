@@ -118,19 +118,19 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
         {
             var categories = new List<Category>
     {
-        new Category { Name = "Gume", Code = "CAT001" },
-        new Category { Name = "Akumulatori", Code = "CAT002" },
-        new Category { Name = "Oprema/Kozmetika", Code = "CAT003" },
-        new Category { Name = "Autopatosnice", Code = "CAT004" },
-        new Category { Name = "Podmetači za gepek", Code = "CAT005" },
-        new Category { Name = "Alu felge", Code = "CAT006" },
-        new Category { Name = "Ulje i tekućine", Code = "CAT007" },
-        new Category { Name = "Sistem ovjesa", Code = "CAT008" },
-        new Category { Name = "Kočioni sistem", Code = "CAT009" },
-        new Category { Name = "Sistem paljenja", Code = "CAT010" },
-        new Category { Name = "Transmisija", Code = "CAT011" },
-        new Category { Name = "Filteri", Code = "CAT012" },
-        new Category { Name = "Dijelovi motora", Code = "CAT013" }
+        new Category { Name = "Tires", Code = "CAT001" },
+        new Category { Name = "Batteris", Code = "CAT002" },
+        new Category { Name = "Equipment/Cosmetics", Code = "CAT003" },
+        new Category { Name = "Car Floor Mats", Code = "CAT004" },
+        new Category { Name = "Trunk Mats", Code = "CAT005" },
+        new Category { Name = "Alloy Wheels", Code = "CAT006" },
+        new Category { Name = "Oil and Fluids", Code = "CAT007" },
+        new Category { Name = "Suspension System", Code = "CAT008" },
+        new Category { Name = "Braking System", Code = "CAT009" },
+        new Category { Name = "Ignition System", Code = "CAT010" },
+        new Category { Name = "Transmission", Code = "CAT011" },
+        new Category { Name = "Filters", Code = "CAT012" },
+        new Category { Name = "Engine Parts", Code = "CAT013" }
     };
 
             db.Categories.AddRange(categories);
@@ -162,10 +162,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
             db.Products.AddRange(
                 new Product
                 {
-                    Name = "Akumulator Exide Premium 77Ah",
+                    Name = "Car battery Exide Premium 77Ah",
                     Code = "ACC-EX77",
                     SKU = "EXIDE-77-P",
-                    Description = "Visokokvalitetni akumulator snage 77Ah i 760A startne struje.",
+                    Description = "High qualitiy battery capacitiy 77Ah i 760A starting current.",
                     Price = 185.50m,
                     StockQuantity = 15,
                     Category = katAkumulatori, 
@@ -179,7 +179,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Name = "Castrol Edge 5W-30",
                     Code = "COL-121",
                     SKU = "OLE-5-P",
-                    Description = "Vrhunsko sintetičko motorno ulje.",
+                    Description = "Great synthetic motor oil.",
                     Price = 50.00m,
                     StockQuantity = 20,
                     Category = katUljeTekucine, 
@@ -193,7 +193,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Name = "Michelin Pilot Sport 5",
                     Code = "TRE-I22",
                     SKU = "TIRE-77-A",
-                    Description = "Gume vrhunskih performansi.",
+                    Description = "Tires of supberb performances.",
                     Price = 250.00m,
                     StockQuantity = 18,
                     Category= katGume,
@@ -207,7 +207,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Name = "Bilstein B6 Amortizer",
                     Code = "SUS-B6-01",
                     SKU = "BIL-B6-VAF",
-                    Description = "Plinski amortizeri visokih performansi.",
+                    Description = "High performance gas shock absorbers.",
                     Price = 120.00m,
                     StockQuantity = 8,
                     Category = katOvjes,
@@ -221,7 +221,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Name = "NGK Iridium IX Svjećice",
                     Code = "IGN-NGK-IX",
                     SKU = "NGK-7092-B",
-                    Description = "Iridijumske svjećice vrhunske kvalitete.",
+                    Description = "Top quality iridium spark plugs.",
                     Price = 15.50m,
                     StockQuantity = 100,
                     Category = katPaljenje,
@@ -232,10 +232,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 },
                 new Product
                 {
-                    Name = "Brembo Max Kočioni Diskovi",
+                    Name = "Brembo Max Brake Discs",
                     Code = "BRK-BM-05",
                     SKU = "BRE-DISK-V1",
-                    Description = "Visokokvalitetni ventilirajući diskovi.",
+                    Description = "High qualitiy ventilating discs.",
                     Price = 145.00m,
                     StockQuantity = 12,
                     Category = katKocnice,
@@ -246,10 +246,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 },
                 new Product
                 {
-                    Name = "ZF Set za servis mjenjača",
+                    Name = "ZF Gearbox Service Kit",
                     Code = "GRB-ZF-8HP",
                     SKU = "ZF-GA8HP-KIT",
-                    Description = "Originalni set za servis automatskog mjenjača.",
+                    Description = "Original set for automatic transmission service.",
                     Price = 350.00m,
                     StockQuantity = 5,
                     Category = katTransmisija,
@@ -260,10 +260,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 },
                 new Product
                 {
-                    Name = "Filter zraka Mann-Filter",
+                    Name = "Air Filter  Mann-Filter",
                     Code = "FLT-AIR-001",
                     SKU = "MANN-C30005",
-                    Description = "Vrhunski filter zraka.",
+                    Description = "Great air filter.",
                     Price = 25.50m,
                     StockQuantity = 45,
                     Category = katFilteri,
@@ -274,10 +274,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 },
                 new Product
                 {
-                    Name = "Brtva glave motora Elring",
+                    Name = "Elring Head Gasket",
                     Code = "ENG-GASK-001",
                     SKU = "ELR-735.450",
-                    Description = "Visokokvalitetna brtva glave motora.",
+                    Description = "High quality head gasket.",
                     Price = 85.00m,
                     StockQuantity = 12,
                     Category = katDijeloviMotora,
@@ -291,7 +291,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Name = "Sonax Ceramic Spray",
                     Code = "KOZ-SNX-001",
                     SKU = "SONAX-257-400",
-                    Description = "Keramički premaz u spreju.",
+                    Description = "Ceramic coating in sprey.",
                     Price = 35.00m,
                     StockQuantity = 25,
                     Category = katOprema,
@@ -302,10 +302,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 },
                 new Product
                 {
-                    Name = "AMC Glava motora",
+                    Name = "AMC Cylinder Head",
                     Code = "ENG-CH-908",
                     SKU = "AMC-908711",
-                    Description = "Nova aluminijska glava motora.",
+                    Description = "New aluminium cylinder head.",
                     Price = 1250.00m,
                     StockQuantity = 2,
                     Category = katDijeloviMotora,
@@ -316,10 +316,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 },
                 new Product
                 {
-                    Name = "Antifriz Febi G12++",
+                    Name = "Antifreeze Febi G12++",
                     Code = "LIQ-ANT-012",
                     SKU = "FEBI-37400-5L",
-                    Description = "Rashladni koncentrat.",
+                    Description = "Cooling concentrate.",
                     Price = 45.00m,
                     StockQuantity = 30,
                     Category = katUljeTekucine,

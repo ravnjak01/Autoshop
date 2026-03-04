@@ -22,18 +22,21 @@ namespace RS1_2024_25.API.Helper.Api
         private readonly AuthService _authService;
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
-        private readonly IConfiguration _config;
         private readonly IEmailService _emailService;
    private readonly ICartService _cartService;
-        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager, IConfiguration  config,IEmailService emailService,
-            ICartService cartService)
+        private readonly TokenBlacklistService _blacklistService;
+        private readonly MyTokenGenerator _tokenGenerator;
+
+        public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager,IEmailService emailService,
+            ICartService cartService,TokenBlacklistService blacklistService,MyTokenGenerator tokenGenerator)
         {
             _authService = authService;
             _userManager = userManager;
             _signInManager = signInManager;
-            _config  = config;
             _emailService = emailService;
             _cartService = cartService;
+            _tokenGenerator = tokenGenerator;
+            _blacklistService = blacklistService;
         }
 
         [AllowAnonymous]
@@ -80,69 +83,39 @@ namespace RS1_2024_25.API.Helper.Api
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginModel model,CancellationToken cancellationToken)
         {
             try
             {
                 var user = await _userManager.FindByNameAsync(model.Username);
                 if (user == null)
                 {
-                    Console.WriteLine("User not found");
                     return Unauthorized(new { message = "Invalid username or password" });
                 }
 
                 var result = await _signInManager.PasswordSignInAsync(user, model.Password,
                     isPersistent: false, lockoutOnFailure: false);
 
-                Console.WriteLine($"Login attempt for {model.Username}, success: {result.Succeeded}");
 
                 if (!result.Succeeded)
                     return Unauthorized(new { message = "Invalid username or password" });
 
                 var guestSessionId = Request.Cookies["guest_session"];
-                Console.WriteLine($"=== LOGIN DEBUG ===");
-                Console.WriteLine($"Guest session ID from cookie: {guestSessionId}");
-                Console.WriteLine($"User ID: {user.Id}");
                 if (!string.IsNullOrEmpty(guestSessionId))
                 {
-                    Console.WriteLine($"Attempting to merge cart...");
-                    await _cartService.MergeGuestCartWithUser(user.Id, guestSessionId);
-                    Console.WriteLine($"Merge completed");
+                    await _cartService.MergeGuestCartWithUser(user.Id, guestSessionId,cancellationToken);
                 }
 
                 var roles = await _userManager.GetRolesAsync(user);
-                var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.NameIdentifier, user.Id)
-        };
-
-                foreach (var role in roles)
-                {
-                    claims.Add(new Claim(ClaimTypes.Role, role));
-                }
-
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                var token = new JwtSecurityToken(
-                    issuer: _config["Jwt:Issuer"],
-                    audience: _config["Jwt:Audience"],
-                    claims: claims,
-                    expires: DateTime.Now.AddHours(3),
-                    signingCredentials: creds
-                );
-       
-
-                var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-                var expiration = token.ValidTo; 
-                var expUnix = new DateTimeOffset(expiration).ToUnixTimeSeconds();
+                
+                var tokenString = _tokenGenerator.GenerateToken(user, roles);
+                var expUnix = DateTimeOffset.UtcNow.AddHours(3).ToUnixTimeSeconds();
 
                 return Ok(new
                 {
                     token = tokenString,
                     username = user.UserName,
                     roles = roles,
-                    expires=expiration,
                     exp=expUnix
                 });
 
@@ -159,14 +132,22 @@ namespace RS1_2024_25.API.Helper.Api
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
-            await _signInManager.SignOutAsync();
-            return Ok(new { message = "Logged out" });
+            var token = Request.Headers["Authorization"]
+                     .ToString()
+                        .Replace("Bearer ", "");
+
+            var handler = new JwtSecurityTokenHandler();
+            var jwtToken = handler.ReadJwtToken(token);
+
+            _blacklistService.BlacklistToken(token, jwtToken.ValidTo);
+
+            return Ok(new { message = "Logged out successfully" });
         }
      
 
         [AllowAnonymous]
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model,CancellationToken cancellationToken)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
@@ -181,12 +162,10 @@ namespace RS1_2024_25.API.Helper.Api
             try
             {
 
-           await _emailService.SendResetPasswordEmail(user.Email, resetLink);
+           await _emailService.SendResetPasswordEmail(user.Email, resetLink,cancellationToken);
         return Ok(new
         {
-            message = "Reset token generated and email sent.",
-            resetToken = token,
-            email = user.Email
+            message = "Reset token generated and email sent."
         });
             }
             catch(Exception ex)
@@ -202,9 +181,7 @@ namespace RS1_2024_25.API.Helper.Api
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-            {
-                return BadRequest(new { message = "invalid request." });
-            }
+                return Ok(new { message = "If account exists, password has been reset." });
 
             var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
             if (!result.Succeeded)

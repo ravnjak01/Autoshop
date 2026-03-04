@@ -31,6 +31,7 @@ export interface Product {
   imageUrl: string;
   brend: string;
   isFavorite: boolean;
+  stockQuantity:number;
 }
 
 export interface ProductGetAllResponse {

@@ -20,6 +20,10 @@ import {HomePageComponent} from './home/components/home-page.component';
 import {FavoritesComponent} from './favorites/components/favorite.component';
 
   export const appRoutes: Routes = [
+
+    { path: '', component: HomePageComponent, pathMatch: 'full' },
+
+    { path: 'home', component: HomePageComponent },
     {
       path: 'administration',
       component: AdministrationComponent,
@@ -37,7 +41,6 @@ import {FavoritesComponent} from './favorites/components/favorite.component';
 
       ]
     },
-    { path: 'home', component: HomePageComponent },
 {
       path: 'products',
     loadComponent: () =>
@@ -60,6 +63,5 @@ import {FavoritesComponent} from './favorites/components/favorite.component';
 {path:'confirmation-modal',component:ConfirmationModalComponent},
 {path:'categories',component:CategoriesComponent}, {path:'favorites',component:FavoritesComponent},
 
-    { path: '', redirectTo: 'home', pathMatch: 'full' },
   { path: '**', redirectTo: 'home' },
 ];

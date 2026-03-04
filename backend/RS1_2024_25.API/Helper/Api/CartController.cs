@@ -7,6 +7,7 @@ using RS1_2024_25.API.Data.DTOs;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.ShoppingCart;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RS1_2024_25.API.Controllers
@@ -27,7 +28,7 @@ namespace RS1_2024_25.API.Controllers
 
         [AllowAnonymous]
         [HttpPost("add-to-cart")]
-        public async Task<IActionResult> AddToCart([FromBody] AddToCartDTO request)
+        public async Task<IActionResult> AddToCart([FromBody] AddToCartDTO request,CancellationToken cancellationToken)
         {
             if (request == null || request.ProductId <= 0 || request.Quantity <= 0)
                 return BadRequest("Invalid data.");
@@ -55,7 +56,7 @@ namespace RS1_2024_25.API.Controllers
             if (userId != null)
             {
                 cart = await _context.Carts.Include(c => c.Items)
-                                           .FirstOrDefaultAsync(c => c.UserId == userId);
+                                           .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
             }
             else if (sessionId != null)
             {
@@ -63,7 +64,7 @@ namespace RS1_2024_25.API.Controllers
                                            .FirstOrDefaultAsync(c => c.GuestSessionId == sessionId);
             }
 
-            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId, cancellationToken);
             if (product == null)
                 return NotFound("Product not found.");
 
@@ -103,12 +104,12 @@ namespace RS1_2024_25.API.Controllers
                     UserId = userId
                 });
 
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
             return Ok(new { message = $"{product.Name} added to the cart!" });
         }
         [AllowAnonymous]
         [HttpGet("my-cart")]
-        public async Task<IActionResult> GetMyCart()
+        public async Task<IActionResult> GetMyCart(CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
             string? sessionId = Request.Cookies["guest_session"];
@@ -129,7 +130,7 @@ namespace RS1_2024_25.API.Controllers
                 cart = await _context.Carts
                     .Include(c => c.Items)
                     .ThenInclude(i => i.Product)
-                    .FirstOrDefaultAsync(c => c.UserId == userId);
+                    .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
             }
             else if (sessionId != null)
             {
@@ -147,6 +148,8 @@ namespace RS1_2024_25.API.Controllers
                     Total = 0
                 });
 
+            var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
             var items = cart.Items.Select(i => new CartItemDTO
             {
                 Id = i.Id,
@@ -154,7 +157,9 @@ namespace RS1_2024_25.API.Controllers
                 ProductName = i.Product.Name,
                 Quantity = i.Quantity,
                 Price = i.Product.Price,
-                imageUrl = i.Product.ImageUrl,
+                imageUrl = i.Product.ImageUrl.StartsWith("http")
+                             ? i.Product.ImageUrl
+                            : $"{baseUrl}{i.Product.ImageUrl}",
                 Total = i.Product.Price * i.Quantity
             }).ToList();
 
@@ -171,30 +176,30 @@ namespace RS1_2024_25.API.Controllers
       
        
         [HttpPost("save-for-later/{productId}")]
-        public async Task<IActionResult> SaveForLater(int productId)
+        public async Task<IActionResult> SaveForLater(int productId,CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
             if (userId == null)
                 return Unauthorized();
 
             var cartItem = await _context.CartItems
-                .FirstOrDefaultAsync(i => i.ProductId == productId && i.UserId == userId);
+                .FirstOrDefaultAsync(i => i.ProductId == productId && i.UserId == userId, cancellationToken);
 
             if (cartItem == null)
                 return NotFound("Product not found in cart.");
 
             cartItem.SavedForLater = true;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Ok(new { Message = "Product saved for later." });
         }
         [HttpPost("move-to-cart/{productId}")]
-        public async Task<IActionResult> MoveToCart(int productId)
+        public async Task<IActionResult> MoveToCart(int productId, CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
             var cart = await _context.Carts
                 .Include(c => c.Items)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+                .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
 
             if (cart == null) return NotFound("Cart not found");
 
@@ -202,13 +207,12 @@ namespace RS1_2024_25.API.Controllers
             if (item == null) return NotFound("Item not found");
 
             item.SavedForLater = false;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Ok();
         }
-        [AllowAnonymous]
         [HttpPut("update/{itemId}")]
-        public async Task<IActionResult> UpdateQuantity(int itemId, [FromBody] UpdateCartItemDTO request)
+        public async Task<IActionResult> UpdateQuantity(int itemId, [FromBody] UpdateCartItemDTO request,CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
             string? sessionId = Request.Cookies["guest_session"];
@@ -223,9 +227,12 @@ namespace RS1_2024_25.API.Controllers
                 .Include(i => i.Cart)
                 .Include(i => i.Product)
                 .FirstOrDefaultAsync(i =>
-                    i.Id == itemId &&
-                    (i.Cart.UserId == userId || i.Cart.GuestSessionId == sessionId)
-                );
+                 i.Id == itemId &&
+                 (
+                (userId != null && i.Cart.UserId == userId) ||
+                (sessionId != null && i.Cart.GuestSessionId == sessionId)
+                 ),cancellationToken
+        );
 
             if (item == null)
                 return NotFound("Item not found in your cart.");
@@ -235,7 +242,7 @@ namespace RS1_2024_25.API.Controllers
                 return BadRequest($"In stock we have {item.Product.StockQuantity} pieces.");
 
             item.Quantity = request.Quantity;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             return Ok(new CartItemDTO
             {
@@ -248,9 +255,8 @@ namespace RS1_2024_25.API.Controllers
                 Total = item.Product.Price * item.Quantity
             });
         }
-        [AllowAnonymous]
         [HttpDelete("clear")]
-        public async Task<IActionResult> ClearCart()
+        public async Task<IActionResult> ClearCart(CancellationToken cancellationToken)
         {
             try
             {
@@ -263,7 +269,7 @@ namespace RS1_2024_25.API.Controllers
                     
                     cart = await _context.Carts
                         .Include(c => c.Items)
-                        .FirstOrDefaultAsync(c => c.UserId == userId);
+                        .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
                 }
                 else
                 {
@@ -288,21 +294,19 @@ namespace RS1_2024_25.API.Controllers
                     return Ok(new { Message = "Cart is already empty." });
 
                 _context.CartItems.RemoveRange(cart.Items);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(cancellationToken);
 
                 return Ok(new { Message = "Cart cleared successfully." });
             }
             catch (Exception ex)
             {
-          
-                Console.WriteLine($"Error clearing cart: {ex.Message}");
+
                 return StatusCode(500, new { Message = "Error clearing cart." });
             }
         }
 
-        [AllowAnonymous]
         [HttpDelete("remove/{itemId}")]
-        public async Task<IActionResult> RemoveFromCart(int itemId)
+        public async Task<IActionResult> RemoveFromCart(int itemId, CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
             string? sessionId = Request.Cookies["guest_session"];
@@ -317,7 +321,7 @@ namespace RS1_2024_25.API.Controllers
                 cart = await _context.Carts
                     .Include(c => c.Items)
                     .ThenInclude(i => i.Product)
-                    .FirstOrDefaultAsync(c => c.UserId == userId);
+                    .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
             }
             else if (sessionId != null)
             {
@@ -336,7 +340,7 @@ namespace RS1_2024_25.API.Controllers
                 return NotFound(new { Message = "Item not found in cart." });
 
             _context.CartItems.Remove(item);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(cancellationToken);
 
             var remainingItems = cart.Items
                 .Where(i => i.Id != itemId) 

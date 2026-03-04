@@ -8,6 +8,8 @@ import {MySnackbarHelperService} from '../../../modules/shared/snackbars/my-snac
 import { MatDialog } from '@angular/material/dialog';
 import { MyDialogConfirmComponent } from '../../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
 import { title } from 'process';
+import { ProductGetAllRequest, ProductGetAllResponse, ProductsGetAllService } from '../../../products/services/product-endpoints/product-get-all-endpoint.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-product-management',
@@ -36,10 +38,11 @@ cancelEdit(): void {
   availableImages: string[] = [];
 
   constructor(
-    private productService: ProductService,
+    private productCRUDService: ProductService,
     private fb: FormBuilder,
     private snackBar:MySnackbarHelperService,
-    private dialog:MatDialog
+    private dialog:MatDialog,
+    private productGetAllService:ProductsGetAllService
   ) {}
 
   ngOnInit(): void {
@@ -48,7 +51,7 @@ cancelEdit(): void {
     this.loadAvailableImages();
   }
   loadAvailableImages() {
-  this.productService.GetAllImages().subscribe({
+  this.productCRUDService.GetAllImages().subscribe({
     next:(res)=>{
       this.availableImages = res.map(name =>
   `http://localhost:7000/images/products/${name}`
@@ -96,9 +99,14 @@ selectImage(img: string) {
 
   loadProducts(): void {
     this.loading = true;
-    this.productService.getAllProducts().subscribe({
-      next: (res: ProductDTO[]) => {
-        this.products = res.map((product: ProductDTO) => {
+
+    const request:ProductGetAllRequest={
+      pageNumber:1,
+      pageSize:5,
+    }
+    this.productGetAllService.handleAsync(request).subscribe({
+      next: (res: ProductGetAllResponse) => {
+        this.products = res.products.map((product: any) => {
           if(product.imageUrl && !product.imageUrl.startsWith('http')){
             product.imageUrl=`http://localhost:7000/images/products/${product.imageUrl}`;
           }
@@ -106,7 +114,7 @@ selectImage(img: string) {
         });
         this.loading = false;
       },
-      error: (err) => {
+      error: (err:HttpErrorResponse) => {
         console.error(err);
         this.loading = false;
       }
@@ -133,7 +141,7 @@ selectImage(img: string) {
       active: this.productForm.value.active
     };
 
-    this.productService.addProduct(newProduct).subscribe({
+    this.productCRUDService.addProduct(newProduct).subscribe({
       next: () => {
         this.snackBar.showMessage('Product added!','success');
         this.loadProducts();
@@ -171,7 +179,7 @@ selectImage(img: string) {
       categoryId: this.productForm.value.categoryId
     };
 
-    this.productService.updateProduct(updatedProduct.id, updatedProduct).subscribe({
+    this.productCRUDService.updateProduct(updatedProduct.id, updatedProduct).subscribe({
       next: () => {
 this.snackBar.showMessage('Changes successfully saved!','success')
         this.isEditing = false;
@@ -199,7 +207,7 @@ this.snackBar.showMessage('Changes successfully saved!','success')
     dialogRef.afterClosed().subscribe(result=>{
       if(result)
       {
-  this.productService.deleteProduct(id).subscribe({
+  this.productCRUDService.deleteProduct(id).subscribe({
       next: () => {
        
         this.loadProducts();

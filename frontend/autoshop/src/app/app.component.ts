@@ -50,15 +50,15 @@ cartItemCount: number = 0;
     });
     
   }
-  ngOnInit() {
+ngOnInit() {
   this.authService.checkAuth().subscribe({
     next: (isAuth) => {
-      if (!isAuth) {
-        this.authService.logout(); 
-      }
+      this.isUserLoggedIn = isAuth;
+      // ❌ Makni logout() odavde - ne redirectaj javne stranice
     },
     error: () => {
-      this.authService.logout();
+      this.isUserLoggedIn = false;
+      // ❌ Makni logout() odavde
     }
   });
 }

@@ -125,15 +125,7 @@ isManager(): boolean {
   }
   
 
-  getLoginToken(): LoginTokenDto | null {
-    let tokenString = window.localStorage.getItem('my-auth-token') ?? '';
-    try {
-      return JSON.parse(tokenString);
-    } catch (e) {
-      return null;
-    }
-  }
- 
+
 getCurrentUserId(): Observable<string | null> {
 
     const cachedUserId = localStorage.getItem('userId');

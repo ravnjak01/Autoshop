@@ -47,44 +47,78 @@ public partial class Program
 
         var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
 
+        //builder.Services.AddAuthentication(options =>
+        //{
+        //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        //})
+        //.AddJwtBearer(options =>
+        //{
+        //    options.TokenValidationParameters = new TokenValidationParameters
+        //    {
+        //        ValidateIssuer = true,
+        //        ValidateAudience = true,
+        //        ValidateLifetime = true,
+        //        ValidateIssuerSigningKey = true,
+        //        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        //        ValidAudience = builder.Configuration["Jwt:Audience"],
+        //        IssuerSigningKey = new SymmetricSecurityKey(key)
+        //    };
+        //    options.Events = new JwtBearerEvents
+        //    {
+        //        OnMessageReceived = context =>
+        //        {
+        //            var accessToken = context.Request.Query["access_token"];
+        //            var path = context.HttpContext.Request.Path;
+
+
+        //            if (!string.IsNullOrEmpty(accessToken) &&
+        //                path.StartsWithSegments("/myHub"))
+        //            {
+        //                context.Token = accessToken;
+        //            }
+        //            return Task.CompletedTask;
+        //        }
+        //    };
+        //});
+
+
+
         builder.Services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(options =>
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(key)
+    };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
         {
-            options.TokenValidationParameters = new TokenValidationParameters
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+
+            // Merged SignalR paths
+            if (!string.IsNullOrEmpty(accessToken) &&
+               (path.StartsWithSegments("/myHub") || path.StartsWithSegments("/mysignalr-hub-path")))
             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                ValidAudience = builder.Configuration["Jwt:Audience"],
-                IssuerSigningKey = new SymmetricSecurityKey(key)
-            };
-            options.Events = new JwtBearerEvents
-            {
-                OnMessageReceived = context =>
-                {
-                    var accessToken = context.Request.Query["access_token"];
-                    var path = context.HttpContext.Request.Path;
-
-                   
-                    if (!string.IsNullOrEmpty(accessToken) &&
-                        path.StartsWithSegments("/myHub"))
-                    {
-                        context.Token = accessToken;
-                    }
-                    return Task.CompletedTask;
-                }
-            };
-        });
-
-
-
-
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
         builder.Services.Configure<IdentityOptions>(options =>
         {
             options.Password.RequireDigit = true;
@@ -138,17 +172,37 @@ public partial class Program
         });
 
         // **Dodaj servise**
-        builder.Services.AddScoped<RS1_2024_25.API.Services.MyAuthService>();
         builder.Services.AddScoped<RS1_2024_25.API.Services.AuthService>();
-
+        builder.Services.AddSingleton<TokenBlacklistService>();
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-        builder.Services.AddTransient<RS1_2024_25.API.Services.MyAuthService>();
         builder.Services.AddTransient<MyTokenGenerator>();
         builder.Services.AddSignalR();
         builder.Services.AddAuthorization();
+        // Program.cs
+        //builder.Services.AddAuthentication()
+        //    .AddJwtBearer(options =>
+        //    {
+        //        options.Events = new JwtBearerEvents
+        //        {
+        //            OnMessageReceived = context =>
+        //            {
+        //                // SignalR šalje token kao query param
+        //                var accessToken = context.Request.Query["access_token"];
+        //                var path = context.HttpContext.Request.Path;
+
+        //                if (!string.IsNullOrEmpty(accessToken) &&
+        //                    path.StartsWithSegments("/mysignalr-hub-path"))
+        //                {
+        //                    context.Token = accessToken;
+        //                }
+        //                return Task.CompletedTask;
+        //            }
+        //        };
+        //    });
         builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<ICartService, CartService>();
+        builder.Services.AddMemoryCache();
         // **Dodaj kontrolere i Swagger**
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -181,34 +235,51 @@ public partial class Program
 
         var provider = new FileExtensionContentTypeProvider();
         provider.Mappings[".webp"] = "image/webp";
+
         app.UseCors("AllowFrontendAndSwagger");
         app.UseStaticFiles(new StaticFileOptions
         {
             ContentTypeProvider = provider
         });
         app.UseRouting();
-        app.UseAuthentication();   
-        app.UseAuthorization();
 
-
+        //  blacklist provjera
         app.Use(async (context, next) =>
         {
             Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
+            var token = context.Request.Headers["Authorization"]
+                .ToString()
+                .Replace("Bearer ", "");
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                var blacklist = context.RequestServices
+                    .GetRequiredService<TokenBlacklistService>();
+                if (blacklist.IsBlacklisted(token))
+                {
+                    context.Response.StatusCode = 401;
+                    await context.Response.WriteAsync("Token has been invalidated.");
+                    return;
+                }
+            }
             await next();
         });
-      
-        app.UseMiddleware<AuditLogMiddleware>();
 
-        // **Dodaj rute**
+        app.UseAuthentication();
+
+        app.UseAuthorization();
+
+        // 4. Ostali middleware
+        app.UseMiddleware<AuditLogMiddleware>();
         app.MapControllers();
         app.MapHub<MySignalrHub>("/mysignalr-hub-path");
-
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API v1");
-            c.RoutePrefix = "swagger"; 
+            c.RoutePrefix = "swagger";
         });
+
         app.Run();
     }
     public static async Task SeedRolesAsync(IServiceProvider serviceProvider)

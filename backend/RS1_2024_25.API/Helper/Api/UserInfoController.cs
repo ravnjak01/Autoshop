@@ -20,13 +20,9 @@ namespace RS1_2024_25.API.Helper.Api
         }
         [Authorize]
         [HttpGet("me")]
-        public async Task<IActionResult> GetCurrentUser()
+        public async Task<IActionResult> GetCurrentUser(CancellationToken cancellationToken)
         {
             
-            if (User?.Identity == null || !User.Identity.IsAuthenticated)
-                return Unauthorized(new { message = "User not authenticated." });
-
-           
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
                 return Unauthorized(new { message = "User not found in database." });
@@ -35,14 +31,21 @@ namespace RS1_2024_25.API.Helper.Api
             var roles = await _userManager.GetRolesAsync(user);
 
             
-            return Ok(new
+            return Ok(new UserInfoDto
             {
-                id = user.Id,
-                username = user.UserName,
-                email = user.Email,
-                roles = roles
+                Id = user.Id,
+                Username = user.UserName,
+                Email = user.Email,
+                Roles = roles.ToList()
             });
         }
     }
-    
+
+    public class UserInfoDto
+    {
+        public string Id { get; set; } = string.Empty;
+        public string? Username { get; set; }
+        public string? Email { get; set; }
+        public List<string> Roles { get; set; } = new();
+    }
 }

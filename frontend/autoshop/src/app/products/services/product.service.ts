@@ -3,15 +3,30 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProductCreateDTO, ProductUpdateDTO } from '../../cart/models/product.dto';
 
-export interface ProductCreate {
+
+
+
+export interface ProductReadDTO {
+  id: number;
   name: string;
   price: number;
-  description?: string;
-  categoryId?: number;
-}
+  description?: string; 
+  imageUrl?: string;
+  sku?: string;
+  brend?: string;
+  code?: string;
+  stockQuantity: number;
+  active: boolean;
 
-export interface ProductUpdate extends ProductCreate {
-  id: number;
+  categoryId: number;
+  categoryName?: string;
+
+  priceAfterGlobalDiscount?: number;
+  badgeDiscountPercentage?: number;
+
+  isFavorite: boolean;
+
+  createdAt?: Date | string; 
 }
 
 @Injectable({
@@ -22,22 +37,20 @@ export class ProductService {
 
   constructor(private http: HttpClient) {}
 
-  getAllProducts(): Observable<any> {
-    return this.http.get(`${this.baseUrl}`, { withCredentials: true });
-  }
+ 
 
-  getProductById(id: number): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${id}`, { withCredentials: true });
-  }
-
-
-  addProduct(product: ProductCreateDTO): Observable<any> {
-    return this.http.post(`${this.baseUrl}`, product, { withCredentials: true });
+  getProductById(id: number): Observable<ProductReadDTO> {
+    return this.http.get<ProductReadDTO>(`${this.baseUrl}/${id}`, { withCredentials: true });
   }
 
 
-  updateProduct(id: number, product: ProductUpdateDTO): Observable<any> {
-    return this.http.put(`${this.baseUrl}/${id}`, product, { withCredentials: true });
+  addProduct(product: ProductCreateDTO): Observable<ProductReadDTO> {
+    return this.http.post<ProductReadDTO>(`${this.baseUrl}`, product, { withCredentials: true });
+  }
+
+
+  updateProduct(id: number, product: ProductUpdateDTO): Observable<ProductReadDTO> {
+    return this.http.put<ProductReadDTO>(`${this.baseUrl}/${id}`, product, { withCredentials: true });
   }
 
 

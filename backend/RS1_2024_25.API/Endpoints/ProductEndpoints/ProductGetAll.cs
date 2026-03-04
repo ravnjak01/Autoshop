@@ -11,10 +11,10 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
     [Route("products")] 
     public class ProductGetAll(ApplicationDbContext db, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<ProductGetAllRequest>
-        .WithResult<ProductGetAllResponse>
+        .WithActionResult<ProductGetAllResponse>
     {
         [HttpGet]
-        public override async Task<ProductGetAllResponse> HandleAsync(
+        public override async Task<ActionResult<ProductGetAllResponse>> HandleAsync(
             [FromQuery] ProductGetAllRequest request,
             CancellationToken cancellationToken = default)
         {
@@ -22,10 +22,10 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 request.MaxPrice.HasValue && request.MaxPrice.Value >= 0 && 
                 request.MaxPrice.Value < request.MinPrice.Value)
             {
-                throw new Exception("Max price must be grater than min price");
+                return BadRequest("Max price must be grater than min price");
             }
 
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
 
             var globalDiscount = await db.Discounts
                 .Where(d => d.StartDate <= now && d.EndDate >= now)
@@ -84,35 +84,50 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             var httpContext = httpContextAccessor.HttpContext!;
             var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
-            var products = await query
+            var productIds = await query.Select(p => p.Id).ToListAsync(cancellationToken);
+            var categoryIds = await query.Select(p => p.CategoryId).Distinct().ToListAsync(cancellationToken);
+
+            var categoryDiscounts = await db.DiscountCategories
+                 .Where(dc => categoryIds.Contains(dc.CategoryId))
+                    .ToDictionaryAsync(dc => dc.CategoryId, dc => dc.Discount.DiscountPercentage, cancellationToken);
+
+            var productDiscounts = await db.DiscountProducts
+                .Where(dp => productIds.Contains(dp.ProductId))
+                .ToDictionaryAsync(dp => dp.ProductId, dp => dp.Discount.DiscountPercentage, cancellationToken);
+            var rawProducts = await query
             .AsNoTracking()
             .Skip((request.PageNumber - 1) * request.PageSize)
             .Take(request.PageSize)
             .Select(p => new
             {
-                Product = p,
-                CategoryDiscount = db.DiscountCategories
-                    .Where(dc => dc.CategoryId == p.CategoryId)
-                    .Select(dc => dc.Discount.DiscountPercentage).FirstOrDefault(),
-                ProductDiscount = db.DiscountProducts
-                    .Where(dp => dp.ProductId == p.Id)
-                    .Select(dp => dp.Discount.DiscountPercentage).FirstOrDefault()
-            })
-            .Select(x => new ProductDto
-            {
-                Id = x.Product.Id,
-                Name = x.Product.Name,
-                Price = x.Product.Price,
-                ImageUrl = x.Product.ImageUrl != null ? $"{baseUrl}{x.Product.ImageUrl}" : null,
-                Brend = x.Product.Brend,
-                CategoryName = x.Product.Category != null ? x.Product.Category.Name : null,
-                
-                IsFavorite = x.Product.Favorites.Any(f => f.UserId == userId),
-
-                PriceAfterGlobalDiscount = x.Product.Price - (x.Product.Price * globalDiscountPercentage / 100),
-                BadgeDiscountPercentage = x.CategoryDiscount + x.ProductDiscount
+                p.Id,
+                p.Name,
+                p.Price,
+                p.ImageUrl,
+                p.Brend,
+                p.CategoryId,
+                CategoryName = p.Category != null ? p.Category.Name : null,
+                IsFavorite = p.Favorites.Any(f => f.UserId == userId),
+                p.StockQuantity
             })
             .ToListAsync(cancellationToken);
+
+            var products = rawProducts.Select(x => new ProductDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Price = x.Price,
+                ImageUrl = x.ImageUrl != null ? $"{baseUrl}{x.ImageUrl}" : null,
+                Brend = x.Brend,
+                CategoryName = x.CategoryName,
+                IsFavorite = x.IsFavorite,
+                PriceAfterGlobalDiscount = x.Price - (x.Price * globalDiscountPercentage / 100),
+                BadgeDiscountPercentage =
+         (categoryDiscounts.TryGetValue(x.CategoryId, out var cd) ? cd : 0) +
+         (productDiscounts.TryGetValue(x.Id, out var pd) ? pd : 0)
+            }).ToList();
+
+
             return new ProductGetAllResponse
             {
                 Products = products,

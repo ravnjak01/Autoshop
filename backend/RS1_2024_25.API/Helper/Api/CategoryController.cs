@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.DTOs;
+using RS1_2024_25.API.Endpoints.ProductEndpoints;
 
 namespace RS1_2024_25.API.Helper.Api
 {
@@ -17,11 +20,20 @@ namespace RS1_2024_25.API.Helper.Api
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var categories = await _context.Categories
-                .Select(c => new { c.Id, c.Name })
-                .ToListAsync();
+                .Include(p=>p.Products)
+                .Select(c => new CategoryDTO
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    Code = c.Code,
+                    Description = c.Description,
+                 
+                })
+                .ToListAsync(cancellationToken);
 
             return Ok(categories);
         }

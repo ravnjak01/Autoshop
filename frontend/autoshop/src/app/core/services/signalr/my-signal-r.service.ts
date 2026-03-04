@@ -8,25 +8,23 @@ export class MySignalRService {
   private hubConnection!: signalR.HubConnection;
 
   // Pokretanje SignalR konekcije
-  startConnection() {
-    let loginTokenDto: LoginTokenDto = JSON.parse(localStorage.getItem('my-auth-token') || '{}');
-    const authToken = loginTokenDto.token;
-
+ startConnection() {
+    const authToken = localStorage.getItem('jwtToken');
+    
     if (!authToken) {
       console.error('No auth token found, SignalR connection not started.');
       return;
     }
 
     this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(`${MyConfig.api_address}/mysginalr-hub-path?my-auth-token=${authToken}`)
+      .withUrl(`${MyConfig.api_address}/mysignalr-hub-path?access_token=${authToken}`)
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
     this.hubConnection
       .start()
       .then(() => console.log('SignalR connected'));
-  }
-
+}
   // Zaustavljanje SignalR konekcije
   stopConnection() {
     if (this.hubConnection) {

@@ -3,33 +3,27 @@ import { Category } from "../../products/services/product-endpoints/product-get-
 
 
 export interface ProductDTO {
-id: number;
+  id: number;
   name: string;
-  price: number; 
-  imageUrl: string;
-  
-
-  categoryId: number;
-  category: Category; 
-  
- 
-  stockQuantity?: number; 
+  price: number;
   description?: string; 
+  imageUrl?: string;
   sku?: string;
-  brend: string; 
+  brend?: string;
   code?: string;
+  stockQuantity: number;
+  active: boolean;
+  categoryId: number;
+  categoryName?: string; 
   
+  
+  priceAfterGlobalDiscount?: number;
+  badgeDiscountPercentage?: number;
+  isFavorite: boolean;
 
   additionalImagesUrl?: string[]; 
-  
 
-  avgGrade?: number; 
-  numberOfReviews?: number; 
-  
-
-  active: boolean;
-  createdAt?: Date; 
-
+  createdAt?: Date | string; 
 }
 
 export interface ProductCreateDTO {
