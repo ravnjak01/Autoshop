@@ -28,9 +28,9 @@
       class="menu-item">
       <a routerLink="/favorites">Favorites</a>
     </li>
-    <li class="menu-item logout-button-item " *ngIf="isUserLoggedIn">
-      <button (click)="onLogout()">Odjavi se</button>
-    </li>
+   <li class="menu-item logout-button-item" *ngIf="authService.isLoggedIn()">
+  <button (click)="onLogout()">Odjavi se</button>
+      </li>
   </ul>
 </nav>
 

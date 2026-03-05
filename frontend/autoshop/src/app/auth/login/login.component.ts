@@ -60,41 +60,22 @@ this.router.navigate(['/forgot-password']);
   const { username, password } = this.loginForm.value;
 
 
-  this.authService.login({ username, password }).subscribe({
-    next: (response) => {
-      if (response && response.token) {
-      localStorage.setItem('jwtToken', response.token);
-    }
-   
-         this.httpClient.get<MyAuthInfo>('http://localhost:7000/api/user/me',).subscribe({
-        next: (user) => {
-          localStorage.setItem('userName', user.username);
-          localStorage.setItem('userRoles', JSON.stringify(user.roles));
-          this.authService.checkAuth().subscribe(); 
-          this.router.navigate(['/home']);
-        },
-        error: (err) => {
-            console.error(' Error fetching user data:', err);
-            console.error('Response:', err.error);
-            console.error('Status:', err.status);
-          this.errorMessage = 'Cant reach user data';
-          this.loading = false;
-        }
+ this.authService.login({ username, password }).subscribe({
+  next: (response) => {
+    if (response && response.token) {
+      localStorage.setItem('jwtToken', response.token); 
+      
+      this.authService.checkAuth().subscribe(() => {
+         this.httpClient.get<MyAuthInfo>('http://localhost:7000/api/user/me').subscribe({
+           next: (user) => {
+             localStorage.setItem('userRoles', JSON.stringify(user.roles));
+             this.router.navigate(['/home']);
+           }
+         });
       });
-    },
-    error: (err) => {
-            console.error(' Login error:', err);
-      if (err.status === 401 && err.error?.message) {
-        this.errorMessage = err.error.message;
-      } else {
-        this.errorMessage = 'Errod during login';
-      }
-      this.loading = false;
-    },
-    complete: () => {
-      this.loading = false;
     }
-  });
+  }
+});
 }
 
   

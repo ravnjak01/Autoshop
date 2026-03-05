@@ -26,7 +26,14 @@ export class MyAuthService {
   };
 }
 
-  constructor(private httpClient: HttpClient, private signalRService: MySignalRService,private router :Router) {}
+  constructor(private httpClient: HttpClient, private signalRService: MySignalRService,private router :Router) {
+
+    window.addEventListener('storage', (event) => {
+    if (event.key === 'jwtToken' && !event.newValue) {
+      this.logout();
+    }
+  });
+  }
  
   private hasStoredLogin(): boolean {
     return   !!localStorage.getItem('jwtToken');
@@ -81,24 +88,20 @@ checkAuth(): Observable<boolean> {
         })
       );
 }
- logout(): void {
- 
-    localStorage.removeItem('jwtToken');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userRoles');
-     localStorage.removeItem('userId');
-     localStorage.removeItem('jwtToken');
+  logout(): void {
+  
+      localStorage.clear();
 
-    this.isLoggedInSubject.next(false);
-    this.router.navigate(['/login']);
+      this.isLoggedInSubject.next(false);
+      this.router.navigate(['/login']);
+    }
+
+      forgotPassword(email: string) {
+    return this.httpClient.post<{ message: string, resetToken?: string }>(
+      `${this.apiUrl}/forgot-password`,
+      { email }
+    );
   }
-
-    forgotPassword(email: string) {
-  return this.httpClient.post<{ message: string, resetToken?: string }>(
-    `${this.apiUrl}/forgot-password`,
-    { email }
-  );
-}
 resetPassword(data: { email: string, token: string, newPassword: string }) {
   return this.httpClient.post('http://localhost:7000/api/auth/reset-password', data);
 }
@@ -107,7 +110,7 @@ resetPassword(data: { email: string, token: string, newPassword: string }) {
     return this.httpClient.post(`${this.apiUrl}/register`, data);
   }
   isLoggedIn(): boolean {
-      return this.hasStoredLogin();
+    return this.isLoggedInSubject.value;
   }
 
   isAdmin(): boolean {
