@@ -129,8 +129,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
 
     this.blogDeleteService.handleAsync(id).subscribe({
       next: () => {
-        //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
-
+        this.refreshPage();
       },
       error: (err) => console.error('Error deleting blog:', err)
     });
@@ -166,7 +165,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
         console.log('Korisnik je potvrdio brisanje');
         // Pozovite servis ili izvršite logiku za brisanje
         this.deleteBlog(id);
-        this.refreshPage();
       } else {
         console.log('Korisnik je otkazao brisanje');
       }
