@@ -54,11 +54,9 @@ ngOnInit() {
   this.authService.checkAuth().subscribe({
     next: (isAuth) => {
       this.isUserLoggedIn = isAuth;
-      // ❌ Makni logout() odavde - ne redirectaj javne stranice
     },
     error: () => {
       this.isUserLoggedIn = false;
-      // ❌ Makni logout() odavde
     }
   });
 }

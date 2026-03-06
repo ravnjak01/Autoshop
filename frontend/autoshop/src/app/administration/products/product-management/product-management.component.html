@@ -47,19 +47,15 @@
 
       <div *ngIf="productForm.get('imageUrl')?.value" class="selected-image-preview full-width">
         <img
-          [src]="productForm.get('imageUrl')?.value"
-          alt="Chosen image"
-          class="preview-img"
+         [src]="API_BASE_URL + productForm.get('imageUrl')?.value"
+    alt="Chosen image"
+    class="preview-img"
+    (error)="$any($event.target).src = API_BASE_URL + '/images/products/no-image.png'"
         />
       </div>
 
       <div class="form-row full-width controls-row">
-          <div class="form-group checkbox-group">
-            <label>
-              <input type="checkbox" formControlName="active" />
-              Active
-            </label>
-          </div>
+          
 
           <div class="button-group">
             <button type="submit" [disabled]="productForm.invalid" class="btn btn-primary">
@@ -116,6 +112,7 @@
           <th>Price</th>
           <th>Quantity</th>
           <th>Brend</th>
+          <th>Image</th>
           <th>Active</th>
           <th>Actions</th>
         </tr>
@@ -128,7 +125,15 @@
           <td>{{ p.price | currency:'BAM' }}</td>
           <td>{{ p.stockQuantity }}</td>
           <td>{{ p.brend }}</td>
-          <td>{{ p.active ? 'Yes' : 'No' }}</td>
+          <td>
+  <img [src]="p.imageUrl" 
+       alt="Product Image" 
+       style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"
+       (error)="p.imageUrl = 'http://localhost:7000/images/products/no-image.png'">
+</td>
+
+
+          <td>{{ p.stockQuantity>0 ?  'Yes' : 'No' }}</td>
           <td class="actions">
             <button class="btn btn-small btn-edit" (click)="editProduct(p)">Edit</button>
             <button class="btn btn-small btn-delete" (click)="deleteProduct(p.id)">Delete</button>
@@ -137,4 +142,38 @@
       </tbody>
     </table>
   </div>
+<div class="pagination-header">
+  <div class="page-size-selector">
+    <label for="pageSize">Items per page: </label>
+    <select id="pageSize" (change)="onPageSizeChange($event)" [value]="pageSize">
+      <option [value]="5">5</option>
+      <option [value]="10">10</option>
+      <option [value]="20">20</option>
+      <option [value]="50">50</option>
+    </select>
+  </div>
+  
+  <div class="page-info">
+    Total products shown: {{ products.length }}
+  </div>
+</div>
 
+<div class="pagination-controls" *ngIf="products.length > 0 || currentPage > 1">
+  <button 
+    class="btn btn-secondary" 
+    [disabled]="currentPage === 1 || loading" 
+    (click)="changePage(-1)">
+    Previous
+  </button>
+
+  <span class="page-info">Page {{ currentPage }}</span>
+
+  <button 
+    class="btn btn-secondary" 
+    [disabled]="products.length < pageSize || loading" 
+    (click)="changePage(1)">
+    Next
+  </button>
+  
+  <div *ngIf="loading" class="spinner-small">Loading...</div>
+</div>

@@ -8,7 +8,7 @@ using RS1_2024_25.API.Data.Models.ShoppingCart;
 namespace RS1_2024_25.API.Helper.Api
 {
 
-    [Route("api/[controller]")]
+    [Route("api/product")]
     [ApiController]
     public class ProductCRUDController : ControllerBase
     {
@@ -69,7 +69,7 @@ namespace RS1_2024_25.API.Helper.Api
                 ImageUrl = dto.ImageUrl,
                 CategoryId = dto.CategoryId,
                 Brend = dto.Brend,
-                Active = dto.Active,
+                Active = dto.StockQuantity > 0,
                 CreatedAt = DateTime.UtcNow
             };
             _context.Products.Add(product);
@@ -99,6 +99,9 @@ namespace RS1_2024_25.API.Helper.Api
         public async Task<ActionResult<ProductReadDTO>> UpdateProduct(int id, [FromBody] ProductUpdateDTO dto,CancellationToken cancellationToken)
         {
 
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             if (id != dto.Id)
                 return BadRequest("Product ID mismatch");
 
@@ -111,12 +114,15 @@ namespace RS1_2024_25.API.Helper.Api
             if (dto.StockQuantity.HasValue) product.StockQuantity = dto.StockQuantity.Value;
             if (dto.Description != null) product.Description = dto.Description;
             if (dto.ImageUrl != null) product.ImageUrl = dto.ImageUrl;
-            if(dto.Active!=null)product.Active = dto.Active.Value;
             if (dto.SKU != null) product.SKU = dto.SKU;
             if (dto.Brend != null) product.Brend = dto.Brend;
             if(dto.CategoryId.HasValue) product.CategoryId = dto.CategoryId.Value;
             if (dto.AdditionalImagesUrl != null) product.AdditionalImagesUrl = dto.AdditionalImagesUrl;
-
+            if (dto.StockQuantity.HasValue)
+            {
+                product.StockQuantity = dto.StockQuantity.Value;
+                product.Active = product.StockQuantity > 0;
+            }
 
             await _context.SaveChangesAsync(cancellationToken);
 
@@ -128,7 +134,6 @@ namespace RS1_2024_25.API.Helper.Api
                 ImageUrl = product.ImageUrl,
                 SKU = product.SKU,
                 Brend = product.Brend,
-                Active = product.Active,
                 CategoryId = product.CategoryId,
                 StockQuantity = product.StockQuantity 
             };
@@ -154,7 +159,7 @@ namespace RS1_2024_25.API.Helper.Api
         }
 
         [HttpGet("images")]
-        [Authorize(Roles = "Admin")]
+        [AllowAnonymous]
         public IActionResult GetImages()
         {
             string imageFolderPath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot", "images","products");

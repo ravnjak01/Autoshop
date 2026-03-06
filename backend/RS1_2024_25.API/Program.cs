@@ -45,80 +45,44 @@ public partial class Program
             .AddDefaultTokenProviders();
 
 
-        var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
+            var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!);
 
-        //builder.Services.AddAuthentication(options =>
-        //{
-        //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        //})
-        //.AddJwtBearer(options =>
-        //{
-        //    options.TokenValidationParameters = new TokenValidationParameters
-        //    {
-        //        ValidateIssuer = true,
-        //        ValidateAudience = true,
-        //        ValidateLifetime = true,
-        //        ValidateIssuerSigningKey = true,
-        //        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        //        ValidAudience = builder.Configuration["Jwt:Audience"],
-        //        IssuerSigningKey = new SymmetricSecurityKey(key)
-        //    };
-        //    options.Events = new JwtBearerEvents
-        //    {
-        //        OnMessageReceived = context =>
-        //        {
-        //            var accessToken = context.Request.Query["access_token"];
-        //            var path = context.HttpContext.Request.Path;
+  
 
-
-        //            if (!string.IsNullOrEmpty(accessToken) &&
-        //                path.StartsWithSegments("/myHub"))
-        //            {
-        //                context.Token = accessToken;
-        //            }
-        //            return Task.CompletedTask;
-        //        }
-        //    };
-        //});
-
-
-
-        builder.Services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-        })
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(key)
-    };
-
-    options.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            var accessToken = context.Request.Query["access_token"];
-            var path = context.HttpContext.Request.Path;
-
-            // Merged SignalR paths
-            if (!string.IsNullOrEmpty(accessToken) &&
-               (path.StartsWithSegments("/myHub") || path.StartsWithSegments("/mysignalr-hub-path")))
+                    builder.Services.AddAuthentication(options =>
+                    {
+                        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    })
+            .AddJwtBearer(options =>
             {
-                context.Token = accessToken;
-            }
-            return Task.CompletedTask;
-        }
-    };
-});
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnMessageReceived = context =>
+                    {
+                        var accessToken = context.Request.Query["access_token"];
+                        var path = context.HttpContext.Request.Path;
+
+                        if (!string.IsNullOrEmpty(accessToken) &&
+                           (path.StartsWithSegments("/myHub") || path.StartsWithSegments("/mysignalr-hub-path")))
+                        {
+                            context.Token = accessToken;
+                        }
+                        return Task.CompletedTask;
+                    }
+                };
+            });
         builder.Services.Configure<IdentityOptions>(options =>
         {
             options.Password.RequireDigit = true;
@@ -178,27 +142,7 @@ public partial class Program
         builder.Services.AddTransient<MyTokenGenerator>();
         builder.Services.AddSignalR();
         builder.Services.AddAuthorization();
-        // Program.cs
-        //builder.Services.AddAuthentication()
-        //    .AddJwtBearer(options =>
-        //    {
-        //        options.Events = new JwtBearerEvents
-        //        {
-        //            OnMessageReceived = context =>
-        //            {
-        //                // SignalR šalje token kao query param
-        //                var accessToken = context.Request.Query["access_token"];
-        //                var path = context.HttpContext.Request.Path;
-
-        //                if (!string.IsNullOrEmpty(accessToken) &&
-        //                    path.StartsWithSegments("/mysignalr-hub-path"))
-        //                {
-        //                    context.Token = accessToken;
-        //                }
-        //                return Task.CompletedTask;
-        //            }
-        //        };
-        //    });
+  
         builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
         builder.Services.AddScoped<IEmailService, EmailService>();
         builder.Services.AddScoped<ICartService, CartService>();

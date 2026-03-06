@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { MyAuthService } from '../../core/services/auth/my-auth.service';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -19,7 +20,9 @@ export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;
   submitted = false;
 
-  constructor(private fb: FormBuilder,private authService: MyAuthService) {
+  constructor(private fb: FormBuilder,private authService: MyAuthService,
+    private snackbar:MySnackbarHelperService
+  ) {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]]
     });
@@ -36,11 +39,10 @@ export class ForgotPasswordComponent {
     const email = this.forgotPasswordForm.value.email;
  this.authService.forgotPassword(email).subscribe({
     next: () => {
-      alert('Link za reset lozinke je poslan na vašu email adresu.');
+      this.snackbar.showMessage('Please check your email for further instructions')
     },
     error: (err: any) => {
-      console.error('Greška pri slanju email-a:', err);
-      alert('Došlo je do greške. Pokušajte ponovo.');
+      this.snackbar.showMessage("There was an error");
     }
   });
   }

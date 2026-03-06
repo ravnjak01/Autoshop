@@ -29,7 +29,6 @@ namespace RS1_2024_25.API.Data.DTOs
         [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters.")]
         public string? Description { get; set; }
 
-        public bool? Active { get; set; }
 
         public string? SKU { get; set; }
         [Range(1, int.MaxValue, ErrorMessage = "Category ID must be a positive number.")]

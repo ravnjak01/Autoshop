@@ -4,7 +4,7 @@ namespace RS1_2024_25.API.Data.DTOs
 {
     public class ProductCreateDTO
     {
-     
+
         [Required(ErrorMessage = "Name is required.")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Name must be between 2 and 100 characters.")]
         public string Name { get; set; }
@@ -17,12 +17,12 @@ namespace RS1_2024_25.API.Data.DTOs
         [Range(0.01, (double)decimal.MaxValue, ErrorMessage = "Price must be a positive number.")]
         public decimal Price { get; set; }
 
-       
+
         [Required(ErrorMessage = "Stock quantity is required.")]
         [Range(0, int.MaxValue, ErrorMessage = "Stock quantity cannot be negative.")]
         public int StockQuantity { get; set; }
 
-       
+
         [StringLength(2000, ErrorMessage = "Description cannot exceed 2000 characters.")]
         public string? Description { get; set; }
 
@@ -37,7 +37,6 @@ namespace RS1_2024_25.API.Data.DTOs
         [Required(ErrorMessage = "Brand is required.")]
         public string Brend { get; set; }
 
-        [Required(ErrorMessage = "Active status is required.")]
-        public bool Active { get; set; }
     }
+    
 }

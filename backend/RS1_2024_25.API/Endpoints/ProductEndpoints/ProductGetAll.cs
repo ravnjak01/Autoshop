@@ -42,10 +42,18 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             request.PageNumber = Math.Max(1, request.PageNumber);
             request.PageSize = Math.Clamp(request.PageSize, 1, 100);
 
+
+            var isAdmin = User.IsInRole("Admin");
             var query = db.Products
                 .Include(p => p.Category)
-                .Where(p => p.Active && p.StockQuantity > 0)
+                .AsNoTracking()
                 .AsQueryable();
+
+            if (!isAdmin)
+            {
+                query = query.Where(p => p.Active && p.StockQuantity > 0);
+            }
+
 
             if (!string.IsNullOrWhiteSpace(request.SearchQuery))
             {
@@ -81,6 +89,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 
             var totalCount = await query.CountAsync(cancellationToken);
             var userId = userManager.GetUserId(User);
+
             var httpContext = httpContextAccessor.HttpContext!;
             var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
@@ -108,7 +117,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 p.CategoryId,
                 CategoryName = p.Category != null ? p.Category.Name : null,
                 IsFavorite = p.Favorites.Any(f => f.UserId == userId),
-                p.StockQuantity
+                p.StockQuantity,
+                p.SKU
             })
             .ToListAsync(cancellationToken);
 
@@ -123,8 +133,10 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 IsFavorite = x.IsFavorite,
                 PriceAfterGlobalDiscount = x.Price - (x.Price * globalDiscountPercentage / 100),
                 BadgeDiscountPercentage =
-         (categoryDiscounts.TryGetValue(x.CategoryId, out var cd) ? cd : 0) +
-         (productDiscounts.TryGetValue(x.Id, out var pd) ? pd : 0)
+                      (categoryDiscounts.TryGetValue(x.CategoryId, out var cd) ? cd : 0) +
+                 (productDiscounts.TryGetValue(x.Id, out var pd) ? pd : 0),
+                SKU =x.SKU,
+                StockQuantity = x.StockQuantity
             }).ToList();
 
 
@@ -137,7 +149,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize),
                 HasNextPage = request.PageNumber < (int)Math.Ceiling(totalCount / (double)request.PageSize),
                 HasPreviousPage = request.PageNumber > 1,
-                PromoCode = promoCode
+                PromoCode = promoCode,
+             
             };
         }
     }
@@ -176,5 +189,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public bool IsFavorite { get; set; }
         public decimal? PriceAfterGlobalDiscount { get; set; }
         public decimal? BadgeDiscountPercentage { get; set; }
+        public string? SKU { get; set; }
+        public int StockQuantity { get; set; }
     }
 }

@@ -24,7 +24,9 @@ export class RegisterComponent {
   passwordStrength= 0;
   constructor(private fb: FormBuilder,private authService: MyAuthService,
     private router: Router,private passwordStrengthService: PasswordStrengthService) {
+
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    
     this.registrationForm = this.fb.group({
         firstName: ['', Validators.required],
         lastName: ['', Validators.required],

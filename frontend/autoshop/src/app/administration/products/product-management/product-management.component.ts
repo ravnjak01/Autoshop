@@ -31,12 +31,16 @@ cancelEdit(): void {
 
 
   products: ProductDTO[] = [];
+  readonly API_BASE_URL = 'http://localhost:7000';
   selectedProduct: ProductDTO | null = null;
   productForm!: FormGroup;
   isEditing: boolean = false;
   loading: boolean = false;
   availableImages: string[] = [];
-
+  currentPage: number = 1;
+  pageSize: number = 5;
+  totalItems: number = 0; 
+  totalPages: number = 0;
   constructor(
     private productCRUDService: ProductService,
     private fb: FormBuilder,
@@ -50,17 +54,16 @@ cancelEdit(): void {
     this.loadProducts();
     this.loadAvailableImages();
   }
+
+  
   loadAvailableImages() {
   this.productCRUDService.GetAllImages().subscribe({
-    next:(res)=>{
-      this.availableImages = res.map(name =>
-  `http://localhost:7000/images/products/${name}`
-);
-
+    next: (res) => {
+      this.availableImages = res; 
     },
-    error:(err)=>console.error('Greška pri učitavanju slika:', err)
-});
-} 
+    error: (err) => console.error('Greška:', err)
+  });
+}
 
 showImageModal = false;
 
@@ -73,8 +76,12 @@ closeImageModal() {
 }
 
 selectImage(img: string) {
+  const fileName = img.split(/[\\/]/).pop() || '';
+
+  const relativePath = `/images/products/${fileName}`;
+
   this.productForm.patchValue({
-    imageUrl:img
+    imageUrl: relativePath
   });
 
   this.showImageModal = false;
@@ -97,19 +104,29 @@ selectImage(img: string) {
   }
 
 
+
+/**
+ * NE RADI PRIKAZIVANJE SLIKE JEDNE U PRODUCT MANAGEMENT
+ * 
+ */
   loadProducts(): void {
     this.loading = true;
 
     const request:ProductGetAllRequest={
-      pageNumber:1,
-      pageSize:5,
+      pageNumber: this.currentPage, 
+    pageSize: this.pageSize,
     }
     this.productGetAllService.handleAsync(request).subscribe({
       next: (res: ProductGetAllResponse) => {
+        console.log('Podaci sa servera:', res.products[0]);
         this.products = res.products.map((product: any) => {
-          if(product.imageUrl && !product.imageUrl.startsWith('http')){
-            product.imageUrl=`http://localhost:7000/images/products/${product.imageUrl}`;
-          }
+          if (!product.imageUrl) {
+    product.imageUrl = 'assets/default-product.png'; 
+  }
+
+          else if (!product.imageUrl.startsWith('http')) {
+    product.imageUrl = `http://localhost:7000/images/products/${product.imageUrl}`;
+  }
           return product;
         });
         this.loading = false;
@@ -120,8 +137,19 @@ selectImage(img: string) {
       }
     });
   }
-
-
+  changePage(delta: number): void {
+    const newPage = this.currentPage + delta;
+    if (newPage > 0) {
+      this.currentPage = newPage;
+      this.loadProducts();
+    }
+  }
+onPageSizeChange(event: Event): void {
+  const selectElement = event.target as HTMLSelectElement;
+  this.pageSize = Number(selectElement.value);
+  this.currentPage = 1; 
+  this.loadProducts();
+}
   addProduct(): void {
     if (this.productForm.invalid) {
      
@@ -193,31 +221,30 @@ this.snackBar.showMessage('Changes successfully saved!','success')
     });
   }
 
+deleteProduct(id: number): void {
+  const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
+    width: '350px',
+    data: {
+      title: 'Are you sure',
+      message: 'Do you really want to delete this product?',
+      confirmButtonText: 'Delete'
+    }
+  });
 
-  deleteProduct(id: number): void {
-    const dialogRef=this.dialog.open(MyDialogConfirmComponent,{
-
-      width:'350px',
-      data:{
-        title:'Are you sure',
-        message:'Do you really want to delete this product?',
-        confirmButtonText: 'Delete'
-      }
-    });
-    dialogRef.afterClosed().subscribe(result=>{
-      if(result)
-      {
-  this.productCRUDService.deleteProduct(id).subscribe({
-      next: () => {
-       
-        this.loadProducts();
-      },
-      error: (err) => {
-        
-      }
-    });
-      }
-    });
-  
-  }
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.productCRUDService.deleteProduct(id).subscribe({
+        next: () => {
+          this.snackBar.showMessage('Product successfully deleted!', 'success');
+          this.loadProducts();
+        },
+        error: (err: HttpErrorResponse) => {
+          const errorMessage = err.error?.message || err.error || 'Error during deleting the product';
+          this.snackBar.showMessage(errorMessage, 'error');
+          console.error('Delete error:', err);
+        }
+      });
+    }
+  });
+}
 }
