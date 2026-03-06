@@ -150,22 +150,42 @@ namespace RS1_2024_25.API.Controllers
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
 
-            var items = cart.Items.Select(i => new CartItemDTO
-            {
-                Id = i.Id,
-                ProductId = i.ProductId,
-                ProductName = i.Product.Name,
-                Quantity = i.Quantity,
-                Price = i.Product.Price,
-                imageUrl = i.Product.ImageUrl.StartsWith("http")
-                             ? i.Product.ImageUrl
-                            : $"{baseUrl}{i.Product.ImageUrl}",
-                Total = i.Product.Price * i.Quantity
-            }).ToList();
+
+            var items = cart.Items
+                    .Where(i => !i.SavedForLater) 
+                     .Select(i => new CartItemDTO
+             {
+             Id = i.Id,
+             ProductId = i.ProductId,
+             ProductName = i.Product.Name,
+             Quantity = i.Quantity,
+             Price = i.Product.Price,
+             imageUrl = i.Product.ImageUrl.StartsWith("http")
+                          ? i.Product.ImageUrl
+                          : $"{baseUrl}{i.Product.ImageUrl}",
+             Total = i.Product.Price * i.Quantity
+         }).ToList();
+
+            var savedItems = cart.Items
+              .Where(i => i.SavedForLater)
+               .Select(i => new CartItemDTO
+                  {
+                      Id = i.Id,
+                      ProductId = i.ProductId,
+                      ProductName = i.Product.Name,
+                      Quantity = i.Quantity,
+                      Price = i.Product.Price,
+                      imageUrl = i.Product.ImageUrl.StartsWith("http")
+                                 ? i.Product.ImageUrl
+                                 : $"{baseUrl}{i.Product.ImageUrl}",
+                      Total = i.Product.Price * i.Quantity
+                  }).ToList();
+
 
             return Ok(new CartResponseDTO
             {
                 Items = items,
+                SavedItems = savedItems,
                 ItemCount = items.Sum(x => x.Quantity),
                 Total = items.Sum(x => x.Total)
             });

@@ -107,7 +107,7 @@ getCart(): Observable<CartResponseDTO> {
       map((response) => {
        
         if (!response) {
-          return { items: [], itemCount: 0, total: 0 };
+          return { items: [], itemCount: 0, total: 0 ,savedItems : []};
         }
         return response;
       })

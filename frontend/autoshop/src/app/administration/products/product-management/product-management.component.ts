@@ -105,10 +105,7 @@ selectImage(img: string) {
 
 
 
-/**
- * NE RADI PRIKAZIVANJE SLIKE JEDNE U PRODUCT MANAGEMENT
- * 
- */
+
   loadProducts(): void {
     this.loading = true;
 

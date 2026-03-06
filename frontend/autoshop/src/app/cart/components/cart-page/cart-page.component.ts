@@ -49,8 +49,9 @@ loadCart(): void {
       if (response && response.items) {
         this.cartItems = response.items;
       } else {
-        console.warn('No items in cart response');
         this.cartItems = [];
+
+        this.savedForLaterItems=response.savedItems || [];
       }
       
       this.isCartEmpty = this.cartItems.length === 0;

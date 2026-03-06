@@ -158,38 +158,3 @@
   </section>
 
 </div>
-<div class="pagination-header">
-  <div class="page-size-selector">
-    <label for="pageSize">Items per page: </label>
-    <select id="pageSize" (change)="onPageSizeChange($event)" [value]="pageSize">
-      <option [value]="5">5</option>
-      <option [value]="10">10</option>
-      <option [value]="20">20</option>
-      <option [value]="50">50</option>
-    </select>
-  </div>
-  
-  <div class="page-info">
-    Total products shown: {{ products.length }}
-  </div>
-</div>
-
-<div class="pagination-controls" *ngIf="products.length > 0 || currentPage > 1">
-  <button 
-    class="btn btn-secondary" 
-    [disabled]="currentPage === 1 || loading" 
-    (click)="changePage(-1)">
-    Previous
-  </button>
-
-  <span class="page-info">Page {{ currentPage }}</span>
-
-  <button 
-    class="btn btn-secondary" 
-    [disabled]="products.length < pageSize || loading" 
-    (click)="changePage(1)">
-    Next
-  </button>
-  
-  <div *ngIf="loading" class="spinner-small">Loading...</div>
-</div>

@@ -3,6 +3,7 @@
     public class CartResponseDTO
     {
         public List<CartItemDTO> Items { get; set; } = new();
+        public List<CartItemDTO> SavedItems { get; set; } = new();
         public decimal Total { get; set; }
         public int ItemCount { get; set; }
     }

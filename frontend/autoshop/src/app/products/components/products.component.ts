@@ -185,4 +185,6 @@ export class ProductsComponent implements OnInit {
         product.isFavorite = result;
       });
   }
+
+
 }

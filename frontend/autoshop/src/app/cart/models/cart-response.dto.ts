@@ -4,4 +4,5 @@ export interface CartResponseDTO {
   items: CartItemDTO[];
   total: number;
   itemCount: number;
+  savedItems:CartItemDTO [];
 }
