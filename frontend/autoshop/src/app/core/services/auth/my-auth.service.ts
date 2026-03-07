@@ -38,27 +38,23 @@ export class MyAuthService {
   private hasStoredLogin(): boolean {
     return   !!localStorage.getItem('jwtToken');
   }
-login(credentials: { username: string; password: string }): Observable<{token:string}> {
+login(credentials: { username: string; password: string }): Observable<any> {
   return this.httpClient
-    .post<{ token: string }>(`${this.apiUrl}/login`, credentials)
+    .post<any>(`${this.apiUrl}/login`, credentials)
     .pipe(
       tap((response) => {
-    
-           if (response && response.token){
-             localStorage.setItem('jwtToken', response.token);
-    
-           }
-           else{
-  console.error(' No token in response!');
-           }
-       
-           
-
-           
+        if (response && response.token) {
+          localStorage.setItem('jwtToken', response.token);
+          
+          if (response.roles) {
+            localStorage.setItem('userRoles', JSON.stringify(response.roles));
+          }
+          
+        } else {
+        }
       })
     );
-  }
-      
+}
 getToken(): string | null {
   return localStorage.getItem('jwtToken');
 }

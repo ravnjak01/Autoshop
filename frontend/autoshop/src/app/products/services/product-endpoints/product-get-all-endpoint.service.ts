@@ -62,7 +62,7 @@ export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllR
 
      if (categoryIds && Array.isArray(categoryIds) && categoryIds.length > 0) {
       categoryIds.forEach((id: number) => {
-        if (id != null && id > 0) { // Provjeri da nije null/undefined
+        if (id != null && id > 0) { 
           params = params.append('categoryIds', id.toString());
         }
       });
