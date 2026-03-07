@@ -34,3 +34,8 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+- task: AzureWebApp@1
+  inputs:
+    azureSubscription: 'rs1_autoshop_connection'
+    appName: 'ecommerceAutoshop'
+    package: '$(build.artifactStagingDirectory)/WebApp.zip'
