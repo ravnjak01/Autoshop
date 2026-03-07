@@ -7,13 +7,15 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideHttpClient, withInterceptorsFromDi, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { MyAuthInterceptor } from './core/services/auth/my-auth-interceptor.service';
 import { MyErrorHandlingInterceptor } from './core/services/auth/my-error-handling-interceptor.service';
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, isDevMode } from '@angular/core';
 import { AppModule } from './app.module';
 import { SharedModule } from './modules/shared/shared.module';
 import { BlogModule } from './blog/blog.module';
 import {DiscountModule} from './administration/discount-management/discount-managements.module';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { TranslocoHttpLoader } from './transloco-loader';
+import { provideTransloco } from '@ngneat/transloco';
 export const appConfig: ApplicationConfig = {
 
     providers: [
@@ -43,7 +45,16 @@ export const appConfig: ApplicationConfig = {
       BlogModule,
       MatSnackBarModule,
       BrowserAnimationsModule
-    )
+    ), provideHttpClient(), provideTransloco({
+        config: { 
+          availableLangs: ['en', 'bs'],
+          defaultLang: 'en',
+          // Remove this option if your application doesn't support changing language in runtime.
+          reRenderOnLangChange: true,
+          prodMode: !isDevMode(),
+        },
+        loader: TranslocoHttpLoader
+      })
   ]
 
 

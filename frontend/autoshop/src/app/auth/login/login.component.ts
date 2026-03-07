@@ -6,6 +6,7 @@ import{ Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { MyAuthInfo } from '../../modules/shared/dtos/my-auth-info';
+import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -16,6 +17,7 @@ import { MyAuthInfo } from '../../modules/shared/dtos/my-auth-info';
     FormsModule,
     ReactiveFormsModule,
     RouterModule,
+    TranslocoModule
  
   ]
 })
@@ -31,18 +33,23 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private authService: MyAuthService, 
     private router: Router ,
-      private httpClient: HttpClient 
+      private httpClient: HttpClient ,
+      public translocoService:TranslocoService
   ) {
    
     this.loginForm = this.formBuilder.group({
-//      email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       username: ['', Validators.required]
     });
   }
+  
+  changeLanguage(lang: string) {
+    this.translocoService.setActiveLang(lang);
+  }
 navigateToForgotPassword() {
 this.router.navigate(['/forgot-password']);
 }
+
 
   get f() { return this.loginForm.controls; }
 
@@ -63,20 +70,28 @@ this.router.navigate(['/forgot-password']);
  this.authService.login({ username, password }).subscribe({
   next: (response) => {
     if (response && response.token) {
-      localStorage.setItem('jwtToken', response.token); 
-      
-      this.authService.checkAuth().subscribe(() => {
-         this.httpClient.get<MyAuthInfo>('http://localhost:7000/api/user/me').subscribe({
-           next: (user) => {
-             localStorage.setItem('userRoles', JSON.stringify(user.roles));
-             this.router.navigate(['/home']);
-           }
-         });
+      localStorage.setItem('jwtToken', response.token);
+      this.authService.checkAuth().subscribe({
+        next: () => this.router.navigate(['/home']),
+        error: () => {
+          this.errorMessage = 'auth.login.errors.general_error';
+          this.loading = false;
+        }
       });
     }
+  },
+  error: (err) => {
+    if (err.status === 401) {
+      this.errorMessage = 'auth.login.errors.invalid_credentials'; 
+    } else {
+      this.errorMessage = 'auth.login.errors.general_error';
+    }
+    this.loading = false;
   }
 });
 }
+
+
 
   
 }

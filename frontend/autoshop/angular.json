@@ -27,6 +27,7 @@
             "outputPath": "dist/autoshop",
             "index": "src/index.html",
             "browser": "src/main.ts",
+            "server": "src/main.server.ts",
             "polyfills": [
               "zone.js",
               "@angular/localize/init"
@@ -36,6 +37,7 @@
               {
                 "glob": "**/*",
                 "input": "public"
+                
               }
             ],
             "styles": [

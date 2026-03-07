@@ -22,15 +22,12 @@ export class MyAuthInterceptor implements HttpInterceptor {
       '/api/auth/reset-password'
     ];
 
-    // Provjeri da li je trenutna ruta u listi za preskakanje
     const shouldSkipAuth = skipAuth.some(url => req.url.includes(url));
 
     if (shouldSkipAuth) {
-      // Za auth rute, samo šalji sa credentials
       return next.handle(req.clone({ withCredentials: true }));
     }
 
-    // Za sve ostale rute, dodaj token
     const jwtToken = localStorage.getItem('jwtToken');
     
     const headers: any = {};

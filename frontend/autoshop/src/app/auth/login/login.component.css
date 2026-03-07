@@ -155,3 +155,34 @@ a:hover {
 .forgot-password-link a:hover {
   color: #5a6268;
 }
+.lang-selector {
+  display: flex;
+  justify-content: center; /* Centriranje horizontalno */
+  gap: 10px;               /* Razmak između dugmića */
+  margin-bottom: 20px;     /* Razmak od naslova forme */
+  padding-top: 10px;
+}
+
+.lang-selector button {
+  background-color: #f8f9fa;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #495057;
+  transition: all 0.3s ease; /* Glatka promjena boje */
+}
+
+.lang-selector button:hover {
+  background-color: #e2e6ea;
+  border-color: #adb5bd;
+}
+
+/* Stil za aktivno dugme */
+.lang-selector button.active {
+  background-color: #007bff; /* Primarna plava boja */
+  color: white;
+  border-color: #0056b3;
+  box-shadow: 0 4px 6px rgba(0, 123, 255, 0.2);
+}

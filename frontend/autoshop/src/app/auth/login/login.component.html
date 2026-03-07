@@ -1,50 +1,75 @@
+<div class="lang-selector">
+  <button 
+    (click)="changeLanguage('bs')" 
+    [class.active]="translocoService.getActiveLang() === 'bs'">
+    BS
+  </button>
+  <button 
+    (click)="changeLanguage('en')" 
+    [class.active]="translocoService.getActiveLang() === 'en'">
+    EN
+  </button>
+</div>
 
 
 <div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
+  {{ errorMessage | transloco }}
 </div>
-
 
 <div class="auth-container">
   <div class="auth-card">
-    <h2>Login</h2>
+    <h2>{{ 'auth.login.title' | transloco }}</h2>
+    
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-      <label for="username">Username</label>
+      
+      <label for="username">{{ 'auth.login.username_label' | transloco }}</label>
       <input 
         type="text" 
         id="username" 
-        formControlName="username" autocomplete="off"
+        formControlName="username" 
+        autocomplete="off"
         [ngClass]="{'is-invalid': submitted && f['username'].errors}"
       />
+      
       <div *ngIf="submitted && f['username'].errors" class="error-message">
-        <div *ngIf="f['username'].errors['required']">Username is required</div>
-        <div *ngIf="f['username'].errors['username']">Enter your username</div>
+        <div *ngIf="f['username'].errors['required']">
+          {{ 'auth.login.errors.username_required' | transloco }}
+        </div>
+        <div *ngIf="f['username'].errors['username']">
+          {{ 'auth.login.errors.username_invalid' | transloco }}
+        </div>
       </div>
 
-      <label for="password">Password:</label>
+      <label for="password">{{ 'auth.login.password_label' | transloco }}</label>
       <input 
         type="password" 
         id="password" 
-        formControlName="password" autocomplete="off"
+        formControlName="password" 
+        autocomplete="off"
         [ngClass]="{'is-invalid': submitted && f['password'].errors}" 
       />
-      <div *ngIf="submitted && f['password'].errors" class="error-message">
-        <div *ngIf="f['password'].errors['required']">Password is required</div>
-      </div>
-    <div class="forgot-password-link">
-      <a (click)="navigateToForgotPassword()">Forgot password?</a>
-    </div>
       
+      <div *ngIf="submitted && f['password'].errors" class="error-message">
+        <div *ngIf="f['password'].errors['required']">
+          {{ 'auth.login.errors.password_required' | transloco }}
+        </div>
+      </div>
 
+      <div class="forgot-password-link">
+        <a (click)="navigateToForgotPassword()">
+          {{ 'auth.login.forgot_password' | transloco }}
+        </a>
+      </div>
+      
       <button type="submit" [disabled]="loading">
         <span *ngIf="loading" class="spinner"></span>
-        Login
+        {{ 'auth.login.submit_button' | transloco }}
       </button>
     </form>
 
-    <p>Dont have an account? 
-      <a routerLink="/register">Register</a>
+    <p>
+      {{ 'auth.login.no_account' | transloco }} 
+      <a routerLink="/register">{{ 'auth.login.register_link' | transloco }}</a>
     </p>
   </div>
 </div>
-

@@ -1,0 +1,20 @@
+{
+  "auth": {
+    "login": {
+      "title": "Prijava",
+      "username_label": "Korisničko ime",
+      "password_label": "Lozinka",
+      "forgot_password": "Zaboravili ste lozinku?",
+      "submit_button": "Prijavi se",
+      "no_account": "Nemate račun?",
+      "register_link": "Registrujte se",
+      "errors": {
+        "username_required": "Korisničko ime je obavezno",
+        "username_invalid": "Unesite ispravno korisničko ime",
+        "password_required": "Lozinka je obavezna",
+        "general_error": "Došlo je do greške prilikom prijave",
+        "invalid_credentials": "Pogrešno korisničko ime ili lozinka"
+      }
+    }
+  }
+}

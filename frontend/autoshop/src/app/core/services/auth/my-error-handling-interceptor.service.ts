@@ -16,6 +16,16 @@ export class MyErrorHandlingInterceptor implements HttpInterceptor {
   ) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    if (req.url.includes('/i18n/')) {
+    return next.handle(req);
+  }
+  
+
+  if (req.url.includes('/auth/login') || req.url.includes('/auth/check')) {
+    return next.handle(req);
+  }
+
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         this.handleError(error);
@@ -37,9 +47,9 @@ export class MyErrorHandlingInterceptor implements HttpInterceptor {
           message = 'Bad request (400). Please check your data.';
           break;
         case 401:
-          // --- AUTOMATSKI LOGOUT LOGIKA ---
+          // --- AUTOMATSKI LOGOUT 
           message = 'Session expired. Please log in again.';
-          this.authService.logout(); // Briše localStorage i resetuje stanje
+          this.authService.logout(); 
           this.router.navigate(['/login']);
           break;
         case 403:

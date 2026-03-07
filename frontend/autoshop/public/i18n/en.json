@@ -1,0 +1,21 @@
+{
+  "auth": {
+    "login": {
+      "title": "Login",
+      "username_label": "Username",
+      "password_label": "Password",
+      "forgot_password": "Forgot password?",
+      "submit_button": "Login",
+      "no_account": "Don't have an account?",
+      "register_link": "Register",
+      "errors": {
+        "username_required": "Username is required",
+        "username_invalid": "Enter your username",
+        "password_required": "Password is required",
+        "general_error": "An error occurred during login",
+        "invalid_credentials": "Wrong  username or password"
+
+      }
+    }
+  }
+}
