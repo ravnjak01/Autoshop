@@ -17,29 +17,25 @@ public partial class Program
 {
     private static async Task Main(string[] args)
     {
-        var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json", optional: false)
-            .Build();
+        //var config = new ConfigurationBuilder()
+        //    .AddJsonFile("appsettings.json", optional: false)
+        //    .Build();
 
         var builder = WebApplication.CreateBuilder(args);
 
-        // **Dodaj DbContext**
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-       options.UseSqlServer(
-           config.GetConnectionString("db1"),
-           sqlOptions => sqlOptions.EnableRetryOnFailure(
-               maxRetryCount: 5,
-               maxRetryDelay: TimeSpan.FromSeconds(10),
-               errorNumbersToAdd: null
-           )
-       )
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("db1"), // Use builder.Configuration here!
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null
+        )
+    )
+ );
 
 
 
-   );
-
-
-        
         builder.Services.AddIdentity<User, IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>()
             .AddDefaultTokenProviders();
