@@ -1,4 +1,6 @@
-﻿using RS1_2024_25.API.Services;
+﻿using Microsoft.AspNetCore.Http;
+using Moq;
+using RS1_2024_25.API.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +22,10 @@ namespace Autoshop.UnitTests
 
         public void IsValidEmail_CheckVariousFormats(string email, bool expectedResult)
         {
-            var authService = new AuthService(null);
+            var mockHttpContextAccessor = new Mock<IHttpContextAccessor>();
+
+            var authService = new AuthService(null, mockHttpContextAccessor.Object);
+
 
             var result = authService.IsValidEmail(email);
 
