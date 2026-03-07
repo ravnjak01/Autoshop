@@ -7,7 +7,9 @@ trigger:
 - master
 
 pool:
-  vmImage: 'windows-latest'
+  name: self_host_autoshop
+  demands:
+    - agent.os -equals Windows_NT
 
 variables:
   solution: '**/*.sln'
