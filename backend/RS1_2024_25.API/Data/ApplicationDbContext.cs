@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data.Models;
-using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Data.Models.Modul3_Audit;
 using RS1_2024_25.API.Data.Models.ShoppingCart;
@@ -21,8 +20,6 @@ namespace RS1_2024_25.API.Data
         {
         }
 
-       
-        public DbSet<MyAuthenticationToken> MyAuthenticationTokensAll { get; set; }
         public DbSet<BlogPost> BlogPosts { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<BlogComment> BlogComments { get; set; }

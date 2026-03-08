@@ -5,7 +5,6 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Services;
 using RS1_2024_25.API.Data.Middleware;
-using RS1_2024_25.API.Helper.Auth;
 using RS1_2024_25.API.SignalRHubs;
 using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -115,7 +114,6 @@ public partial class Program
             new string[] {}
         }
     });
-            c.OperationFilter<MyAuthorizationSwaggerHeader>();
         });
 
 

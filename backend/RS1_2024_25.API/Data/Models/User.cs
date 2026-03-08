@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using RS1_2024_25.API.Data.Models.Modul1_Auth;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using System.ComponentModel.DataAnnotations;
 

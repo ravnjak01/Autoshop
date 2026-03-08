@@ -217,6 +217,10 @@ namespace RS1_2024_25.API.Controllers
         public async Task<IActionResult> MoveToCart(int productId, CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
+
+            if (userId == null)
+                return Unauthorized();
+
             var cart = await _context.Carts
                 .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
@@ -362,8 +366,9 @@ namespace RS1_2024_25.API.Controllers
             _context.CartItems.Remove(item);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var remainingItems = cart.Items
-                .Where(i => i.Id != itemId) 
+            var remainingItems = await _context.CartItems
+                .Where(i => i.CartId == cart.Id)
+                .Include(i => i.Product)
                 .Select(i => new CartItemDTO
                 {
                     Id = i.Id,
@@ -373,7 +378,8 @@ namespace RS1_2024_25.API.Controllers
                     Price = i.Product.Price,
                     imageUrl = i.Product.ImageUrl,
                     Total = i.Product.Price * i.Quantity
-                }).ToList();
+                })
+                .ToListAsync(cancellationToken);
 
             return Ok(new CartResponseDTO
             {
