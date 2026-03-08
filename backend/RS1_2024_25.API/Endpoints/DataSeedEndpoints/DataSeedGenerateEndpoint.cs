@@ -371,15 +371,6 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 );
             db.SaveChanges();
         }
-
-        if(!db.DiscountCategories.Any())
-        {
-            db.DiscountCategories.AddRange(
-                new DiscountCategory { DiscountId = 1, CategoryId = 1 },
-                new DiscountCategory { DiscountId = 1, CategoryId = 2 }
-                );
-            db.SaveChanges();
-        }
         return "Data generation completed successfully.";
     }
 }
