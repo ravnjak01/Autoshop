@@ -6,16 +6,20 @@ import { CommonModule } from '@angular/common';
 import { CartService } from './cart/services/cart.service';
 import { CartItemDTO } from './cart/models/cart-item.dto';
 import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sidebar.component';
+import {LoadingService} from './loading/loading.service';
+import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
   standalone:true,
-  imports: [CommonModule,RouterOutlet,RouterLink,CartSidebarComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, CartSidebarComponent, MatProgressSpinner],
 
 })
 export class AppComponent {
+  loading$!: any;
+
    isCartSidebarOpen = false;
 
   closeSidebar() {
@@ -32,7 +36,10 @@ throw new Error('Method not implemented.');
    isCartOpen: boolean = false;
 cartItems: CartItemDTO[] = [];
 cartItemCount: number = 0;
-  constructor(private router: Router, public authService: MyAuthService,public cartService:CartService) {
+  constructor(private loadingService: LoadingService, private router: Router, public authService: MyAuthService,public cartService:CartService) {
+
+    this.loading$ = this.loadingService.loading$;
+
     this.router.events.subscribe((event) => {
       if(event instanceof NavigationEnd) {
         const url=event.urlAfterRedirects;
@@ -43,12 +50,12 @@ cartItemCount: number = 0;
       this.isAdminPage = this.router.url.includes('/administration');
       }
 
-   
+
     });
         this.authService.isLoggedIn$.subscribe((loggedIn) => {
       this.isUserLoggedIn = loggedIn;
     });
-    
+
   }
 ngOnInit() {
   this.authService.checkAuth().subscribe({
@@ -72,11 +79,11 @@ ngOnInit() {
   onLogout() {
   this.authService.logout();
   }
-  
 
- 
 
- 
+
+
+
     addProductToCart(productId: number): void {
     this.cartService.addToCart(productId, 1).subscribe({
       next: (cartItem: CartItemDTO) => {
@@ -87,15 +94,15 @@ ngOnInit() {
     });
   }
 
- 
 
- 
 
-  
+
+
+
  loadCart(): void {
     this.cartService.getCart().subscribe({
       next: (data) => {
-        this.cartItems = data.items; 
+        this.cartItems = data.items;
       },
       error: (err) => {
         console.error('Error during loading the cart', err);
@@ -119,7 +126,7 @@ removeItem(productId: number): void {
     }
   toggleCart(): void {
     this.isCartOpen = !this.isCartOpen;
-   
+
     if (this.isCartOpen) {
       document.body.classList.add('cart-open');
     } else {
@@ -131,4 +138,4 @@ closeCart(): void {
   document.body.classList.remove('cart-open');
 }
 }
-   
+
