@@ -63,6 +63,8 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
+    this.dataSource.filter = filterValue;
     this.searchSubject.next(filterValue);
   }
 
@@ -158,7 +160,11 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
   }
 
   refreshPage(): void {
-    window.location.reload();
+    const filterValue = this.dataSource.filter || '';
+    const page = this.paginator.pageIndex + 1;
+    const pageSize = this.paginator.pageSize;
+
+    this.fetchDiscounts(filterValue, page, pageSize);
   }
 
   openCategoryDialog(discount: any, event: MouseEvent) {

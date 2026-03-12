@@ -35,6 +35,9 @@ import {DiscountModule} from './administration/discount-management/discount-mana
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import {FavoriteModule} from './favorites/favorite.module';
 
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { LoadingInterceptor} from './loading/loading.interceptor';
+
 @NgModule({
 
   declarations: [
@@ -51,6 +54,7 @@ import {FavoriteModule} from './favorites/favorite.module';
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
 
     BlogModule,
     BlogManagementModule,
@@ -78,13 +82,16 @@ import {FavoriteModule} from './favorites/favorite.module';
 
     // Treći strani moduli
     InfiniteScrollModule,
-    NgxSliderModule,
     FavoriteModule
   ],
   providers: [
 
     MyAuthService,
-
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: LoadingInterceptor,
+      multi: true
+    }
     ],
 
 

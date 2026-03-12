@@ -38,4 +38,9 @@
   *ngIf="isCartOpen"
   (closeSidebar)="closeCart()">
 </cart-sidebar>
+
+<div class="global-spinner" *ngIf="loading$ | async">
+  <mat-spinner diameter="50"></mat-spinner>
+</div>
+
 <router-outlet></router-outlet>

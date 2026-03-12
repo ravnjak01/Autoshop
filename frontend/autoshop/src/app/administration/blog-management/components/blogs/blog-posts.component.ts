@@ -93,8 +93,11 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
-    this.paginator.pageIndex = 0; // Reset to the first page
-    this.searchSubject.next(filterValue); // Send the new filter value
+
+    this.dataSource.filter = filterValue;
+    this.paginator.pageIndex = 0;
+
+    this.searchSubject.next(filterValue);
   }
 
   openBlogPostForm(event: MouseEvent, blogId?: number): void {
@@ -190,6 +193,10 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
   }
 
   refreshPage(): void {
-    window.location.reload();
+    const filterValue = this.dataSource.filter || '';
+    const page = this.paginator.pageIndex + 1;
+    const pageSize = this.paginator.pageSize;
+
+    this.fetchBlogs(filterValue, page, pageSize);
   }
 }
