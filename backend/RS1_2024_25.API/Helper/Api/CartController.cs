@@ -160,6 +160,7 @@ namespace RS1_2024_25.API.Controllers
              ProductName = i.Product.Name,
              Quantity = i.Quantity,
              Price = i.Product.Price,
+             StockQuantity = i.Product.StockQuantity,
              imageUrl = i.Product.ImageUrl.StartsWith("http")
                           ? i.Product.ImageUrl
                           : $"{baseUrl}{i.Product.ImageUrl}",
@@ -274,6 +275,7 @@ namespace RS1_2024_25.API.Controllers
                 ProductId = item.ProductId,
                 ProductName = item.Product.Name,
                 Price = item.Product.Price,
+                StockQuantity = item.Product.StockQuantity,
                 Quantity = item.Quantity,
                 imageUrl = item.Product.ImageUrl,
                 Total = item.Product.Price * item.Quantity
@@ -376,6 +378,7 @@ namespace RS1_2024_25.API.Controllers
                     ProductName = i.Product.Name,
                     Quantity = i.Quantity,
                     Price = i.Product.Price,
+                    StockQuantity = i.Product.StockQuantity,
                     imageUrl = i.Product.ImageUrl,
                     Total = i.Product.Price * i.Quantity
                 })

@@ -75,7 +75,7 @@
         </span>
 
         <!-- ❤️ FAVORITE -->
-        <button
+        <button type="button"
           *ngIf="authService.isLoggedIn()"
           class="favorite-btn"
           (click)="toggleFavorite(product)"

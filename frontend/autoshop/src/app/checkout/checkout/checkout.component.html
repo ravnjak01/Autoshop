@@ -23,9 +23,7 @@
         <input id="city" formControlName="city" type="text" placeholder="City" />
       </div>
       <div class="form-group">
-        <div class="form-group">
           <input id="postalCode" formControlName="postalCode" type="text" placeholder="Postal code" />
-        </div>
         <input id="street" formControlName="street" type="text" placeholder="Street and number" />
       </div>
 
@@ -54,18 +52,18 @@
           <div class="product-info">
             <img 
               *ngIf="item.imageUrl || item.product?.imageUrl" 
-              [src]="'http://localhost:7000' + (item.imageUrl || item.product?.imageUrl)" 
+              [src]="item.imageUrl"
               alt="{{ item.productName }}" 
               class="checkout-product-image" 
             />
             <span>{{ item.productName }} × {{ item.quantity }}</span>
           </div>
-          <span>{{ getItemTotal(item) | number:'1.2-2' }} KM</span>
+          <span>{{ getItemTotal(item) | number:'1.2-2' |currency }} </span>
         </div>
 
         <div class="summary-row shipping-row">
           <strong>Delivery within 24 hours</strong>
-          <span>{{ shippingFee }} KM</span> 
+          <span>{{ shippingFee  | currency }} </span> 
         </div>
       </div>
       
