@@ -87,7 +87,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
         this.paginator.length = data.totalCount;
       },
       error: (err: any) => {
-        console.error('Error fetching blogs:', err);
       },
     });
   }
@@ -121,7 +120,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
         //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
         this.openMySimpleDialog("Uspješno ste izvršili akciju");
       },
-      error: (err) => console.error('Error deactivate blog:', err)
     });
   }
 
@@ -131,7 +129,6 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       next: () => {
         this.refreshPage();
       },
-      error: (err) => console.error('Error deleting blog:', err)
     });
   }
 
@@ -162,11 +159,8 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Korisnik je potvrdio brisanje');
         // Pozovite servis ili izvršite logiku za brisanje
         this.deleteBlog(id);
-      } else {
-        console.log('Korisnik je otkazao brisanje');
       }
     });
   }
@@ -177,8 +171,7 @@ export class BlogPostsComponent implements OnInit, AfterViewInit {
       next: () => {
         //this.cities = this.cities.filter(city => city.id !== id); // Uklanjanje iz lokalne liste
         this.openMySimpleDialog("Uspješno ste izvršili akciju");
-      },
-      error: (err) => console.error('Error deactivate blog:', err)
+      }
     });
   }
 

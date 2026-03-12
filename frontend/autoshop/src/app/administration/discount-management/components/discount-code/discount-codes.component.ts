@@ -29,7 +29,6 @@ export class DiscountCodesComponent implements OnInit {
   loadCodes(): void {
     this.discountGetCodesService.handleAsync(this.data.discountId).subscribe({
       next: codes => this.codes = codes,
-      error: err => console.error('Error loading codes', err)
     });
   }
 
@@ -66,8 +65,7 @@ export class DiscountCodesComponent implements OnInit {
     event.stopPropagation();
     if (confirm('Are you sure you want to delete this code?')) {
       this.discountCodeDeleteService.handleAsync(id).subscribe({
-        next: () => this.loadCodes(),
-        error: err => console.error('Error deleting code', err)
+        next: () => this.loadCodes()
       });
     }
   }

@@ -2,11 +2,10 @@ import { Component, Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, catchError, EMPTY, map, Observable, tap } from 'rxjs';
 import {  CartItemDTO  } from '../models/cart-item.dto'
-import { AddToCartDTO } from '../models/add-to-cart.dto';
-import { UpdateCartItemDTO } from '../models/update-cart.dto';
 import { CartResponseDTO } from '../models/cart-response.dto';
 import { CurrencyPipe } from '@angular/common';
 import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
+import { MyConfig } from '../../my-config';
 @Injectable({
   providedIn: 'root',
   
@@ -16,14 +15,13 @@ import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snack
 export class CartService {
   private cartTotalSubject = new BehaviorSubject<number>(0);
   cartTotal$ = this.cartTotalSubject.asObservable();
-  getItems(): any {
-    throw new Error('Method not implemented.');
-  }
-  private baseUrl = 'http://localhost:7000/api/cart'; 
+
+  private baseUrl = `${MyConfig.api_address}/api/cart`;
 
     private cartItemsSubject = new BehaviorSubject<CartItemDTO[]>([]);
   cartItems$ = this.cartItemsSubject.asObservable();
   constructor(private http: HttpClient,private snackbar:MySnackbarHelperService) { }
+
 loadCart(): void {
   this.getCart().subscribe({
     next: (cartResponse) => {
@@ -33,7 +31,6 @@ loadCart(): void {
       this.cartTotalSubject.next(cartResponse?.total || 0);
     },
     error: (err) => {
-      console.error("Error during loading ", err);
       this.cartItemsSubject.next([]);
     }
   });
@@ -68,22 +65,6 @@ addToCart(productId: number, quantity: number = 1): Observable<CartItemDTO> {
     );
   }
 
-
-  updateCartItem(itemId: number, quantity: number): Observable<any> {
-    const updateData: UpdateCartItemDTO = { quantity };
-    
-    return this.http.put(
-      `${this.baseUrl}/update/${itemId}`,
-      updateData,
-      { 
-        withCredentials: true,
-        headers: { 'Content-Type': 'application/json' }
-      }
-    ).pipe(
-      tap(() => this.loadCart())
-    );
-  }
-
 updateQuantity(itemId: number, quantity: number): Observable<CartItemDTO> {
   return this.http.put<CartItemDTO>(
     `${this.baseUrl}/update/${itemId}`,
@@ -92,7 +73,6 @@ updateQuantity(itemId: number, quantity: number): Observable<CartItemDTO> {
   ).pipe(
     tap(() => this.loadCart()),
     catchError((err)=>{
-      console.log('Kompletna greška:', err);
       const message=err.error?.message || err.error ||'Not enough on the stock';
       this.snackbar.showMessage(message,'error');
 
@@ -133,15 +113,14 @@ getCartItems(): Observable<CartItemDTO[]> {
 
  getCartItemCount(): Observable<number> {
     return this.getCart().pipe(
-      // Koristi se map da izvuče samo 'itemCount' iz objekta korpe
       map(cart => cart.itemCount)
     );
 }
 
-  checkout(): Observable<any> {
+  checkout(data:any): Observable<any> {
     return this.http.post(
-      `http://localhost:7000/api/checkout`,
-      {},
+       `${MyConfig.api_address}/api/Checkout/checkout`,
+      data,
       { 
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' }

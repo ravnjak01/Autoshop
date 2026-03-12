@@ -27,8 +27,7 @@ export class DiscountPostComponent implements OnInit {
     this.discountGetByIdService.handleAsync(this.data.discountId).subscribe({
       next: (discount) => {
         this.discount = discount;
-      },
-      error: (error) => console.error('Error loading blog data', error),
+      }
     });
   }
 

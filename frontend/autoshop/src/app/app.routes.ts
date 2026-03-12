@@ -11,7 +11,6 @@ import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sideba
 import { CheckoutComponent } from './checkout/checkout/checkout.component';
 import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
 import { ProductManagementComponent } from './administration/products/product-management/product-management.component';
-import { CategoriesComponent } from './categories/components/categories.component';
 import { DiscountsComponent } from './administration/discount-management/components/discount/discount.component';
 import {BlogPostsComponent as BlogPostsComponentsAdministration} from './administration/blog-management/components/blogs/blog-posts.component' ;
 import {BlogPostsComponent} from './blog/components/blog-posts/blog-posts.component';
@@ -61,7 +60,7 @@ import {FavoritesComponent} from './favorites/components/favorite.component';
   canActivate: [AuthGuard]
 },
 {path:'confirmation-modal',component:ConfirmationModalComponent},
-{path:'categories',component:CategoriesComponent}, {path:'favorites',component:FavoritesComponent},
+{path:'favorites',component:FavoritesComponent},
 
   { path: '**', redirectTo: 'home' },
 ];

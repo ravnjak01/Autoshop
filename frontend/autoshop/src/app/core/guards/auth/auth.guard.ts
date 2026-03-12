@@ -15,7 +15,6 @@ export class AuthGuard implements CanActivate {
   constructor(private authService: MyAuthService, private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
-    console.log('Guard provjerava rutu:', route.routeConfig?.path);
     const guardData = route.data as AuthGuardData;
 
     if (!this.authService.isLoggedIn()) {

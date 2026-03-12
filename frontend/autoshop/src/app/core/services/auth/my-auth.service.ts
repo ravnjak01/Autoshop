@@ -6,11 +6,13 @@ import { LoginTokenDto } from '../../../modules/shared/dtos/login-token-dto';
 import {MySignalRService} from '../../../core/services/signalr/my-signal-r.service';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
+import { MyConfig } from '../../../my-config';
 
 
 @Injectable({ providedIn: 'root' })
 export class MyAuthService {
-  private apiUrl = 'http://localhost:7000/api/auth';
+   private apiUrl = `${MyConfig.api_address}/api/auth`; 
+    private userUrl = `${MyConfig.api_address}/api/user`;
     private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasStoredLogin());
   isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
@@ -69,7 +71,7 @@ checkAuth(): Observable<boolean> {
   });
 
  return this.httpClient
-      .get<{ username: string; roles: string[] }>('http://localhost:7000/api/user/me', { headers })
+      .get<{ username: string; roles: string[] }>(`${this.userUrl}/me`, { headers })
       .pipe(
         map((response) => {
           if (response && response.username) {
@@ -99,7 +101,7 @@ checkAuth(): Observable<boolean> {
     );
   }
 resetPassword(data: { email: string, token: string, newPassword: string }) {
-  return this.httpClient.post('http://localhost:7000/api/auth/reset-password', data);
+  return this.httpClient.post(`${this.apiUrl}/reset-password`, data);
 }
 
   register(data: { email: string, username:string,password: string }): Observable<any> {
@@ -138,7 +140,7 @@ getCurrentUserId(): Observable<string | null> {
   });
 
   return this.httpClient
-    .get<{ id: string; username: string; email: string; roles: string[] }>('http://localhost:7000/api/user/me', { headers })
+        .get<{ id: string; username: string; email: string; roles: string[] }>(`${this.userUrl}/me`, { headers })
        .pipe(
       tap(response => {
         if (response.id) {

@@ -82,7 +82,6 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
         this.paginator.pageSize = data.pageSize;
       },
       error: (err) => {
-        console.error('Error fetching discounts:', err);
       }
     });
   }
@@ -106,8 +105,7 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
     this.discountDeleteService.handleAsync(id).subscribe({
       next: () => {
         this.refreshPage();
-      },
-      error: (err) => console.error('Error deleting discount:', err)
+      }
     });
   }
 
@@ -123,12 +121,9 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Korisnik je potvrdio brisanje');
         // Pozovite servis ili izvršite logiku za brisanje
         this.deleteDiscount(id);
-      } else {
-        console.log('Korisnik je otkazao brisanje');
-      }
+      } 
     });
   }
 
@@ -158,7 +153,6 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if(result === 'updated') {
         this.refreshPage()
-        console.log('Codes updated');
       }
     });
   }

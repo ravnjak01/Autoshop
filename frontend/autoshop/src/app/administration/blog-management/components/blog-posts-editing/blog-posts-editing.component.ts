@@ -60,8 +60,7 @@ export class BlogEditComponent implements OnInit {
 
         // Set image field for display
         this.imageUrl = `data:image/jpeg;base64,${blog.image}`; // Set image URL to the new variable
-      },
-      error: (error) => console.error('Error loading blog data', error),
+      }
     });
   }
 
@@ -102,7 +101,6 @@ export class BlogEditComponent implements OnInit {
 
     this.blogUpdateService.handleAsync(formData).subscribe({
       next: (response: any) => this.dialogRef.close('saved'),
-      error: (error: any) => console.error('Greška pri spremanju!', error),
     });
   }
 

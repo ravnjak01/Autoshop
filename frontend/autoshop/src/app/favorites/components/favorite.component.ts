@@ -44,7 +44,6 @@ export class FavoritesComponent implements OnInit {
     })
 
     this.filterForm.get('sortBy')?.valueChanges.subscribe(value => {
-      console.log("sort changed:", value);
       setTimeout(() => this.loadFavorite(), 0);
     });
 
@@ -62,7 +61,6 @@ export class FavoritesComponent implements OnInit {
       next: (response: FavoriteGetAllResponse) => {
         this.favorites = response.favorites;
       },
-      error: (err: any) => console.log(err)
     });
   }
 

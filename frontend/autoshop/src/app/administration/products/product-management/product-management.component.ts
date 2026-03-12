@@ -61,7 +61,6 @@ cancelEdit(): void {
     next: (res) => {
       this.availableImages = res; 
     },
-    error: (err) => console.error('Greška:', err)
   });
 }
 
@@ -115,7 +114,6 @@ selectImage(img: string) {
     }
     this.productGetAllService.handleAsync(request).subscribe({
       next: (res: ProductGetAllResponse) => {
-        console.log('Podaci sa servera:', res.products[0]);
         this.products = res.products.map((product: any) => {
           if (!product.imageUrl) {
     product.imageUrl = 'assets/default-product.png'; 
@@ -129,7 +127,6 @@ selectImage(img: string) {
         this.loading = false;
       },
       error: (err:HttpErrorResponse) => {
-        console.error(err);
         this.loading = false;
       }
     });
@@ -187,7 +184,6 @@ onPageSizeChange(event: Event): void {
 
   updateProduct(): void {
     if (this.productForm.invalid || !this.selectedProduct) {
-      console.warn('Form not valid or no product selected for update!');
       return;
     }
 
@@ -213,7 +209,6 @@ this.snackBar.showMessage('Changes successfully saved!','success')
         this.productForm.reset({ active: true });
       },
       error: (err) => {
-        console.error('error during updating the product', err);
       }
     });
   }
@@ -238,7 +233,6 @@ deleteProduct(id: number): void {
         error: (err: HttpErrorResponse) => {
           const errorMessage = err.error?.message || err.error || 'Error during deleting the product';
           this.snackBar.showMessage(errorMessage, 'error');
-          console.error('Delete error:', err);
         }
       });
     }

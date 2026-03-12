@@ -80,10 +80,8 @@ ngOnInit() {
     addProductToCart(productId: number): void {
     this.cartService.addToCart(productId, 1).subscribe({
       next: (cartItem: CartItemDTO) => {
-        console.log("Added to the cart:", cartItem);
         this.cartItems.push(cartItem);
       },
-      error: (err:any) => console.error("Error during adding to the cart", err)
     });
   }
 
@@ -96,25 +94,20 @@ ngOnInit() {
     this.cartService.getCart().subscribe({
       next: (data) => {
         this.cartItems = data.items; 
-      },
-      error: (err) => {
-        console.error('Error during loading the cart', err);
       }
     });
   }
 removeItem(productId: number): void {
     this.cartService.removeFromCart(productId).subscribe({
-      next: () => this.loadCart(),
-      error: (err) => console.error('Error while deleting', err)
+      next: () => this.loadCart()
     });
   }
 
    changeQuantity(item: CartItemDTO, increment: boolean): void {
       const newQuantity = increment ? item.quantity + 1 : item.quantity - 1;
       if (newQuantity < 1) return;
-      this.cartService.updateCartItem(item.id, newQuantity).subscribe({
-        next: () => this.loadCart(),
-        error: (err) => console.error('Error while updating quantity', err)
+      this.cartService.updateQuantity(item.id, newQuantity).subscribe({
+        next: () => this.loadCart()
       });
     }
   toggleCart(): void {

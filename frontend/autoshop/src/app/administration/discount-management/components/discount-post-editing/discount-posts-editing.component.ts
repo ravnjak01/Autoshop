@@ -64,8 +64,7 @@ export class DiscountEditComponent implements OnInit {
           startDate: discount.startDate ? new Date(discount.startDate) : '',
           endDate: discount.endDate ? new Date(discount.endDate) : ''
         });
-      },
-      error: (error) => console.error('Error loading discount data', error),
+      }
     });
   }
 
@@ -86,13 +85,11 @@ export class DiscountEditComponent implements OnInit {
     if (this.discountId && this.discountId !== 0) {
       formData.append('id', this.discountId.toString());
       this.discountUpdateService.handleAsync(formData).subscribe({
-        next: () => this.dialogRef.close('updated'),
-        error: (error: any) => console.error('Greška pri ažuriranju popusta!', error),
+        next: () => this.dialogRef.close('updated')
       });
     } else {
       this.discountUpdateService.handleAsync(formData).subscribe({
-        next: () => this.dialogRef.close('saved'),
-        error: (error: any) => console.error('Greška pri spremanju popusta!', error),
+        next: () => this.dialogRef.close('saved')
       });
     }
   }

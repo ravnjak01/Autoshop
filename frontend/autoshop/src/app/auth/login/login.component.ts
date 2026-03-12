@@ -5,8 +5,8 @@ import { MyAuthService } from '../../core/services/auth/my-auth.service';
 import{ Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { MyAuthInfo } from '../../modules/shared/dtos/my-auth-info';
 import { TranslocoModule, TranslocoService } from '@ngneat/transloco';
+import { switchMap } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -33,7 +33,6 @@ export class LoginComponent {
     private formBuilder: FormBuilder,
     private authService: MyAuthService, 
     private router: Router ,
-      private httpClient: HttpClient ,
       public translocoService:TranslocoService
   ) {
    
@@ -58,40 +57,35 @@ this.router.navigate(['/forgot-password']);
   this.submitted = true;
   this.errorMessage = '';
 
-  if (this.loginForm.invalid) {
-    return;
-  }
+  if (this.loginForm.invalid) return;
 
   this.loading = true;
-
   const { username, password } = this.loginForm.value;
 
-
- this.authService.login({ username, password }).subscribe({
-  next: (response) => {
-    if (response && response.token) {
-      localStorage.setItem('jwtToken', response.token);
-      this.authService.checkAuth().subscribe({
-        next: () => this.router.navigate(['/home']),
-        error: () => {
-          this.errorMessage = 'auth.login.errors.general_error';
-          this.loading = false;
+  this.authService.login({ username, password })
+    .pipe(
+      switchMap((response) => {
+        if (response && response.token) {
+          localStorage.setItem('jwtToken', response.token);
+          return this.authService.checkAuth(); 
         }
-      });
-    }
-  },
-  error: (err) => {
-    if (err.status === 401) {
-      this.errorMessage = 'auth.login.errors.invalid_credentials'; 
-    } else {
-      this.errorMessage = 'auth.login.errors.general_error';
-    }
-    this.loading = false;
-  }
-});
+        throw new Error('No token found'); 
+      })
+    )
+    .subscribe({
+      next: () => {
+        this.router.navigate(['/home']);
+      },
+      error: (err) => {
+        if (err.status === 401) {
+          this.errorMessage = 'auth.login.errors.invalid_credentials';
+        } else {
+          this.errorMessage = 'auth.login.errors.general_error';
+        }
+        this.loading = false;
+      }
+    });
 }
-
-
 
   
 }

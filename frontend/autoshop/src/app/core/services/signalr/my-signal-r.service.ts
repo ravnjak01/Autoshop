@@ -12,7 +12,6 @@ export class MySignalRService {
     const authToken = localStorage.getItem('jwtToken');
     
     if (!authToken) {
-      console.error('No auth token found, SignalR connection not started.');
       return;
     }
 
@@ -23,21 +22,18 @@ export class MySignalRService {
 
     this.hubConnection
       .start()
-      .then(() => console.log('SignalR connected'));
 }
   // Zaustavljanje SignalR konekcije
   stopConnection() {
     if (this.hubConnection) {
       this.hubConnection
         .stop()
-        .then(() => console.log('SignalR connection stopped'));
     }
   }
 
   // Dodavanje listenera za primanje poruka
   myClientMethod1(callback: (message: string) => void) {
     this.hubConnection.on('myClientMethod1', (data: string) => {
-      console.log('Message received:', data);
       callback(data);
     });
   }
@@ -46,6 +42,5 @@ export class MySignalRService {
   myServerHubMethod1(toUser: string, message: string) {
     this.hubConnection
       .invoke('MyServerHubMethod1', toUser, message)
-      .then(() => console.log('Message sent successfully'));
   }
 }

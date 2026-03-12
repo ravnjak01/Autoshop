@@ -50,7 +50,7 @@
         </div>
         
         <!-- Prikaz proizvoda sa slikom -->
-        <div class="summary-row product-item" *ngFor="let item of cartItems">
+        <div class="summary-row product-item" *ngFor="let item of cartItems$ | async">
           <div class="product-info">
             <img 
               *ngIf="item.imageUrl || item.product?.imageUrl" 
@@ -72,8 +72,8 @@
       <div class="total-row-highlight">
         <strong>Total</strong>
         <div class="total-amount-box">
-          <span class="final-total">{{ finalTotalPrice | currency:'KM' }}</span> 
-          <p class="vat-info">(uključuje {{ vatAmount | currency:'KM' }} PDV)</p>
+          <span class="final-total">{{ finalTotal$ | async | currency }}</span> 
+          <p class="vat-info">(uključuje {{ vatAmount$ | async | currency }} PDV)</p>
         </div>
       </div>
 
@@ -98,11 +98,4 @@
     (onConfirm)="placeOrder()"
     (onCancel)="showConfirmModal = false">
   </app-confirmation-modal>
-</div>
- <div *ngIf="successMessage" class="alert alert-success">
-  {{ successMessage }}
-</div>
-
-<div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
 </div>

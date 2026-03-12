@@ -21,7 +21,7 @@ export class ResetPasswordComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private authService: MyAuthService,
-    private router: Router
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -59,8 +59,7 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
-        this.errorMessage = 'Error resetting password. Please try again.';
-        console.error(err);
+        
       }
     });
   }

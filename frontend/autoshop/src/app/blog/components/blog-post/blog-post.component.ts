@@ -49,8 +49,7 @@ export class BlogDetailsComponent implements OnInit {
         this.imageUrl = blog.image
           ? `data:image/jpeg;base64,${blog.image}`
           : null; // Set the image URL if available
-      },
-      error: (error) => console.error('Error loading blog data', error),
+      }
     });
 
     this.loadRating();
@@ -64,7 +63,6 @@ export class BlogDetailsComponent implements OnInit {
   addRating() {
 
     if (this.currentRating < 1 || this.currentRating > 5) {
-      console.error('Rating must be between 1 and 5');
       return;
     }
 
@@ -80,9 +78,6 @@ export class BlogDetailsComponent implements OnInit {
     this.ratingAddService.handleAsync(formData).subscribe(
       () => {
         this.loadRating()
-      },
-      (error) => {
-        console.error('Error adding comment', error);
       }
     );
   }

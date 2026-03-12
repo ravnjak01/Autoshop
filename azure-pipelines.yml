@@ -26,7 +26,7 @@ steps:
 - task: VSBuild@1
   inputs:
     solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=FileSystem /p:PublishUrl="$(build.artifactStagingDirectory)\WebApp" /p:SkipInvalidConfigurations=true /p:DeployIisAppPath="Default Web Site"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
@@ -37,5 +37,6 @@ steps:
 - task: AzureWebApp@1
   inputs:
     azureSubscription: 'rs1_autoshop_connection'
+    appType: 'webApp'
     appName: 'ecommerceAutoshop'
-    package: '$(build.artifactStagingDirectory)/WebApp.zip'
+    package: '$(build.artifactStagingDirectory)\WebApp'

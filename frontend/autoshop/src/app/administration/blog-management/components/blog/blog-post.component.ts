@@ -31,7 +31,6 @@ export class BlogPostComponent implements OnInit {
           ? `data:image/jpeg;base64,${blog.image}`
           : null; // Set the image URL if available
       },
-      error: (error) => console.error('Error loading blog data', error),
     });
   }
 

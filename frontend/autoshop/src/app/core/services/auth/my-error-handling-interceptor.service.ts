@@ -37,7 +37,6 @@ export class MyErrorHandlingInterceptor implements HttpInterceptor {
   private handleError(error: HttpErrorResponse): void {
     let message = '';
 
-    console.error('Error Intercepted:', error);
 
     if (error.error instanceof ErrorEvent) {
       message = 'A network or browser error occurred.';
