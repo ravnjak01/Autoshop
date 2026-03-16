@@ -36,9 +36,8 @@ return quantity>=stock;
    cartItems: CartItemDTO[] = [];
   isCartEmpty: boolean = false;
 savedForLaterItems: CartItemDTO[] = [];
-goToCart() {
-throw new Error('Method not implemented.');
-}
+
+
   constructor(public cartService: CartService,private router:Router,private snackbar:MySnackbarHelperService) {}
  
   ngOnInit(): void {

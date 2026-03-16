@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ProductCreateDTO, ProductUpdateDTO } from '../../cart/models/product.dto';
+import { MyConfig } from '../../my-config';
 
 
 
@@ -33,7 +34,7 @@ export interface ProductReadDTO {
   providedIn: 'root'
 })
 export class ProductService {
-  private baseUrl = 'http://localhost:7000/api/product'; 
+  private baseUrl = `${MyConfig.api_address}/api/product`; 
 
   constructor(private http: HttpClient) {}
 

@@ -126,11 +126,14 @@
           <td>{{ p.stockQuantity }}</td>
           <td>{{ p.brend }}</td>
           <td>
-  <img [src]="p.imageUrl" 
-       alt="Product Image" 
-       style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"
-       (error)="p.imageUrl = 'http://localhost:7000/images/products/no-image.png'">
-</td>
+          <img 
+          [src]="p.imageUrl" 
+          style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"
+          (error)="handleMissingImage(p)"
+          loading="lazy"
+        >
+        </td>
+
 
 
           <td>{{ p.stockQuantity>0 ?  'Yes' : 'No' }}</td>

@@ -11,23 +11,6 @@ import { EMPTY, map, Observable, switchMap, take } from 'rxjs';
 import { CartItemDTO } from '../../cart/models/cart-item.dto';
 
 
- /** 
-    this.http.get<any>('http://localhost:7000/api/cart/my-cart', { withCredentials: true })
-      .subscribe({
-        next: (cart) => {
-          if (cart && cart.items) {
-            this.cartItems = cart.items;
-            this.subtotalPrice = this.cartItems.reduce((sum, item) => sum + item.total, 0);
-            this.vatAmount = this.subtotalPrice * 0.17;
-            this.finalTotalPrice = this.subtotalPrice + this.shippingFee;
-          } else {
-            this.cartItems = [];
-          }
-        },
-        error: (err) => console.error('Error when reaching the cart', err)
-      });
-      */
-
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
