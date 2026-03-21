@@ -4,7 +4,6 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using Microsoft.AspNetCore.Identity;
 using RS1_2024_25.API.Data.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 {
@@ -25,23 +24,10 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 return BadRequest("Max price must be grater than min price");
             }
 
-            var now = DateTime.UtcNow;
-
-            var globalDiscount = await db.Discounts
-                .Where(d => d.StartDate <= now && d.EndDate >= now)
-                .OrderByDescending(d => d.DiscountPercentage)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            var globalDiscountPercentage = globalDiscount?.DiscountPercentage ?? 0;
-
-            var promoCode = await db.DiscountCodes
-               .Where(d => d.ValidFrom <= now && d.ValidTo >= now)
-               .Select(d => d.Code)
-               .FirstOrDefaultAsync(cancellationToken);
+            var now = DateTime.Now;
 
             request.PageNumber = Math.Max(1, request.PageNumber);
             request.PageSize = Math.Clamp(request.PageSize, 1, 100);
-
 
             var isAdmin = User.IsInRole("Admin");
             var query = db.Products
@@ -93,50 +79,72 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             var httpContext = httpContextAccessor.HttpContext!;
             var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
+            var rawProducts = await query
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    p.Price,
+                    p.ImageUrl,
+                    p.Brend,
+                    p.CategoryId,
+                    CategoryName = p.Category != null ? p.Category.Name : null,
+                    IsFavorite = p.Favorites.Any(f => f.UserId == userId),
+                    p.StockQuantity,
+                    p.SKU
+                })
+                .ToListAsync(cancellationToken);
+
             var productIds = await query.Select(p => p.Id).ToListAsync(cancellationToken);
             var categoryIds = await query.Select(p => p.CategoryId).Distinct().ToListAsync(cancellationToken);
 
             var categoryDiscounts = await db.DiscountCategories
-                 .Where(dc => categoryIds.Contains(dc.CategoryId))
-                    .ToDictionaryAsync(dc => dc.CategoryId, dc => dc.Discount.DiscountPercentage, cancellationToken);
+                .Where(dc => categoryIds.Contains(dc.CategoryId)
+                    && dc.Discount.StartDate <= now
+                    && dc.Discount.EndDate >= now)
+                .GroupBy(dc => dc.CategoryId)
+                .Select(g => new
+                {
+                    CategoryId = g.Key,
+                    Discount = g.Max(x => x.Discount.DiscountPercentage)
+                })
+                .ToDictionaryAsync(x => x.CategoryId, x => x.Discount, cancellationToken);
 
             var productDiscounts = await db.DiscountProducts
-                .Where(dp => productIds.Contains(dp.ProductId))
-                .ToDictionaryAsync(dp => dp.ProductId, dp => dp.Discount.DiscountPercentage, cancellationToken);
-            var rawProducts = await query
-            .AsNoTracking()
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .Select(p => new
-            {
-                p.Id,
-                p.Name,
-                p.Price,
-                p.ImageUrl,
-                p.Brend,
-                p.CategoryId,
-                CategoryName = p.Category != null ? p.Category.Name : null,
-                IsFavorite = p.Favorites.Any(f => f.UserId == userId),
-                p.StockQuantity,
-                p.SKU
-            })
-            .ToListAsync(cancellationToken);
+                .Where(dp => productIds.Contains(dp.ProductId)
+                && dp.Discount.StartDate <= now
+                && dp.Discount.EndDate >= now)
+                .GroupBy(dp => dp.ProductId)
+                .Select(g => new
+                {
+                ProductId = g.Key,
+                Discount = g.Max(x => x.Discount.DiscountPercentage)
+                })
+                .ToDictionaryAsync(x => x.ProductId, x => x.Discount, cancellationToken);
 
-            var products = rawProducts.Select(x => new ProductDto
+            var products = rawProducts.Select(x =>
             {
-                Id = x.Id,
-                Name = x.Name,
-                Price = x.Price,
-                ImageUrl = x.ImageUrl != null ? $"{baseUrl}{x.ImageUrl}" : null,
-                Brend = x.Brend,
-                CategoryName = x.CategoryName,
-                IsFavorite = x.IsFavorite,
-                PriceAfterGlobalDiscount = x.Price - (x.Price * globalDiscountPercentage / 100),
-                BadgeDiscountPercentage =
-                      (categoryDiscounts.TryGetValue(x.CategoryId, out var cd) ? cd : 0) +
-                 (productDiscounts.TryGetValue(x.Id, out var pd) ? pd : 0),
-                SKU =x.SKU,
-                StockQuantity = x.StockQuantity
+                var categoryDiscount = categoryDiscounts.TryGetValue(x.CategoryId, out var cd) ? cd : 0;
+                var productDiscount = productDiscounts.TryGetValue(x.Id, out var pd) ? pd : 0;
+
+                var finalDiscount = Math.Max(categoryDiscount, productDiscount);
+
+                return new ProductDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Price = x.Price,
+                    ImageUrl = x.ImageUrl != null ? $"{baseUrl}{x.ImageUrl}" : null,
+                    Brend = x.Brend,
+                    CategoryName = x.CategoryName,
+                    IsFavorite = x.IsFavorite,
+                    BadgeDiscountPercentage = finalDiscount,
+                    PriceAfterDiscount = x.Price - (x.Price * finalDiscount / 100),
+                    SKU = x.SKU,
+                    StockQuantity = x.StockQuantity
+                };
             }).ToList();
 
 
@@ -148,9 +156,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 PageSize = request.PageSize,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize),
                 HasNextPage = request.PageNumber < (int)Math.Ceiling(totalCount / (double)request.PageSize),
-                HasPreviousPage = request.PageNumber > 1,
-                PromoCode = promoCode,
-             
+                HasPreviousPage = request.PageNumber > 1
             };
         }
     }
@@ -175,7 +181,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public int TotalPages { get; set; }
         public bool HasNextPage { get; set; }
         public bool HasPreviousPage { get; set; }
-        public string? PromoCode { get; set; }
     }
 
     public class ProductDto
@@ -187,7 +192,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public string? Brend { get; set; }
         public string? CategoryName { get; set; }
         public bool IsFavorite { get; set; }
-        public decimal? PriceAfterGlobalDiscount { get; set; }
+        public decimal? PriceAfterDiscount { get; set; }
         public decimal? BadgeDiscountPercentage { get; set; }
         public string? SKU { get; set; }
         public int StockQuantity { get; set; }

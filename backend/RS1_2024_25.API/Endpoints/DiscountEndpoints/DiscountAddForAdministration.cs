@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -13,6 +14,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
 
     [Route("discount-post")]
+    [Authorize(Roles = "Admin")]
     public class DiscountAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<DiscountPostUpdateOrInsertRequest>
         .WithoutResult

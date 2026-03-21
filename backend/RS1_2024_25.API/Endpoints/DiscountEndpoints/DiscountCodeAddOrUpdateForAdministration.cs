@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -10,6 +11,7 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountCodeAddOrUpdate
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
     [Route("discount-code-post")]
+    [Authorize(Roles = "Admin")]
     public class DiscountCodeAddOrUpdateForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<DiscountCodePostRequest>
         .WithoutResult
@@ -17,6 +19,20 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
         [HttpPost]
         public override async Task HandleAsync([FromForm] DiscountCodePostRequest request, CancellationToken cancellationToken = default)
         {
+            var discount = await db.Discounts
+                    .SingleOrDefaultAsync(d => d.Id == request.DiscountId, cancellationToken);
+
+            if (discount == null)
+            {
+                throw new Exception("Discount not found.");
+            }
+
+            var now = DateTime.Now;
+            if (discount.StartDate > now || discount.EndDate < now)
+            {
+                throw new Exception("Discount is not currently active.");
+            }
+
             var discountCode = await db.DiscountCodes
                                        .SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
@@ -33,7 +49,6 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
             {
                 throw new Exception("End date must be grater than start date");
             }
-
             if (discountCode == null)
             {
                 discountCode = new DiscountCode

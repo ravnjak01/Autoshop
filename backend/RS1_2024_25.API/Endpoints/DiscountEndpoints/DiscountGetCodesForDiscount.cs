@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
@@ -7,6 +8,7 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountGetCodesForDisc
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
     [Route("discount-codes")]
+    [Authorize(Roles = "Admin")]
     public class DiscountGetCodesForDiscount(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<int>
         .WithResult<List<DiscountCodeResponse>>

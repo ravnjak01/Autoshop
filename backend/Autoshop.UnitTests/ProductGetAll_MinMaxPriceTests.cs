@@ -1,4 +1,5 @@
-﻿//using RS1_2024_25.API.Endpoints.ProductEndpoints;
+﻿//using Microsoft.AspNetCore.Mvc;
+//using RS1_2024_25.API.Endpoints.ProductEndpoints;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
@@ -22,17 +23,17 @@
 //                MaxPrice = maxPrice
 //            };
 
-           
+
 //            var endpoint = new ProductGetAll(
 //                db: null!,
 //                userManager: null!,
 //                httpContextAccessor: null!
 //            );
 
-//            // Act & Assert
-//            await Assert.ThrowsAsync<Exception>(() =>
-//                endpoint.HandleAsync(request)
-//            );
+//            var result = await endpoint.HandleAsync(request);
+
+//            var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
+//            Assert.Equal("Max price must be greater than min price", badRequest.Value);
 //        }
 //    }
 //}

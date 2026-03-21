@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -12,6 +13,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
 
     [Route("blog-post")]
+    [Authorize(Roles = "Admin")]
     public class BlogAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<BlogPostUpdateOrInsertRequest>
         .WithoutResult
