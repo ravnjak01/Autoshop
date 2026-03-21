@@ -5,6 +5,11 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MyAuthService } from '../../core/services/auth/my-auth.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal/confirmation-modal.component';
+import { CartService } from '../../cart/services/cart.service';
+import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
+import { EMPTY, map, Observable, switchMap, take } from 'rxjs';
+import { CartItemDTO } from '../../cart/models/cart-item.dto';
+
 
 @Component({
   selector: 'app-checkout',
@@ -14,17 +19,29 @@ import { ConfirmationModalComponent } from '../../confirmation-modal/confirmatio
   imports: [CommonModule, ReactiveFormsModule, ConfirmationModalComponent],
 })
 export class CheckoutComponent implements OnInit {
-  checkoutForm: FormGroup;
-  subtotalPrice = 0;
+    checkoutForm: FormGroup;
   shippingFee = 10;
-  finalTotalPrice = 0;
-  vatAmount = 0;
-  cartItems: any[] = [];
-  showConfirmModal = false;
-  successMessage = '';
-  errorMessage = '';
 
-  constructor(private fb: FormBuilder, private http: HttpClient, private router: Router, private authService: MyAuthService) {
+  cartItems$!: Observable<CartItemDTO[]>;
+  subtotal$!: Observable<number>;
+  vatAmount$!: Observable<number>;
+  finalTotal$!: Observable<number>;
+
+  showConfirmModal = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private authService: MyAuthService,
+    private cartService: CartService,
+    private snackbar: MySnackbarHelperService
+  ) {
+
+     this.cartItems$ = this.cartService.cartItems$;
+    this.subtotal$ = this.cartService.cartTotal$;
+    this.vatAmount$ = this.subtotal$.pipe(map(subtotal => subtotal * 0.17));
+    this.finalTotal$ = this.subtotal$.pipe(map(subtotal => subtotal + this.shippingFee));
+
     this.checkoutForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -38,24 +55,12 @@ export class CheckoutComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.http.get<any>('http://localhost:7000/api/cart/my-cart', { withCredentials: true })
-      .subscribe({
-        next: (cart) => {
-          if (cart && cart.items) {
-            this.cartItems = cart.items;
-            this.subtotalPrice = this.cartItems.reduce((sum, item) => sum + item.total, 0);
-            this.vatAmount = this.subtotalPrice * 0.17;
-            this.finalTotalPrice = this.subtotalPrice + this.shippingFee;
-          } else {
-            this.cartItems = [];
-          }
-        },
-        error: (err) => console.error('Error when reaching the cart', err)
-      });
+    this.cartService.loadCart();
   }
-  getItemTotal(item: any): number {
-  return item.price * item.quantity;
-}
+
+  getItemTotal(item: CartItemDTO): number {
+    return item.price * item.quantity;
+  }
 
   onSubmit() {
     if (!this.authService.isLoggedIn()) {
@@ -68,37 +73,44 @@ export class CheckoutComponent implements OnInit {
 
   placeOrder() {
     this.showConfirmModal = false;
-    this.authService.getCurrentUserId().subscribe({
-      next: (userId) => {
+
+    this.finalTotal$.pipe(
+      take(1),
+      switchMap(finalTotal =>
+        this.authService.getCurrentUserId().pipe(
+          map(userId => ({ userId, finalTotal }))
+        )
+      ),
+      switchMap(({ userId, finalTotal }) => {
         if (!userId) {
           this.router.navigate(['/login']);
-          return;
+          return EMPTY;
         }
+
         const checkoutData = {
-          userId: userId,
+          userId,
           adresa: {
             country: this.checkoutForm.value.country,
             city: this.checkoutForm.value.city,
             street: this.checkoutForm.value.street,
             postalCode: this.checkoutForm.value.postalCode,
             telephoneNumber: this.checkoutForm.value.phone || '',
-            userId: userId
+            userId
           },
           paymentMethod: 'Cash',
-          totalAmount: this.finalTotalPrice
+          totalAmount: finalTotal
         };
 
-        this.http.post('http://localhost:7000/api/Checkout/checkout', checkoutData, { withCredentials: true })
-          .subscribe({
-            next: () => {
-              this.successMessage = 'Your order has been successfully created! Thank you for your trust.';
-              this.checkoutForm.reset();
-              setTimeout(() => this.router.navigate(['/home']), 2500);
-            },
-            error: () => alert('Failed to place order. Please try again.')
-          });
+        return this.cartService.checkout(checkoutData);
+      })
+    ).subscribe({
+      next: () => {
+        this.snackbar.showMessage('Your order has been successfully created!', 'success');
+        this.checkoutForm.reset();
+        this.cartService.clearCart().subscribe();
+        setTimeout(() => this.router.navigate(['/home']), 2500);
       },
-      error: (err) => console.error('Error getting user ID:', err)
+      error: () => this.snackbar.showMessage('Failed to place order', 'error')
     });
   }
 }

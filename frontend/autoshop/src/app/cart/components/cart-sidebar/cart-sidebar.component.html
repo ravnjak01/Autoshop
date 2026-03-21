@@ -9,36 +9,35 @@
      [src]="item.imageUrl"
      [alt]="item.productName" 
      class="cart-item-image"
-     (error)="onImageError($event, item)"
       />
       <div class="cart-item-details">
         <span class="cart-item-name">{{ item.productName }}</span>
         <div class="quantity-controls">
-          <button 
+          <button  type="button"
             class="quantity-button decrease" 
             (click)="decreaseQuantity(item)"
             [disabled]="item.stockQuantity === 1"
           >-</button>
           <span class="cart-item-quantity">{{ item.quantity }}</span>
-          <button 
+          <button  type="button" 
             class="quantity-button increase" 
             (click)="increaseQuantity(item)"
               [disabled]="item.quantity >= item.stockQuantity">
           +</button>
         </div>
-        <span class="cart-item-price">{{ item.quantity }} x {{ item.price | currency:'BAM' }}</span>
+        <span class="cart-item-price">{{ item.quantity }} x {{ item.price | currency:'USD' }}</span>
       </div>
-      <button class="remove-item-button" (click)="removeItem(item)">X</button>
+      <button type="button" class="remove-item-button" (click)="removeItem(item)">X</button>
     </li>
   </ul>
 
   <div class="cart-total" *ngIf="cartItems && cartItems.length > 0">
     <span>Total:</span>
-    <span class="total-price">{{ getTotalPrice() | currency:'BAM' }}</span>
+    <span class="total-price">{{ getTotalPrice() | currency:'USD' }}</span>
   </div>
 
   <div class="cart-actions">
-    <button class="clear-cart-button" (click)="clearCart()">Clear cart</button>
-    <button class="go-to-cart-btn" (click)="goToCart()">Go to cart</button>
+    <button type="button" class="clear-cart-button" (click)="clearCart()">Clear cart</button>
+    <button type="button" class="go-to-cart-btn" (click)="goToCart()">Go to cart</button>
   </div>
 </div>

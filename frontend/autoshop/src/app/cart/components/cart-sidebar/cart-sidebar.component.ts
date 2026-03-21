@@ -3,6 +3,8 @@ import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { CartItemDTO } from '../../models/cart-item.dto';
 import { Router } from '@angular/router';
+import { MyDialogConfirmComponent } from '../../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'cart-sidebar',
@@ -13,10 +15,7 @@ import { Router } from '@angular/router';
 })
 
 export class CartSidebarComponent  {
-onImageError($event: ErrorEvent,_t6: CartItemDTO) {
-throw new Error('Method not implemented.');
-}
-  isCartOpen = false;
+ isCartOpen = false;
 totalPrice: string|number = 0;
 cartItems: CartItemDTO[] = [];
  @Output() closeSidebar = new EventEmitter<void>();
@@ -26,7 +25,7 @@ goToCart() {
 }
 
 
-    constructor(public cartService: CartService, private router: Router) {}
+    constructor(public cartService: CartService, private router: Router,private dialog:MatDialog) {}
 
 
    ngOnInit() {
@@ -42,39 +41,29 @@ goToCart() {
 
  removeItem(item: CartItemDTO): void {
   const itemId = item.id;
-  
-  if (!itemId) {
-    console.error('Error: item doesnt have id.');
-    return;
-  }
+  if (!itemId) return;
 
   this.cartService.removeFromCart(itemId).subscribe({
     next: () => {
-      console.log('Product removed:', item.productName);
-      this.cartService.loadCart();
-      
-      this.cartItems = this.cartItems.filter(i => i.id !== itemId);
-    },
-    error: (err) => {
-      console.error('Error during removing product from the cart', err);
     }
   });
 }
 
  clearCart(): void {
-  if (confirm('Are you sure you want to clear the cart?')) {
-    this.cartService.clearCart().subscribe({
-      next: () => {
-        console.log("Cart cleared");
-        this.cartItems = [];
-      },
-      error: (err) => {
-        console.error("Error during clearing the cart", err);
-      }
-    });
-  }
-}
+  const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
+    data: {
+      title: 'Clear Cart',
+      message: 'Are you sure you want to clear the cart?',
+      confirmButtonText: 'Clear'
+    }
+  });
 
+  dialogRef.afterClosed().subscribe(result => {
+    if (result) {
+      this.cartService.clearCart().subscribe();
+    }
+  });
+}
   getTotalPrice(): number {
     if (!this.cartItems || this.cartItems.length === 0) {
     return 0;
@@ -96,19 +85,6 @@ goToCart() {
 
 
  
-     checkout(): void {
-  this.cartService.checkout().subscribe({
-    next: (res) => {
-      alert('Checkout successfull!'); 
-      this.cartService.clearCart(); 
-      this.isCartOpen = false;      
-    },
-    error: (err) => {
-      console.error('Error during checkout', err);
-      alert('Checkout wasnt successfull.');
-    }
-  });
-}
 
 increaseQuantity(item: CartItemDTO): void {
   if(item.quantity>=item.stockQuantity)
@@ -122,7 +98,6 @@ increaseQuantity(item: CartItemDTO): void {
       item.quantity = updatedItem.quantity; 
     },
     error: (err) => {
-      console.error('Error during increasing quantity', err);
     }
   });
 }
@@ -134,7 +109,6 @@ decreaseQuantity(item: CartItemDTO): void {
       next: (updatedItem) => {
         item.quantity = updatedItem.quantity;
       },
-      error: (err) => console.error('Error decreasing quantity', err)
     });
   } else {
     

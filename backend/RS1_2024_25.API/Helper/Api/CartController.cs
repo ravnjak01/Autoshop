@@ -160,6 +160,7 @@ namespace RS1_2024_25.API.Controllers
              ProductName = i.Product.Name,
              Quantity = i.Quantity,
              Price = i.Product.Price,
+             StockQuantity = i.Product.StockQuantity,
              imageUrl = i.Product.ImageUrl.StartsWith("http")
                           ? i.Product.ImageUrl
                           : $"{baseUrl}{i.Product.ImageUrl}",
@@ -217,6 +218,10 @@ namespace RS1_2024_25.API.Controllers
         public async Task<IActionResult> MoveToCart(int productId, CancellationToken cancellationToken)
         {
             var userId = _userManager.GetUserId(User);
+
+            if (userId == null)
+                return Unauthorized();
+
             var cart = await _context.Carts
                 .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
@@ -270,6 +275,7 @@ namespace RS1_2024_25.API.Controllers
                 ProductId = item.ProductId,
                 ProductName = item.Product.Name,
                 Price = item.Product.Price,
+                StockQuantity = item.Product.StockQuantity,
                 Quantity = item.Quantity,
                 imageUrl = item.Product.ImageUrl,
                 Total = item.Product.Price * item.Quantity
@@ -362,8 +368,9 @@ namespace RS1_2024_25.API.Controllers
             _context.CartItems.Remove(item);
             await _context.SaveChangesAsync(cancellationToken);
 
-            var remainingItems = cart.Items
-                .Where(i => i.Id != itemId) 
+            var remainingItems = await _context.CartItems
+                .Where(i => i.CartId == cart.Id)
+                .Include(i => i.Product)
                 .Select(i => new CartItemDTO
                 {
                     Id = i.Id,
@@ -371,9 +378,11 @@ namespace RS1_2024_25.API.Controllers
                     ProductName = i.Product.Name,
                     Quantity = i.Quantity,
                     Price = i.Product.Price,
+                    StockQuantity = i.Product.StockQuantity,
                     imageUrl = i.Product.ImageUrl,
                     Total = i.Product.Price * i.Quantity
-                }).ToList();
+                })
+                .ToListAsync(cancellationToken);
 
             return Ok(new CartResponseDTO
             {

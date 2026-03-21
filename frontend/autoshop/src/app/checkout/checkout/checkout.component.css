@@ -170,6 +170,14 @@ button[type="submit"] {
   transition: background-color 0.3s ease;
 }
 
+.checkout-product-image {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+
 button[type="submit"]:hover {
   background-color: #1e40af;
 }

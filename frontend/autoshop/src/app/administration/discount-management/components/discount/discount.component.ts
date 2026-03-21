@@ -63,6 +63,8 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
 
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
+
+    this.dataSource.filter = filterValue;
     this.searchSubject.next(filterValue);
   }
 
@@ -82,7 +84,6 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
         this.paginator.pageSize = data.pageSize;
       },
       error: (err) => {
-        console.error('Error fetching discounts:', err);
       }
     });
   }
@@ -106,8 +107,7 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
     this.discountDeleteService.handleAsync(id).subscribe({
       next: () => {
         this.refreshPage();
-      },
-      error: (err) => console.error('Error deleting discount:', err)
+      }
     });
   }
 
@@ -123,12 +123,9 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        console.log('Korisnik je potvrdio brisanje');
         // Pozovite servis ili izvršite logiku za brisanje
         this.deleteDiscount(id);
-      } else {
-        console.log('Korisnik je otkazao brisanje');
-      }
+      } 
     });
   }
 
@@ -158,13 +155,16 @@ export class DiscountsComponent implements OnInit, AfterViewInit {
     dialogRef.afterClosed().subscribe((result) => {
       if(result === 'updated') {
         this.refreshPage()
-        console.log('Codes updated');
       }
     });
   }
 
   refreshPage(): void {
-    window.location.reload();
+    const filterValue = this.dataSource.filter || '';
+    const page = this.paginator.pageIndex + 1;
+    const pageSize = this.paginator.pageSize;
+
+    this.fetchDiscounts(filterValue, page, pageSize);
   }
 
   openCategoryDialog(discount: any, event: MouseEvent) {

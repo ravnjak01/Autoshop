@@ -26,9 +26,10 @@ namespace RS1_2024_25.API.Helper.Api
    private readonly ICartService _cartService;
         private readonly TokenBlacklistService _blacklistService;
         private readonly MyTokenGenerator _tokenGenerator;
+        private readonly IConfiguration _configuration;
 
         public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager,IEmailService emailService,
-            ICartService cartService,TokenBlacklistService blacklistService,MyTokenGenerator tokenGenerator)
+            ICartService cartService,TokenBlacklistService blacklistService,MyTokenGenerator tokenGenerator, IConfiguration configuration)
         {
             _authService = authService;
             _userManager = userManager;
@@ -37,6 +38,7 @@ namespace RS1_2024_25.API.Helper.Api
             _cartService = cartService;
             _tokenGenerator = tokenGenerator;
             _blacklistService = blacklistService;
+            _configuration = configuration;
         }
 
         [AllowAnonymous]
@@ -152,21 +154,23 @@ namespace RS1_2024_25.API.Helper.Api
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
-                
                 return Ok(new { message = "if account exists,a link has been sent" });
             }
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-            var resetLink = $"http://localhost:4200/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
+
+            var baseUrl = _configuration["Frontend:BaseUrl"];
+
+            var resetLink = $"{baseUrl}/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
 
             try
             {
 
-           await _emailService.SendResetPasswordEmail(user.Email, resetLink,cancellationToken);
-        return Ok(new
-        {
-            message = "Reset token generated and email sent."
-        });
+                await _emailService.SendResetPasswordEmail(user.Email, resetLink,cancellationToken);
+                return Ok(new
+                {
+                    message = "Reset token generated and email sent."
+                });
             }
             catch(Exception ex)
             {

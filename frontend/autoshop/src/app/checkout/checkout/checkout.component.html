@@ -23,9 +23,7 @@
         <input id="city" formControlName="city" type="text" placeholder="City" />
       </div>
       <div class="form-group">
-        <div class="form-group">
           <input id="postalCode" formControlName="postalCode" type="text" placeholder="Postal code" />
-        </div>
         <input id="street" formControlName="street" type="text" placeholder="Street and number" />
       </div>
 
@@ -50,30 +48,30 @@
         </div>
         
         <!-- Prikaz proizvoda sa slikom -->
-        <div class="summary-row product-item" *ngFor="let item of cartItems">
+        <div class="summary-row product-item" *ngFor="let item of cartItems$ | async">
           <div class="product-info">
             <img 
               *ngIf="item.imageUrl || item.product?.imageUrl" 
-              [src]="'http://localhost:7000' + (item.imageUrl || item.product?.imageUrl)" 
+              [src]="item.imageUrl"
               alt="{{ item.productName }}" 
               class="checkout-product-image" 
             />
             <span>{{ item.productName }} × {{ item.quantity }}</span>
           </div>
-          <span>{{ getItemTotal(item) | number:'1.2-2' }} KM</span>
+          <span>{{ getItemTotal(item) | number:'1.2-2' |currency }} </span>
         </div>
 
         <div class="summary-row shipping-row">
           <strong>Delivery within 24 hours</strong>
-          <span>{{ shippingFee }} KM</span> 
+          <span>{{ shippingFee  | currency }} </span> 
         </div>
       </div>
       
       <div class="total-row-highlight">
         <strong>Total</strong>
         <div class="total-amount-box">
-          <span class="final-total">{{ finalTotalPrice | currency:'KM' }}</span> 
-          <p class="vat-info">(uključuje {{ vatAmount | currency:'KM' }} PDV)</p>
+          <span class="final-total">{{ finalTotal$ | async | currency }}</span> 
+          <p class="vat-info">(uključuje {{ vatAmount$ | async | currency }} PDV)</p>
         </div>
       </div>
 
@@ -93,16 +91,9 @@
   <!--Modal za potvrdu -->
   <app-confirmation-modal
     [isVisible]="showConfirmModal"
-    title="Potvrda narudžbe"
+    title="Confrim order"
     message="Are you sure you want to confirm order?"
     (onConfirm)="placeOrder()"
     (onCancel)="showConfirmModal = false">
   </app-confirmation-modal>
-</div>
- <div *ngIf="successMessage" class="alert alert-success">
-  {{ successMessage }}
-</div>
-
-<div *ngIf="errorMessage" class="alert alert-danger">
-  {{ errorMessage }}
 </div>

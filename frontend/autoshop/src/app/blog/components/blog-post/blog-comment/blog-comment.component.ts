@@ -36,14 +36,12 @@ export class BlogCommentsComponent implements OnInit {
         this.comments = response.comments;
       },
       (error) => {
-        console.error('Error loading comments', error);
       }
     );
   }
 
   addComment() {
     if (!this.newCommentContent.trim()) {
-      console.error('Comment cannot be empty');
       return; // Exit the method if the comment is empty
     }
 
@@ -62,7 +60,6 @@ export class BlogCommentsComponent implements OnInit {
         this.newCommentContent = '';
       },
       (error) => {
-        console.error('Error adding comment', error);
       }
     );
 

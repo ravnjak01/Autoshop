@@ -29,7 +29,17 @@ namespace RS1_2024_25.API.Data.Middleware
             request.RouteValues.TryGetValue(ControllerKey, out var controllerValue);
             var controllerName = (string)(controllerValue ?? string.Empty);
 
-            var changedValue = await GetChangedValues(request).ConfigureAwait(false);
+            string changedValue;
+
+            if (request.Path.StartsWithSegments("/api/auth/login") || request.Path.StartsWithSegments("/api/auth/register") ||
+                request.Path.StartsWithSegments("/api/auth/forgot-password") || request.Path.StartsWithSegments("/api/auth/reset-password"))
+            {
+                changedValue = "[CREDENTIALS REDACTED]";
+            }
+            else
+            {
+                changedValue = await GetChangedValues(request).ConfigureAwait(false);
+            }
 
             var userManager = context.RequestServices.GetRequiredService<UserManager<User>>();
             var user = await userManager.GetUserAsync(context.User);

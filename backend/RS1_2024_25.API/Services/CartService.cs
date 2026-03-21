@@ -65,9 +65,6 @@ namespace RS1_2024_25.API.Services
                 });
             }
 
-            // Smanji količinu proizvoda na lageru
-            product.StockQuantity -= request.Quantity;
-
             await _context.SaveChangesAsync(cancellationToken);
         }
 

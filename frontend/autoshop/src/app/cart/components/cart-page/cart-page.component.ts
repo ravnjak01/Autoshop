@@ -3,7 +3,7 @@ import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { CartItemDTO } from '../../models/cart-item.dto'; 
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-snackbar-helper.service';
 
 @Component({
@@ -13,7 +13,8 @@ import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-sn
   standalone: true,
   imports: [
     CommonModule,
-    MatButtonModule
+    MatButtonModule,
+    RouterModule
   ]
 })
 export class CartPageComponent implements OnInit {
@@ -35,9 +36,8 @@ return quantity>=stock;
    cartItems: CartItemDTO[] = [];
   isCartEmpty: boolean = false;
 savedForLaterItems: CartItemDTO[] = [];
-goToCart() {
-throw new Error('Method not implemented.');
-}
+
+
   constructor(public cartService: CartService,private router:Router,private snackbar:MySnackbarHelperService) {}
  
   ngOnInit(): void {
@@ -57,7 +57,6 @@ loadCart(): void {
       this.isCartEmpty = this.cartItems.length === 0;
     },
     error: (err) => {
-      console.error('Error loading cart', err);
       this.cartItems = [];
       this.isCartEmpty = true;
     }
@@ -88,8 +87,7 @@ decreaseQuantity(item: CartItemDTO): void {
     this.cartService.updateQuantity(item.id, newQuantity).subscribe({
       next: (updatedItem) => {
         item.quantity = updatedItem.quantity;
-      },
-      error: (err) => console.error('Error decreasing quantity', err)
+      }
     });
   } else {
     
@@ -110,19 +108,16 @@ removeItem(item: CartItemDTO): void {
   const itemId = item.id;
   
   if (!itemId) {
-    console.error('Error: item doesnt have id.');
     return;
   }
 
   this.cartService.removeFromCart(itemId).subscribe({
     next: () => {
-      console.log('Product removed:', item.productName);
       this.cartService.loadCart();
     
       this.cartItems = this.cartItems.filter(i => i.id !== itemId);
     },
     error: (err) => {
-      console.error('Error during removing product from the cart', err);
     }
   });
 }
@@ -135,7 +130,6 @@ saveForLater(item: CartItemDTO): void {
       this.cartItems = this.cartItems.filter(i => i.productId !== item.productId);
       this.savedForLaterItems.push(item);
     },
-    error: (err) => console.error('Error saving item for later:', err)
   });
 }
 
@@ -145,7 +139,6 @@ moveToCart(item: CartItemDTO): void {
       this.savedForLaterItems = this.savedForLaterItems.filter(i => i.productId !== item.productId);
       this.cartItems.push(item);
     },
-    error: (err) => console.error('Error moving item back to cart:', err)
   });
 }
 

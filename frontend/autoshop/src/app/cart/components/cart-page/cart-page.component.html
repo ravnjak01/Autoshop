@@ -10,14 +10,14 @@
     <div class="details">
       <p class="name">{{ item.productName }}</p>
       <div class="actions">
-        <button mat-button color="warn" (click)="removeItem(item)">🗑️ Remove</button>
+        <button  type="button" mat-button color="warn" (click)="removeItem(item)">🗑️ Remove</button>
         <button mat-stroked-button color="primary" (click)="saveForLater(item)">💾 Save for later</button>
       </div>
     </div>
   </div>
 
   <div class="cart-summary">
-    <p><strong>Subtotal:</strong> {{ getTotal() | currency:'BAM' }}</p>
+    <p><strong>Subtotal:</strong> {{ getTotal() | currency:'USD' }}</p>
     <button mat-raised-button color="accent" (click)="goToCheckout()">Proceed to Checkout</button>
   </div>
 </div>

@@ -10,6 +10,7 @@ import { MyDialogConfirmComponent } from '../../../modules/shared/dialogs/my-dia
 import { title } from 'process';
 import { ProductGetAllRequest, ProductGetAllResponse, ProductsGetAllService } from '../../../products/services/product-endpoints/product-get-all-endpoint.service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { MyConfig } from '../../../my-config';
 
 @Component({
   selector: 'app-product-management',
@@ -31,7 +32,8 @@ cancelEdit(): void {
 
 
   products: ProductDTO[] = [];
-  readonly API_BASE_URL = 'http://localhost:7000';
+  public MyConfig = MyConfig;
+  readonly API_BASE_URL = `${MyConfig.api_address}`;
   selectedProduct: ProductDTO | null = null;
   productForm!: FormGroup;
   isEditing: boolean = false;
@@ -55,13 +57,14 @@ cancelEdit(): void {
     this.loadAvailableImages();
   }
 
-  
+handleMissingImage(product: any) {
+  product.imageUrl = `${MyConfig.api_address}${MyConfig.ImagesPath}no-image.png`;
+}
   loadAvailableImages() {
   this.productCRUDService.GetAllImages().subscribe({
     next: (res) => {
       this.availableImages = res; 
     },
-    error: (err) => console.error('Greška:', err)
   });
 }
 
@@ -115,21 +118,17 @@ selectImage(img: string) {
     }
     this.productGetAllService.handleAsync(request).subscribe({
       next: (res: ProductGetAllResponse) => {
-        console.log('Podaci sa servera:', res.products[0]);
-        this.products = res.products.map((product: any) => {
-          if (!product.imageUrl) {
-    product.imageUrl = 'assets/default-product.png'; 
-  }
-
-          else if (!product.imageUrl.startsWith('http')) {
-    product.imageUrl = `http://localhost:7000/images/products/${product.imageUrl}`;
-  }
-          return product;
-        });
+       this.products = res.products.map((product: any) => {
+      if (!product.imageUrl || product.imageUrl.includes('${')) {
+        product.imageUrl = `${MyConfig.api_address}${MyConfig.ImagesPath}no-image.png`;
+      } else if (!product.imageUrl.startsWith('http')) {
+        product.imageUrl = `${MyConfig.api_address}${MyConfig.ImagesPath}${product.imageUrl}`;
+      }
+      return product;
+});
         this.loading = false;
       },
       error: (err:HttpErrorResponse) => {
-        console.error(err);
         this.loading = false;
       }
     });
@@ -181,13 +180,21 @@ onPageSizeChange(event: Event): void {
   editProduct(product: ProductDTO): void {
     this.isEditing = true;
     this.selectedProduct = product;
-    this.productForm.patchValue(product);
+
+     const relativeImageUrl = product.imageUrl?.startsWith('http')
+    ? product.imageUrl.replace(MyConfig.api_address, '')
+    : product.imageUrl;
+
+
+     this.productForm.patchValue({
+    ...product,
+    imageUrl: relativeImageUrl  
+  });
   }
 
 
   updateProduct(): void {
     if (this.productForm.invalid || !this.selectedProduct) {
-      console.warn('Form not valid or no product selected for update!');
       return;
     }
 
@@ -213,7 +220,6 @@ this.snackBar.showMessage('Changes successfully saved!','success')
         this.productForm.reset({ active: true });
       },
       error: (err) => {
-        console.error('error during updating the product', err);
       }
     });
   }
@@ -238,7 +244,6 @@ deleteProduct(id: number): void {
         error: (err: HttpErrorResponse) => {
           const errorMessage = err.error?.message || err.error || 'Error during deleting the product';
           this.snackBar.showMessage(errorMessage, 'error');
-          console.error('Delete error:', err);
         }
       });
     }

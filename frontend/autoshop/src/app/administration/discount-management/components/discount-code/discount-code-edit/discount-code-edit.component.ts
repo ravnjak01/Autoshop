@@ -70,8 +70,7 @@ export class DiscountCodeEditComponent implements OnInit {
     formData.append('validTo', new Date(raw.validTo).toISOString());
 
     this.discountService.handleAsync(formData).subscribe({
-      next: () => this.dialogRef.close('updated'),
-      error: err => console.error('Error saving code', err)
+      next: () => this.dialogRef.close('updated')
     });
   }
 

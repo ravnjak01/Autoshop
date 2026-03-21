@@ -8,6 +8,7 @@ import{Router, RouterModule}from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { PasswordStrengthService } from './services/password-strength.service';
 import { last } from 'rxjs';
+import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
@@ -23,7 +24,8 @@ export class RegisterComponent {
   registrationForm: FormGroup;
   passwordStrength= 0;
   constructor(private fb: FormBuilder,private authService: MyAuthService,
-    private router: Router,private passwordStrengthService: PasswordStrengthService) {
+    private router: Router,private passwordStrengthService: PasswordStrengthService,
+  private snackbar:MySnackbarHelperService) {
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
     
@@ -43,7 +45,6 @@ export class RegisterComponent {
   this.registrationForm.get('confirmPassword')?.updateValueAndValidity()
    this.passwordStrength=this.passwordStrengthService.calculatePasswordStrength(value);
 
-     console.log("Strength = ", this.passwordStrength); 
 });
 
   }
@@ -86,12 +87,12 @@ export class RegisterComponent {
 
   this.authService.register(registrationData).subscribe({
     next:()=>{
-    alert('Registration successful');
+      this.snackbar.showMessage('Registration successfull','success');
     this.router.navigate(['/login']);
     },
     error: (error) => {
-      console.error('Registration failed', error);
-      alert('Registration failed');
+     const errorMessage = error.error?.message || 'Registration failed. Please try again.';
+    this.snackbar.showMessage(errorMessage, 'error');
     }
   });
     }
