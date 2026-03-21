@@ -19,8 +19,8 @@
     *ngFor="let blog of blogs"
     (click)="openBlog(blog.id)"
   >
-    <div class="card-image-container" *ngIf="blog.image">
-      <img [src]="blog.image" alt="Blog Image" class="card-image">
+    <div class="card-image-container" *ngIf="blog.imageUrl">
+      <img [src]="blog.imageUrl" alt="Blog Image" class="card-image">
     </div>
 
     <div class="card-body">

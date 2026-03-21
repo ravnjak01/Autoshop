@@ -54,7 +54,7 @@
     <div class="promo-info" *ngIf="promoCode">
       Promo code: <strong>{{ promoCode }}</strong>
       <div style="font-size: 13px; font-weight: 400; margin-top: 4px;">
-        Use the promo code at checkout to get an additional discount.
+        Use the promo code at checkout to get an additional discount ({{promoCodeDiscount}}%).
       </div>
     </div>
 
@@ -112,8 +112,8 @@
             <!-- STARA CIJENA -->
             <span
               *ngIf="
-                product.priceAfterGlobalDiscount != null &&
-                product.priceAfterGlobalDiscount < product.price
+                product.priceAfterDiscount != null &&
+                product.priceAfterDiscount < product.price
               "
               class="old-price"
             >
@@ -123,9 +123,9 @@
             <!-- NOVA CIJENA -->
             <span class="new-price">
               {{
-                product.priceAfterGlobalDiscount != null &&
-                product.priceAfterGlobalDiscount < product.price
-                  ? product.priceAfterGlobalDiscount
+                product.priceAfterDiscount != null &&
+                product.priceAfterDiscount < product.price
+                  ? product.priceAfterDiscount
                   : product.price
               }} KM
             </span>

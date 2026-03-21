@@ -7,6 +7,7 @@ import {
 import {
   DiscountProductSaveService, DiscountProductsRequest
 } from '../../services/discount-products-save-endpoint.service';
+import {MySnackbarHelperService} from '../../../../modules/shared/snackbars/my-snackbar-helper.service';
 
 @Component({
   selector: 'app-discount-product-dialog',
@@ -25,7 +26,8 @@ export class DiscountProductDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<DiscountProductDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { discountId: number, discountName: string },
     private discountProductGetAllService: DiscountProductGetAllService,
-    private discountProductSaveService: DiscountProductSaveService
+    private discountProductSaveService: DiscountProductSaveService,
+    private snackbar: MySnackbarHelperService
   ) {}
 
   ngOnInit(): void {
@@ -97,7 +99,15 @@ export class DiscountProductDialogComponent implements OnInit {
     };
 
     this.discountProductSaveService.handleAsync(request)
-      .subscribe(() => this.dialogRef.close(true));
+      .subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.snackbar.showMessage("Discount is not currently active!", 'error');
+        }
+
+      });
   }
 
   close(): void {
