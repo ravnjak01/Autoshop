@@ -12,6 +12,7 @@ import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snack
 import {FavoriteToggleEndpointService} from '../services/product-endpoints/favorites-toggle-endpoint.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { priceRangeValidator } from '../validators/price-range.validator';
+import {PromoCodeService} from '../services/promo-code-endpoint/promo-code-validate-endpoint.service';
 
 
 @Component({
@@ -36,7 +37,6 @@ export class ProductsComponent implements OnInit {
   maxPrice: number = 1500;
   editing = false;
   isAdmin = false;
-  promoCode?: string;
 
 
   filterForm!: FormGroup;
@@ -46,6 +46,8 @@ export class ProductsComponent implements OnInit {
   hasNextPage = true;
   isLoading = false;
 
+  promoCode: string = '';
+  promoCodeDiscount: number = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -56,6 +58,7 @@ export class ProductsComponent implements OnInit {
     public authService: MyAuthService,
     private snackbar: MySnackbarHelperService,
     private favoriteToggleService: FavoriteToggleEndpointService,
+    private promoCodeService: PromoCodeService,
   ) {
   }
 
@@ -98,6 +101,7 @@ export class ProductsComponent implements OnInit {
 
     this.loadProducts(true);
 
+    this.loadPromoCodeInfo();
     window.addEventListener('scroll', this.onScroll.bind(this));
   }
 
@@ -166,8 +170,6 @@ export class ProductsComponent implements OnInit {
 
         this.products = [...this.products, ...response.products];
 
-        this.promoCode = response.promoCode;
-
         this.hasNextPage = response.products.length === this.pageSize;
 
         this.currentPage++;
@@ -186,5 +188,19 @@ export class ProductsComponent implements OnInit {
       });
   }
 
+  private loadPromoCodeInfo(): void {
+    this.promoCodeService.handleAsync().subscribe({
+      next: (res) => {
+        if(res.isValid) {
+          this.promoCode = res.promoCode;
+          this.promoCodeDiscount = res.discountPercentage ?? 0;
+        }
+      },
+      error: () => {
+        this.promoCode = '';
+        this.promoCodeDiscount = 0;
+      }
+    });
+  }
 
 }
