@@ -1,6 +1,8 @@
 ﻿namespace RS1_2024_25.API.Endpoints.DataSeedEndpoints;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Data.Models.ShoppingCart;
@@ -12,8 +14,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Category = Data.Models.ShoppingCart.Category;
 
+[Authorize(Roles = "Admin")]
 [Route("data-seed")]
-public class DataSeedGenerateEndpoint(ApplicationDbContext db)
+public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironment env)
     : MyEndpointBaseAsync
     .WithoutRequest
     .WithResult<string>
@@ -21,7 +24,12 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
     [HttpPost]
     public override async Task<string> HandleAsync(CancellationToken cancellationToken = default)
     {
-        if (!db.BlogPosts.Any())
+        if (!env.IsDevelopment())
+        {
+            throw new UnauthorizedAccessException("Data seeding is allowed only in Development environment.");
+        }
+
+        if (!await db.BlogPosts.AnyAsync(cancellationToken))
         {
             // Kreiranje blogs
             var blogs = new List<BlogPost>
@@ -66,16 +74,16 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 }
             };
 
-            db.AddRange(blogs);
-            db.SaveChanges();
+            await db.AddRangeAsync(blogs, cancellationToken);
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        if (!db.BlogComments.Any())
+        if (!await db.BlogComments.AnyAsync(cancellationToken))
         {
             // Dohvatamo sve postojeće Blog postove iz baze
-            var postovi = db.BlogPosts.ToList();
+            var postovi = await db.BlogPosts.ToListAsync(cancellationToken);
 
-            if (postovi.Any())
+            if (postovi != null && postovi.Any())
             {
                 // Uzimamo ID prvog posta (umjesto 1)
                 var prviId = postovi[0].Id;
@@ -90,14 +98,14 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     db.BlogComments.Add(new BlogComment { BlogPostId = drugiId, Content = "Slažem se sa prethodnim komentarima.", CreatedAt = DateTime.Now });
                 }
 
-                db.SaveChanges();
+                await db.SaveChangesAsync(cancellationToken);
             }
         }
-        if (!db.BlogRatings.Any())
+        if (!await db.BlogRatings.AnyAsync(cancellationToken))
         {
-            var postovi = db.BlogPosts.ToList();
+            var postovi = await db.BlogPosts.ToListAsync();
 
-            if (postovi.Any())
+            if (postovi != null && postovi.Any())
             {
                 var prviId = postovi[0].Id;
 
@@ -110,37 +118,37 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     db.BlogRatings.Add(new BlogRating { BlogPostId = drugiId, Rating = 3, CreatedAt = DateTime.Now });
                 }
 
-                db.SaveChanges();
+                await db.SaveChangesAsync(cancellationToken);
             }
         }
 
-        if (!db.Categories.Any())
+        if (!await db.Categories.AnyAsync(cancellationToken))
         {
             var categories = new List<Category>
-    {
-        new Category { Name = "Tires", Code = "CAT001" },
-        new Category { Name = "Batteris", Code = "CAT002" },
-        new Category { Name = "Equipment/Cosmetics", Code = "CAT003" },
-        new Category { Name = "Car Floor Mats", Code = "CAT004" },
-        new Category { Name = "Trunk Mats", Code = "CAT005" },
-        new Category { Name = "Alloy Wheels", Code = "CAT006" },
-        new Category { Name = "Oil and Fluids", Code = "CAT007" },
-        new Category { Name = "Suspension System", Code = "CAT008" },
-        new Category { Name = "Braking System", Code = "CAT009" },
-        new Category { Name = "Ignition System", Code = "CAT010" },
-        new Category { Name = "Transmission", Code = "CAT011" },
-        new Category { Name = "Filters", Code = "CAT012" },
-        new Category { Name = "Engine Parts", Code = "CAT013" }
-    };
+            {
+                new Category { Name = "Tires", Code = "CAT001" },
+                new Category { Name = "Batteris", Code = "CAT002" },
+                new Category { Name = "Equipment/Cosmetics", Code = "CAT003" },
+                new Category { Name = "Car Floor Mats", Code = "CAT004" },
+                new Category { Name = "Trunk Mats", Code = "CAT005" },
+                new Category { Name = "Alloy Wheels", Code = "CAT006" },
+                new Category { Name = "Oil and Fluids", Code = "CAT007" },
+                new Category { Name = "Suspension System", Code = "CAT008" },
+                new Category { Name = "Braking System", Code = "CAT009" },
+                new Category { Name = "Ignition System", Code = "CAT010" },
+                new Category { Name = "Transmission", Code = "CAT011" },
+                new Category { Name = "Filters", Code = "CAT012" },
+                new Category { Name = "Engine Parts", Code = "CAT013" }
+            };
 
-            db.Categories.AddRange(categories);
-            db.SaveChanges();
+            await db.Categories.AddRangeAsync(categories, cancellationToken);
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        if (!db.Products.Any())
+        if (!await db.Products.AnyAsync(cancellationToken))
         {
 
-            var sveKat = db.Categories.ToList();
+            var sveKat = await db.Categories.ToListAsync(cancellationToken);
 
             // 2. Umjesto ID-a, koristi First ili Find da nađeš CIJELI OBJEKAT
             var katAkumulatori = sveKat.FirstOrDefault(c => c.Code == "CAT002");
@@ -159,7 +167,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
             var katFelge = sveKat.FirstOrDefault(c => c.Code == "CAT006");
 
 
-            db.Products.AddRange(
+            await db.Products.AddRangeAsync(
                 new Product
                 {
                     Name = "Car battery Exide Premium 77Ah",
@@ -329,10 +337,10 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     CreatedAt = DateTime.Now
                 }
             );
-            db.SaveChanges();
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        if (!db.Discounts.Any())
+        if (!await db.Discounts.AnyAsync(cancellationToken))
         {
             db.Discounts.Add(new Discount
             {
@@ -341,35 +349,43 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 StartDate = new DateTime(2026, 4, 1),
                 EndDate = new DateTime(2026, 6, 1)
             });
-            db.SaveChanges();
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        if (!db.DiscountProducts.Any())
+        var discount = await db.Discounts.FirstOrDefaultAsync(cancellationToken);
+        var product = await db.Products.FirstOrDefaultAsync(cancellationToken);
+        var categoryDb = await db.Categories.FirstOrDefaultAsync(cancellationToken);
+
+
+        if (!await db.DiscountProducts.AnyAsync(cancellationToken) && discount != null && product != null)
         {
-            db.DiscountProducts.AddRange(
-                new DiscountProduct { DiscountId = 1, ProductId = 1 }, 
-                new DiscountProduct { DiscountId = 1, ProductId = 2 }  
-            );
-            db.SaveChanges();
+            db.DiscountProducts.Add(
+                new DiscountProduct {
+                    DiscountId = discount.Id,
+                    ProductId = product.Id
+            });
+
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        if (!db.DiscountCategories.Any())
+        if (!await db.DiscountCategories.AnyAsync(cancellationToken) && discount != null && categoryDb != null)
         {
+            db.DiscountCategories.Add(new DiscountCategory
+            {
+                DiscountId = discount.Id,
+                CategoryId = categoryDb.Id
+            });
 
-            db.DiscountCategories.AddRange(
-                new DiscountCategory { DiscountId = 1, CategoryId = 1 },
-                new DiscountCategory { DiscountId = 1, CategoryId = 2 }
-                );
-            db.SaveChanges();
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        if (!db.DiscountCodes.Any())
+        if (!await db.DiscountCodes.AnyAsync(cancellationToken) && discount != null)
         {
             db.DiscountCodes.AddRange(
-                new DiscountCode { DiscountId = 1, Code = "PROLJECE5", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(3) },
-                new DiscountCode { DiscountId = 1, Code = "AUTO10", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(5) }
+                new DiscountCode { DiscountId = discount.Id, Code = "PROLJECE5", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(3) },
+                new DiscountCode { DiscountId = discount.Id, Code = "AUTO10", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(5) }
                 );
-            db.SaveChanges();
+            await db.SaveChangesAsync(cancellationToken);
         }
         return "Data generation completed successfully.";
     }

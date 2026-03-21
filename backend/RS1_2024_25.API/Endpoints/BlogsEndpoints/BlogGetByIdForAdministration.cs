@@ -1,12 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
-using Microsoft.EntityFrameworkCore;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetByIdForAdministration;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
     [Route("/administration/blogpost")]
+    [Authorize(Roles = "Admin")]
     public class BlogGetByIdForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<int>
         .WithResult<BlogsGetByIdForAdministrationResponse>

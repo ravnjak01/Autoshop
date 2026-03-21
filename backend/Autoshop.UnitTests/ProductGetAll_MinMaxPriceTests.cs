@@ -1,9 +1,5 @@
 ﻿using RS1_2024_25.API.Endpoints.ProductEndpoints;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Autoshop.UnitTests
 {
@@ -29,10 +25,10 @@ namespace Autoshop.UnitTests
                 httpContextAccessor: null!
             );
 
-            // Act & Assert
-            await Assert.ThrowsAsync<Exception>(() =>
-                endpoint.HandleAsync(request)
-            );
+            var result = await endpoint.HandleAsync(request);
+
+            var badRequest = Assert.IsType<BadRequestObjectResult>(result.Result);
+            Assert.Equal("Max price must be greater than min price", badRequest.Value);
         }
     }
 }

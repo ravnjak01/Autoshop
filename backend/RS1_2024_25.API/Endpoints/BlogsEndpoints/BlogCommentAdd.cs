@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -11,6 +12,7 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogCommentAdd;
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
     [Route("blog-comment")]
+    [Authorize]
     public class BlogCommentAdd(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<BlogCommentRequest>
         .WithoutResult
@@ -18,22 +20,33 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpPost]
         public override async Task HandleAsync([FromForm] BlogCommentRequest request, CancellationToken cancellationToken = default)
         {
-            var blog = await db.BlogPosts.SingleOrDefaultAsync(x => x.Id == request.BlogPostId, cancellationToken);
+            if (request.BlogPostId <= 0)
+                throw new BadHttpRequestException("Invalid blog post id.");
+
+            if (string.IsNullOrWhiteSpace(request.Content))
+                throw new BadHttpRequestException("Comment content is required.");
+
+            if (request.Content.Length > 1000)
+                throw new BadHttpRequestException("Comment is too long (max 1000 characters).");
+
+            var blogExists = await db.BlogPosts
+                .AnyAsync(x => x.Id == request.BlogPostId, cancellationToken);
+
+            if (!blogExists)
+                throw new BadHttpRequestException("Blog does not exist.");
 
             var userId = userManager.GetUserId(User);
 
-            if (blog == null)
-            {
-                Response.StatusCode = 400;
-                await Response.WriteAsync("There is no blog with this id.");
-                return;
-            }
+            if (string.IsNullOrEmpty(userId))
+                throw new UnauthorizedAccessException("User not authenticated.");
+
+            var sanitizedContent = System.Net.WebUtility.HtmlEncode(request.Content.Trim());
 
             var comment = new BlogComment
             {
                 BlogPostId = request.BlogPostId,
-                Content = request.Content,
-                CreatedAt = DateTime.Now,
+                Content = sanitizedContent,
+                CreatedAt = DateTime.UtcNow,
                 UserId = userId
             };
 

@@ -1,15 +1,16 @@
-﻿using RS1_2024_25.API.Data;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RS1_2024_25.API.Data;
+using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetAll;
-using Microsoft.AspNetCore.Mvc;
-using RS1_2024_25.API.Data.Models.Modul2_Basic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
     [Route("blogposts")]
-    public class BlogGetAll(ApplicationDbContext db) : MyEndpointBaseAsync
+    public class BlogGetAll(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<BlogGetAllRequest>
         .WithResult<BlogGetAllResponse>
     {
@@ -33,28 +34,47 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             }
 
             // Apply pagination
+            var httpContext = httpContextAccessor.HttpContext!;
+            var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
+
             var blogs = await query
-                .OrderBy(b => b.PublishedDate) // Sorting by published date, adjust as needed
-                .Skip((request.PageNumber - 1) * request.PageSize) // Pagination
-                .Take(request.PageSize) // Limit the number of results
+                .OrderByDescending(b => b.PublishedDate)
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
                 .Select(b => new BlogPostDTO
                 {
                     Id = b.Id,
                     Title = b.Title,
-                    AuthorName = b.Author != null ?  b.Author.LastName + " " +  b.Author.FirstName : string.Empty,
+                    AuthorName = b.Author != null
+                        ? b.Author.LastName + " " + b.Author.FirstName
+                        : string.Empty,
                     PublishedDate = b.PublishedDate,
-                    Image = b.Image
+                    ImageUrl = b.Image != null
+                        ? $"{baseUrl}/blogposts/{b.Id}/image"
+                        : null
                 })
                 .ToListAsync(cancellationToken);
 
-            // Calculate the total count (including the filter for search query)
             var totalCount = await query.CountAsync(cancellationToken);
-
             return new BlogGetAllResponse()
             {
                 TotalCount = totalCount,
                 Blogs = blogs
             };
+        }
+
+        [HttpGet("{id}/image")]
+        public async Task<IActionResult> GetImage(int id, CancellationToken cancellationToken)
+        {
+            var blog = await db.BlogPosts
+                .Where(b => b.Id == id)
+                .Select(b => new { b.Image })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (blog?.Image == null)
+                return NotFound();
+
+            return File(blog.Image, "image/jpeg");
         }
 
         public class BlogGetAllRequest
@@ -74,7 +94,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public string Title { get; set; }
             public string AuthorName { get; set; }
             public DateTime? PublishedDate { get; set; }
-            public byte[]? Image { get; set; }
+            public string? ImageUrl { get; set; }
         }
     }
 }
