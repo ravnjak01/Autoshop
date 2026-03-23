@@ -4,6 +4,7 @@ import {MyConfig} from '../../../my-config';
 import {buildHttpParams} from '../../../core/helper/http-params.helper';
 import {MyBaseEndpointAsync} from '../../../core/helper/my-base-endpoint-async.interface';
 import {tap} from 'rxjs/operators';
+import { ProductDTO } from '../../../cart/models/product.dto';
 
 export interface Category {
   id: number;
@@ -35,7 +36,7 @@ export interface Product {
 }
 
 export interface ProductGetAllResponse {
-  products: Product[];
+  products: ProductDTO[];
   promoCode?: string;
 }
 
@@ -50,7 +51,7 @@ export class ProductsGetAllService implements MyBaseEndpointAsync<ProductGetAllR
 
   handleAsync(request: ProductGetAllRequest) {
 
-      const cleanRequest: any = { ...request };
+      const cleanRequest: ProductGetAllRequest = { ...request };
 
       const categoryIds = cleanRequest.categoryIds;
 

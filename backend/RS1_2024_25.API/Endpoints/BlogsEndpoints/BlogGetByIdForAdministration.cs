@@ -3,9 +3,12 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using Microsoft.EntityFrameworkCore;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetByIdForAdministration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
+    [Authorize(Roles = "Admin")]
+
     [Route("/administration/blogpost")]
     public class BlogGetByIdForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<int>

@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MyAuthService } from '../../../core/services/auth/my-auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-snackbar-helper.service';
 @Component({
   selector: 'app-reset-password',
   templateUrl: './reset-password.component.html',
@@ -22,6 +23,7 @@ export class ResetPasswordComponent implements OnInit {
     private route: ActivatedRoute,
     private authService: MyAuthService,
     private router: Router,
+    private snackBar:MySnackbarHelperService
   ) {}
 
   ngOnInit(): void {
@@ -59,7 +61,7 @@ const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
         setTimeout(() => this.router.navigate(['/login']), 3000);
       },
       error: (err) => {
-        
+      this.snackBar.showMessage('Failed to reset password. Please try again.',"error",3000);
       }
     });
   }

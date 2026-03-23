@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
+    [Authorize(Roles = "Admin")]
+
     [Route("delete-discount-code")]
     public class DiscountCodeDeleteForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
     .WithRequest<int>

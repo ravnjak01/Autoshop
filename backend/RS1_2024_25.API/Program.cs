@@ -16,15 +16,13 @@ public partial class Program
 {
     private static async Task Main(string[] args)
     {
-        //var config = new ConfigurationBuilder()
-        //    .AddJsonFile("appsettings.json", optional: false)
-        //    .Build();
+        
 
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
-        builder.Configuration.GetConnectionString("db1"), // Use builder.Configuration here!
+        builder.Configuration.GetConnectionString("db1"), 
         sqlOptions => sqlOptions.EnableRetryOnFailure(
             maxRetryCount: 5,
             maxRetryDelay: TimeSpan.FromSeconds(10),
@@ -75,6 +73,17 @@ public partial class Program
                             context.Token = accessToken;
                         }
                         return Task.CompletedTask;
+                    },
+                    OnTokenValidated = async context =>
+                    {
+                        var blacklist = context.HttpContext.RequestServices.GetRequiredService<TokenBlacklistService>();
+
+                        var token = context.SecurityToken as System.IdentityModel.Tokens.Jwt.JwtSecurityToken;
+                        if (token != null && await blacklist.IsBlacklistedAsync(token.RawData))
+                        {
+                            context.Fail("Token has been invalidated (logged out).");
+                        }
+
                     }
                 };
             });
@@ -93,7 +102,7 @@ public partial class Program
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "My API", Version = "v1" });
 
-          
+            c.DocumentFilter<SwaggerDevelopmentFilter>();
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
@@ -131,7 +140,13 @@ public partial class Program
 
         // **Dodaj servise**
         builder.Services.AddScoped<RS1_2024_25.API.Services.AuthService>();
-        builder.Services.AddSingleton<TokenBlacklistService>();
+        builder.Services.AddScoped<TokenBlacklistService>();
+        if (builder.Environment.IsDevelopment())
+        {
+            builder.Services.AddDistributedMemoryCache();
+        }
+
+
         builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
         builder.Services.AddTransient<MyTokenGenerator>();
         builder.Services.AddSignalR();
@@ -169,7 +184,8 @@ public partial class Program
             
         }
 
-        
+       
+
 
         var provider = new FileExtensionContentTypeProvider();
         provider.Mappings[".webp"] = "image/webp";
@@ -181,33 +197,14 @@ public partial class Program
         });
         app.UseRouting();
 
-        //  blacklist provjera
-        app.Use(async (context, next) =>
-        {
-            Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
-            var token = context.Request.Headers["Authorization"]
-                .ToString()
-                .Replace("Bearer ", "");
-
-            if (!string.IsNullOrEmpty(token))
-            {
-                var blacklist = context.RequestServices
-                    .GetRequiredService<TokenBlacklistService>();
-                if (blacklist.IsBlacklisted(token))
-                {
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Token has been invalidated.");
-                    return;
-                }
-            }
-            await next();
-        });
+       
 
         app.UseAuthentication();
 
         app.UseAuthorization();
 
         // 4. Ostali middleware
+        app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
         app.UseMiddleware<AuditLogMiddleware>();
         app.MapControllers();
         app.MapHub<MySignalrHub>("/mysignalr-hub-path");
@@ -225,14 +222,8 @@ public partial class Program
         var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
         string[] roleNames = { "Admin", "Customer", "Manager" };
-        string roleToDelete = "Dean";
 
-        var deanRole = await roleManager.FindByNameAsync(roleToDelete);
-        if (deanRole != null)
-        {
-            
-            await roleManager.DeleteAsync(deanRole);
-        }
+       
 
         foreach (var roleName in roleNames)
         {
@@ -271,7 +262,7 @@ public partial class Program
             if (result.Succeeded)
             {
                
-                await userManager.AddToRoleAsync(adminUser, "Admin");
+                await userManager.AddToRoleAsync(adminUser, UserRoles.Admin.ToString());
            
             }
             else
@@ -288,10 +279,9 @@ public partial class Program
             Console.WriteLine(" Admin korisnik već postoji.");
 
            
-            if (!await userManager.IsInRoleAsync(existingAdmin, "Admin"))
+            if (!await userManager.IsInRoleAsync(existingAdmin, UserRoles.Admin.ToString()))
             {
-                await userManager.AddToRoleAsync(existingAdmin, "Admin");
-                Console.WriteLine(" Admin uloga je dodata postojećem korisniku.");
+                await userManager.AddToRoleAsync(existingAdmin, UserRoles.Admin.ToString());
             }
         }
     }

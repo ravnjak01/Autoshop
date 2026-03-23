@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -7,6 +8,8 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogRatingGetByBlogId;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
+    [Authorize]
+
     [Route("blog-rating")]
     public class BlogRatingGetByBlogId(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<int>

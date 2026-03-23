@@ -38,7 +38,7 @@ namespace RS1_2024_25.API.Services
                 Email = email,
                 FirstName=firstname,
                 LastName = lastname,
-                CreatedAt = DateTime.Now
+                CreatedAt = DateTime.UtcNow
             };
 
             var result = await _userManager.CreateAsync(user, password);

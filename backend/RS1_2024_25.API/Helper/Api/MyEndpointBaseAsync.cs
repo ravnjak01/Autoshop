@@ -3,6 +3,8 @@
 namespace RS1_2024_25.API.Helper.Api;
 
 //https://github.com/ardalis/ApiEndpoints/blob/main/src/Ardalis.ApiEndpoints/FluentGenerics/EndpointBaseAsync.cs
+
+[ApiController]
 public static class MyEndpointBaseAsync
 {
     public static class WithRequest<TRequest>
@@ -76,11 +78,6 @@ public static class MyEndpointBaseAsync
             );
         }
 
-        //public abstract class WithAsyncEnumerableResult<T> : MyEndpointBase
-        //{
-        //    public abstract IAsyncEnumerable<T> HandleAsync(
-        //      CancellationToken cancellationToken = default
-        //    );
-        //}
+      
     }
 }

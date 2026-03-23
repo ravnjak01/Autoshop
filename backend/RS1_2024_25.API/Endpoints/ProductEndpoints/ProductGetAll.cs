@@ -22,7 +22,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 request.MaxPrice.HasValue && request.MaxPrice.Value >= 0 && 
                 request.MaxPrice.Value < request.MinPrice.Value)
             {
-                return BadRequest("Max price must be grater than min price");
+                return BadRequest("Max price must be greater than min price");
             }
 
             var now = DateTime.UtcNow;
@@ -127,7 +127,9 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 Id = x.Id,
                 Name = x.Name,
                 Price = x.Price,
-                ImageUrl = x.ImageUrl != null ? $"{baseUrl}{x.ImageUrl}" : null,
+                ImageUrl = x.ImageUrl.StartsWith("http")
+                        ? x.ImageUrl
+                        : $"{baseUrl.TrimEnd('/')}/{x.ImageUrl?.TrimStart('/')}",
                 Brend = x.Brend,
                 CategoryName = x.CategoryName,
                 IsFavorite = x.IsFavorite,

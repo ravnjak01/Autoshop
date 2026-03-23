@@ -4,10 +4,13 @@ using RS1_2024_25.API.Helper.Api;
 using RS1_2024_25.API.Helper;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.GetAllForAdministration;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
     //sa paging i sa filterom
+    [Authorize(Roles = "Admin")]
+
     [Route("/administration/blogposts")]
     public class GetAllForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<BlogsGetAllForAdministrationRequest>

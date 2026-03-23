@@ -5,6 +5,7 @@ import { CartItemDTO } from '../../models/cart-item.dto';
 import { Router } from '@angular/router';
 import { MyDialogConfirmComponent } from '../../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-snackbar-helper.service';
 
 @Component({
   selector: 'cart-sidebar',
@@ -25,7 +26,7 @@ goToCart() {
 }
 
 
-    constructor(public cartService: CartService, private router: Router,private dialog:MatDialog) {}
+    constructor(public cartService: CartService, private router: Router,private dialog:MatDialog,private snackbar:MySnackbarHelperService) {}
 
 
    ngOnInit() {
@@ -98,6 +99,7 @@ increaseQuantity(item: CartItemDTO): void {
       item.quantity = updatedItem.quantity; 
     },
     error: (err) => {
+      this.snackbar.showMessage('Failed to update quantity', 'error');
     }
   });
 }
@@ -112,6 +114,7 @@ decreaseQuantity(item: CartItemDTO): void {
     });
   } else {
     
+    this.snackbar.showMessage('Quantity cannot be less than 1', 'error');
     
   }
 }

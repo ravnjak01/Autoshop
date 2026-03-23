@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router } from '@angular/router';
 import { MyAuthService } from '../../services/auth/my-auth.service';
+import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-snackbar-helper.service';
 
 export class AuthGuardData {
   isAdmin?: boolean;
@@ -12,7 +13,7 @@ export class AuthGuardData {
 })
 export class AuthGuard implements CanActivate {
 
-  constructor(private authService: MyAuthService, private router: Router) {}
+  constructor(private authService: MyAuthService, private router: Router, private snackbar: MySnackbarHelperService) {}
 
   canActivate(route: ActivatedRouteSnapshot): boolean {
     const guardData = route.data as AuthGuardData;
@@ -23,12 +24,14 @@ export class AuthGuard implements CanActivate {
     }
 
     if (guardData.isAdmin && !this.authService.isAdmin()) {
-      this.router.navigate(['/unauthorized']);
+      this.snackbar.showMessage('You are not authorized to access this page.', 'error');
+      this.router.navigate(['/home']);
       return false;
     }
 
     if (guardData.isManager && !this.authService.isManager()) {
-      this.router.navigate(['/unauthorized']);
+      this.snackbar.showMessage('You are not authorized to access this page.', 'error');
+      this.router.navigate(['/home']);
       return false;
     }
 

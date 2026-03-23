@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Category, Product, ProductGetAllRequest, ProductGetAllResponse, ProductsGetAllService } from '../services/product-endpoints/product-get-all-endpoint.service';
 import { CategoryGetAllService } from '../services/category-endpoints/category-get-all-endpoint.service';
 import { CartService } from '../../cart/services/cart.service';
@@ -12,7 +12,8 @@ import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snack
 import {FavoriteToggleEndpointService} from '../services/product-endpoints/favorites-toggle-endpoint.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { priceRangeValidator } from '../validators/price-range.validator';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; 
+import { ProductDTO } from '../../cart/models/product.dto';
 
 @Component({
   selector: 'app-product-list',
@@ -31,7 +32,7 @@ export class ProductsComponent implements OnInit {
   searchQuery: string = '';
   sortBy: string = 'datedesc';
   categories: Category[] = [];
-  products: Product[] = [];
+  products: ProductDTO[] = [];
   minPrice: number = 0;
   maxPrice: number = 1500;
   editing = false;
@@ -60,7 +61,7 @@ export class ProductsComponent implements OnInit {
   }
 
   productForm!: FormGroup;
-
+  private destroyRef = inject(DestroyRef);
   ngOnInit(): void {
     this.isAdmin = this.authService.isAdmin();
     this.productForm = this.fb.group({
@@ -82,7 +83,8 @@ export class ProductsComponent implements OnInit {
     this.filterForm.valueChanges
       .pipe(
         debounceTime(400),          // ⏱️ čeka da korisnik prestane kucati
-        distinctUntilChanged()      // 🔁 ne poziva API ako je isto
+        distinctUntilChanged() ,     // 🔁 ne poziva API ako je isto
+         takeUntilDestroyed(this.destroyRef)
       )
       .subscribe(values => {
 
@@ -98,12 +100,12 @@ export class ProductsComponent implements OnInit {
 
     this.loadProducts(true);
 
-    window.addEventListener('scroll', this.onScroll.bind(this));
+    window.addEventListener('scroll', this.scrollHandler);
   }
-
+    private scrollHandler = this.onScroll.bind(this);
   ngOnDestroy(): void {
     // 🔥 INFINITE SCROLL – cleanup
-    window.removeEventListener('scroll', this.onScroll.bind(this));
+    window.removeEventListener('scroll', this.scrollHandler);
   }
 
   onScroll(): void {
@@ -125,7 +127,9 @@ export class ProductsComponent implements OnInit {
   }
 
   addToCart(productId: number): void {
-    this.cartService.addToCart(productId, 1).subscribe({
+    this.cartService.addToCart(productId, 1)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
       error: (err) => {
         this.snackbar.showMessage('Unfortunately ,this product isnt awailable in the wanted quantity.')
       }
@@ -133,7 +137,9 @@ export class ProductsComponent implements OnInit {
   }
 
   loadCategories(): void {
-    this.categoriesGetAllService.handleAsync().subscribe((response) => {
+    this.categoriesGetAllService.handleAsync()
+     .pipe(takeUntilDestroyed(this.destroyRef)) 
+    .subscribe((response) => {
       this.categories = response.categories;
     });
   }
@@ -161,7 +167,9 @@ export class ProductsComponent implements OnInit {
       pageSize: this.pageSize
     };
 
-    this.productsGetAllService.handleAsync(request).subscribe({
+    this.productsGetAllService.handleAsync(request)
+    .pipe(takeUntilDestroyed(this.destroyRef))  
+    .subscribe({
       next: (response: ProductGetAllResponse) => {
 
         this.products = [...this.products, ...response.products];
@@ -179,7 +187,7 @@ export class ProductsComponent implements OnInit {
     });
   }
 
-  toggleFavorite(product: any) {
+  toggleFavorite(product: ProductDTO) {
     this.favoriteToggleService.handleAsync(product.id)
       .subscribe(result => {
         product.isFavorite = result;

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -9,6 +10,8 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountCodeAddOrUpdate
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
+    [Authorize(Roles = "Admin")]
+
     [Route("discount-code-post")]
     public class DiscountCodeAddOrUpdateForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<DiscountCodePostRequest>
@@ -26,12 +29,12 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                 request.DiscountId == null || request.DiscountId == 0 ||
                 request.ValidFrom == null || request.ValidTo == null)
             {
-                throw new ArgumentNullException("Filled the required fields");
+                throw new ArgumentException("Filled the required fields");
             }
 
             if(request.ValidTo < request.ValidFrom)
             {
-                throw new Exception("End date must be grater than start date");
+                throw new ArgumentException("End date must be grater than start date");
             }
 
             if (discountCode == null)

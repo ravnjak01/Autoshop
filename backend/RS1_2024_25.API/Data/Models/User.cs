@@ -12,7 +12,7 @@ namespace RS1_2024_25.API.Data.Models
 
         public string LastName { get; set; }
 
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public ICollection<Favorite> Favorites { get; set; } = new List<Favorite>();
 

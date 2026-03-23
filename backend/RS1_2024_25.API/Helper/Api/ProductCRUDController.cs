@@ -3,11 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.DTOs;
+using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.ShoppingCart;
 
 namespace RS1_2024_25.API.Helper.Api
 {
 
+    [Authorize(Roles ="Admin")]
     [Route("api/product")]
     [ApiController]
     public class ProductCRUDController : ControllerBase
@@ -53,7 +55,6 @@ namespace RS1_2024_25.API.Helper.Api
         }
 
         [HttpPost]
-       [Authorize(Roles = "Admin")]
         public async Task<ActionResult<ProductReadDTO>> CreateProduct([FromBody] ProductCreateDTO dto,CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
@@ -95,7 +96,7 @@ namespace RS1_2024_25.API.Helper.Api
         }
 
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult<ProductReadDTO>> UpdateProduct(int id, [FromBody] ProductUpdateDTO dto,CancellationToken cancellationToken)
         {
 
@@ -142,20 +143,17 @@ namespace RS1_2024_25.API.Helper.Api
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> DeleteProduct(int id, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FindAsync(id);
-            if (product == null)
+            var product = await _context.Products.FindAsync(id,cancellationToken);
+            if (product == null || !product.Active)
                 return NotFound();
 
+            product.Active = false;
 
-            if (await _context.OrderItems.AnyAsync(o => o.ProductId == id))
-                return BadRequest("Cant delete product thats already part of the order.");
-
-            _context.Products.Remove(product);
             await _context.SaveChangesAsync(cancellationToken);
-            return Ok(new { Message = $"Product '{product.Name}' deleted successfully." });
+            return Ok(new { Message = $"Product '{product.Name}' deactivated successfully." });
         }
 
         [HttpGet("images")]

@@ -7,7 +7,15 @@
   background-color: #f5f5f5;
   padding: 20px;
 }
+.error-message {
+  color: #dc3545; /* Crvena boja */
+  font-size: 12px;
+  margin-top: 4px;
+}
 
+.is-invalid {
+  border: 1px solid #dc3545 !important;
+}
 .auth-card {
   background-color: white;
   border-radius: 8px;

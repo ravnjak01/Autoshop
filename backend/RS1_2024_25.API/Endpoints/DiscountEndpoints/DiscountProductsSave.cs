@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
@@ -8,6 +9,8 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountProductsSave;
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
+    [Authorize(Roles = "Admin")]
+
     [Route("discounts")]
     public class DiscountProductsSave(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
     .WithRequest<DiscountProductsSaveRequest>

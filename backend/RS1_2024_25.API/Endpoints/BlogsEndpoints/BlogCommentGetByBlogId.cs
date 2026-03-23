@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
@@ -6,6 +7,7 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogCommentGetByBlogId;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
+    [Authorize]
     [Route("blog-comment")]
     public class BlogCommentGetByBlogId(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<int>
@@ -37,7 +39,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 
         private string GetTimeAgo(DateTime createdAt)
         {
-            var timeSpan = DateTime.Now - createdAt;
+            var timeSpan = DateTime.UtcNow - createdAt;
 
             if (timeSpan.TotalSeconds < 60)
                 return $"{timeSpan.TotalSeconds} s";

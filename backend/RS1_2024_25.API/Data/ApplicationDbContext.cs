@@ -131,8 +131,21 @@ namespace RS1_2024_25.API.Data
                 .HasOne(f => f.Product)
                 .WithMany(p => p.Favorites)
                 .HasForeignKey(f => f.ProductId);
-            // opcija kod nasljeđivanja
-            // modelBuilder.Entity<NekaBaznaKlasa>().UseTpcMappingStrategy();
+
+            modelBuilder.Entity<User>()
+               .HasIndex(u => u.Email)
+               .IsUnique();
+
+
+                    modelBuilder.Entity<User>()
+              .HasIndex(u => u.UserName)
+              .IsUnique();
+
+            modelBuilder.Entity<BlogPost>()
+                .HasIndex(b => b.AuthorId);
+
+            modelBuilder.Entity<BlogRating>()
+                .HasIndex(r => r.BlogPostId);
 
         }
         #endregion

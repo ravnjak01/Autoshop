@@ -27,9 +27,12 @@ namespace RS1_2024_25.API.Helper.Api
         private readonly TokenBlacklistService _blacklistService;
         private readonly MyTokenGenerator _tokenGenerator;
         private readonly IConfiguration _configuration;
+        private readonly ILogger<AuthController> _logger;
+
 
         public AuthController(AuthService authService, UserManager<User> userManager, SignInManager<User> signInManager,IEmailService emailService,
-            ICartService cartService,TokenBlacklistService blacklistService,MyTokenGenerator tokenGenerator, IConfiguration configuration)
+            ICartService cartService,TokenBlacklistService blacklistService,MyTokenGenerator tokenGenerator, IConfiguration configuration,
+              ILogger<AuthController> logger)
         {
             _authService = authService;
             _userManager = userManager;
@@ -39,7 +42,9 @@ namespace RS1_2024_25.API.Helper.Api
             _tokenGenerator = tokenGenerator;
             _blacklistService = blacklistService;
             _configuration = configuration;
+            _logger = logger;
         }
+
 
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -61,7 +66,7 @@ namespace RS1_2024_25.API.Helper.Api
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                
+                await _userManager.AddToRoleAsync(user, UserRoles.Customer.ToString());
                 int strengthScore = _authService.GetPasswordStrengthScore(model.Password);
 
                 string feedbackMessage = strengthScore switch
@@ -87,8 +92,7 @@ namespace RS1_2024_25.API.Helper.Api
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginModel model,CancellationToken cancellationToken)
         {
-            try
-            {
+           
                 var user = await _userManager.FindByNameAsync(model.Username);
                 if (user == null)
                 {
@@ -109,74 +113,52 @@ namespace RS1_2024_25.API.Helper.Api
                 }
 
                 var roles = await _userManager.GetRolesAsync(user);
-                
-                var tokenString = _tokenGenerator.GenerateToken(user, roles);
-                var expUnix = DateTimeOffset.UtcNow.AddHours(3).ToUnixTimeSeconds();
+                var (token, expiration) = _tokenGenerator.GenerateToken(user, roles);
+
+  
 
                 return Ok(new
                 {
-                    token = tokenString,
+                    token = token,
                     username = user.UserName,
-                    roles = roles,
-                    exp=expUnix
+                    expiration = expiration,
                 });
-
-         
-
-
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error during login: {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
         }
+        [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> Logout()
+        public IActionResult Logout()
         {
-            var token = Request.Headers["Authorization"]
-                     .ToString()
-                        .Replace("Bearer ", "");
+            var authHeader = Request.Headers["Authorization"].ToString();
+            if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
+                return Unauthorized(new { message = "Missing or invalid Authorization header" });
 
+            var token = authHeader.Replace("Bearer ", "");
             var handler = new JwtSecurityTokenHandler();
+            if (!handler.CanReadToken(token))
+                return BadRequest(new { message = "Token is malformed and cannot be read" });
+
             var jwtToken = handler.ReadJwtToken(token);
-
             _blacklistService.BlacklistToken(token, jwtToken.ValidTo);
-
             return Ok(new { message = "Logged out successfully" });
         }
-     
+
 
         [AllowAnonymous]
         [HttpPost("forgot-password")]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model,CancellationToken cancellationToken)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel model, CancellationToken cancellationToken)
         {
+            var genericResponse = new { message = "If an account exists for this email, a reset link has been sent." };
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
-            {
-                return Ok(new { message = "if account exists,a link has been sent" });
-            }
+                return Ok(genericResponse);
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-
             var baseUrl = _configuration["Frontend:BaseUrl"];
-
             var resetLink = $"{baseUrl}/reset-password?token={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
 
-            try
-            {
-
-                await _emailService.SendResetPasswordEmail(user.Email, resetLink,cancellationToken);
-                return Ok(new
-                {
-                    message = "Reset token generated and email sent."
-                });
-            }
-            catch(Exception ex)
-            {
-                return StatusCode(500, $"Error during sending email-a: {ex.Message}");
-            }
-
+            await _emailService.SendResetPasswordEmail(user.Email, resetLink, cancellationToken);
+            return Ok(genericResponse);
         }
 
         [AllowAnonymous]

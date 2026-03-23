@@ -3,9 +3,12 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using Microsoft.EntityFrameworkCore;
 using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountGetByIdForAdministration;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
+    [Authorize(Roles = "Admin")]
+
     [Route("/administration/discount")]
     public class DiscountGetByIdForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<int>

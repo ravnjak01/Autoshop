@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Category = Data.Models.ShoppingCart.Category;
 
 [Route("data-seed")]
-public class DataSeedGenerateEndpoint(ApplicationDbContext db)
+public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironment env)
     : MyEndpointBaseAsync
     .WithoutRequest
     .WithResult<string>
@@ -21,6 +21,13 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
     [HttpPost]
     public override async Task<string> HandleAsync(CancellationToken cancellationToken = default)
     {
+        if (!env.IsDevelopment())
+        {
+            
+            return "Error: This action is only allowed in Development environment.";
+
+
+        }
         if (!db.BlogPosts.Any())
         {
             // Kreiranje blogs
@@ -37,7 +44,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                         "blogs", 
                         "golf2.webp")
                         ),
-                    PublishedDate = DateTime.Now,
+                    PublishedDate = DateTime.UtcNow,
                     IsPublished = false,
                     Active = true
                 },
@@ -52,7 +59,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                         "blogs",
                         "mercedes-taxi.jpg")
                         ),
-                    PublishedDate = DateTime.Now,
+                    PublishedDate = DateTime.UtcNow,
                     IsPublished = true,
                     Active = true
                 },
@@ -60,14 +67,15 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 {
                     Title = "Audi, BMW, Ford, Volkswagen: Prolazna kriza ili početak kraja njemačkog carstva ",
                     Content = " Stub njemačke, ali i evropske ekonomije je pred kolapsom, jer njemačka autoindustrija prolazi kroz turbulentna vremena. BMW, Audi, Ford i Volkswagen, dugogodišnji stubovi sektora, suočavaju se s naglim padom profita i velikim izazovima koji ugrožavaju njihovu budućnost.\r\n\r\nVeličinu krize kroz koju prolazi industrija u Njemačkoj najbolje otkrivaju brojke, krize, štrajkovi i protesti posljednih mjeseci. Njemačko carstvo, čini se, nikada prije nije bilo ovako u paketu uzdrmano.\r\n\r\nBMW je zabilježio pad profita za 84 posto u trećem kvartalu 2024. godine. Ne zaostaje ni Audi, koji se bori s mnogo brutalnijim padom profita od 91 posto. Što se tiče Volkswagena, on se priprema za pokretanje drastičnog plana uštede od više od 10 milijardi eura i uz prijetnju štrajkovima. Slično je i kod Forda. Naime, evropska filijala američkog giganta planira otpustiti 4.000 radnika, uglavnom u Njemačkoj zbog drastičnog pada potražnje za električnim vozilima.",
-                    PublishedDate = DateTime.Now,
+                    PublishedDate = DateTime.UtcNow,
                     IsPublished = false,
                     Active = false
                 }
             };
 
             db.AddRange(blogs);
-            db.SaveChanges();
+            await db.SaveChangesAsync(cancellationToken);
+
         }
 
         if (!db.BlogComments.Any())
@@ -80,17 +88,18 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                 // Uzimamo ID prvog posta (umjesto 1)
                 var prviId = postovi[0].Id;
 
-                db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Odličan post!", CreatedAt = DateTime.Now });
-                db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Zanimljiv tekst, hvala!", CreatedAt = DateTime.Now });
+                db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Odličan post!", CreatedAt = DateTime.UtcNow });
+                db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Zanimljiv tekst, hvala!", CreatedAt = DateTime.UtcNow });
 
                 // Ako imamo barem dva posta, dodajemo komentar i na drugi (umjesto 2)
                 if (postovi.Count > 1)
                 {
                     var drugiId = postovi[1].Id;
-                    db.BlogComments.Add(new BlogComment { BlogPostId = drugiId, Content = "Slažem se sa prethodnim komentarima.", CreatedAt = DateTime.Now });
+                    db.BlogComments.Add(new BlogComment { BlogPostId = drugiId, Content = "Slažem se sa prethodnim komentarima.", CreatedAt = DateTime.UtcNow });
                 }
 
-                db.SaveChanges();
+                await db.SaveChangesAsync(cancellationToken);
+
             }
         }
         if (!db.BlogRatings.Any())
@@ -101,16 +110,17 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
             {
                 var prviId = postovi[0].Id;
 
-                db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 5, CreatedAt = DateTime.Now });
-                db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 4, CreatedAt = DateTime.Now });
+                db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 5, CreatedAt = DateTime.UtcNow });
+                db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 4, CreatedAt = DateTime.UtcNow });
 
                 if (postovi.Count > 1)
                 {
                     var drugiId = postovi[1].Id;
-                    db.BlogRatings.Add(new BlogRating { BlogPostId = drugiId, Rating = 3, CreatedAt = DateTime.Now });
+                    db.BlogRatings.Add(new BlogRating { BlogPostId = drugiId, Rating = 3, CreatedAt = DateTime.UtcNow });
                 }
 
-                db.SaveChanges();
+                await db.SaveChangesAsync(cancellationToken);
+
             }
         }
 
@@ -134,7 +144,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
     };
 
             db.Categories.AddRange(categories);
-            db.SaveChanges();
+           await db.SaveChangesAsync(cancellationToken);
         }
 
         if (!db.Products.Any())
@@ -172,7 +182,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Exide",
                     ImageUrl = "/images/products/car_battery.jpg",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -186,7 +196,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Castrol",
                     ImageUrl = "/images/products/castrol_oil.jpg",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -200,7 +210,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Michelin",
                     ImageUrl = "/images/products/michelin_tire.jpg",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -214,7 +224,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Bilstein",
                     ImageUrl = "/images/products/shock_absorbers.webp",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -228,7 +238,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "NGK",
                     ImageUrl = "/images/products/ngk.jpg",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -242,7 +252,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Brembo",
                     ImageUrl = "/images/products/brembo_disk.jpg",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -256,7 +266,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "ZF",
                     ImageUrl = "/images/products/gearbox.webp",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -270,7 +280,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Mann-Filter",
                     ImageUrl = "/images/products/filter_zraka.jpg",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -284,7 +294,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Elring",
                     ImageUrl = "/images/products/head_gasket.webp",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -298,7 +308,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Sonax",
                     ImageUrl = "/images/products/sonax_sprej.jpg",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -312,7 +322,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "AMC",
                     ImageUrl = "/images/products/cylinder_head.webp",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 },
                 new Product
                 {
@@ -326,50 +336,71 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db)
                     Brend = "Febi Bilstein",
                     ImageUrl = "/images/products/antifreeze.webp",
                     Active = true,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.UtcNow
                 }
             );
-            db.SaveChanges();
+           await db.SaveChangesAsync(cancellationToken);
         }
 
+        // --- POPUSTI ---
         if (!db.Discounts.Any())
         {
-            db.Discounts.Add(new Discount
+            var proljetnaAkcija = new Discount
             {
                 Name = "Proljetna Akcija",
                 DiscountPercentage = 10,
                 StartDate = new DateTime(2026, 4, 1),
                 EndDate = new DateTime(2026, 6, 1)
-            });
-            db.SaveChanges();
-        }
+            };
 
-        if (!db.DiscountProducts.Any())
-        {
-            db.DiscountProducts.AddRange(
-                new DiscountProduct { DiscountId = 1, ProductId = 1 }, 
-                new DiscountProduct { DiscountId = 1, ProductId = 2 }  
-            );
-            db.SaveChanges();
-        }
+            db.Discounts.Add(proljetnaAkcija);
+            await db.SaveChangesAsync(cancellationToken); // Spasimo da dobijemo ID iz baze
 
-        if (!db.DiscountCategories.Any())
-        {
+            // --- PROIZVODI ZA POPUST ---
+            if (!db.DiscountProducts.Any())
+            {
+                // Uzmi prva dva proizvoda iz baze (koje si prethodno kreirao u istom HandleAsync)
+                var proizvodi = db.Products.Take(2).ToList();
 
-            db.DiscountCategories.AddRange(
-                new DiscountCategory { DiscountId = 1, CategoryId = 1 },
-                new DiscountCategory { DiscountId = 1, CategoryId = 2 }
+                if (proizvodi.Count >= 2)
+                {
+                    db.DiscountProducts.AddRange(
+                        // Koristiš objekat 'proljetnaAkcija' i 'proizvodi[0]' 
+                        // umjesto hardkodiranih 1 i 2
+                        new DiscountProduct { Discount = proljetnaAkcija, Product = proizvodi[0] },
+                        new DiscountProduct { Discount = proljetnaAkcija, Product = proizvodi[1] }
+                    );
+                }
+            }
+
+            // --- KATEGORIJE ZA POPUST ---
+            if (!db.DiscountCategories.Any())
+            {
+                var kategorije = db.Categories.Take(2).ToList();
+                if (kategorije.Count >= 2)
+                {
+                    db.DiscountCategories.AddRange(
+                        new DiscountCategory { Discount = proljetnaAkcija, Category = kategorije[0] },
+                        new DiscountCategory { Discount = proljetnaAkcija, Category = kategorije[1] }
+                    );
+                }
+            }
+
+            // --- KODOVI ZA POPUST ---
+            if (!db.DiscountCodes.Any())
+            {
+                db.DiscountCodes.AddRange(
+                    new DiscountCode
+                    {
+                        Discount = proljetnaAkcija, // Opet koristimo referencu na objekat
+                        Code = "PROLJECE5",
+                        ValidFrom = DateTime.UtcNow,
+                        ValidTo = DateTime.UtcNow.AddDays(3)
+                    }
                 );
-            db.SaveChanges();
-        }
+            }
 
-        if (!db.DiscountCodes.Any())
-        {
-            db.DiscountCodes.AddRange(
-                new DiscountCode { DiscountId = 1, Code = "PROLJECE5", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(3) },
-                new DiscountCode { DiscountId = 1, Code = "AUTO10", ValidFrom = DateTime.Now, ValidTo = DateTime.Now.AddDays(5) }
-                );
-            db.SaveChanges();
+            await db.SaveChangesAsync(cancellationToken);
         }
         return "Data generation completed successfully.";
     }

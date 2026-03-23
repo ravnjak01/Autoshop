@@ -41,7 +41,7 @@ export class ForgotPasswordComponent {
     next: () => {
       this.snackbar.showMessage('Please check your email for further instructions')
     },
-    error: (err: any) => {
+    error: (err: Error) => {
       this.snackbar.showMessage("There was an error");
     }
   });

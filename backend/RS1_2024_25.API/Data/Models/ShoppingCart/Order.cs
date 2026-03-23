@@ -16,6 +16,6 @@ namespace RS1_2024_25.API.Data.Models.ShoppingCart
         public List<OrderItem> Items { get; set; } = new List<OrderItem>();
 
         
-        public string Status { get; set; } = "Pending";
+        public Status Status { get; set; } =Status.Pending;
     }
 }

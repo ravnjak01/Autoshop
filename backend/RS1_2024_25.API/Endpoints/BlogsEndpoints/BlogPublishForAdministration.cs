@@ -3,9 +3,12 @@ using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
+    [Authorize(Roles = "Admin")]
+
     [Route("publish-blog")]
     public class BlogPublishForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
     .WithRequest<int>
@@ -23,7 +26,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 
             if (blog.IsPublished)
             {
-                blog.PublishedDate = DateTime.Now;
+                blog.PublishedDate = DateTime.UtcNow;
             }
             else
             {

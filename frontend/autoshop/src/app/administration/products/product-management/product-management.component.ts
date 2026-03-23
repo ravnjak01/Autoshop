@@ -8,7 +8,7 @@ import {MySnackbarHelperService} from '../../../modules/shared/snackbars/my-snac
 import { MatDialog } from '@angular/material/dialog';
 import { MyDialogConfirmComponent } from '../../../modules/shared/dialogs/my-dialog-confirm/my-dialog-confirm.component';
 import { title } from 'process';
-import { ProductGetAllRequest, ProductGetAllResponse, ProductsGetAllService } from '../../../products/services/product-endpoints/product-get-all-endpoint.service';
+import { Product, ProductGetAllRequest, ProductGetAllResponse, ProductsGetAllService } from '../../../products/services/product-endpoints/product-get-all-endpoint.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MyConfig } from '../../../my-config';
 
@@ -43,6 +43,7 @@ cancelEdit(): void {
   pageSize: number = 5;
   totalItems: number = 0; 
   totalPages: number = 0;
+  submitted: boolean = false;
   constructor(
     private productCRUDService: ProductService,
     private fb: FormBuilder,
@@ -57,7 +58,7 @@ cancelEdit(): void {
     this.loadAvailableImages();
   }
 
-handleMissingImage(product: any) {
+handleMissingImage(product: ProductDTO) {
   product.imageUrl = `${MyConfig.api_address}${MyConfig.ImagesPath}no-image.png`;
 }
   loadAvailableImages() {
@@ -118,7 +119,7 @@ selectImage(img: string) {
     }
     this.productGetAllService.handleAsync(request).subscribe({
       next: (res: ProductGetAllResponse) => {
-       this.products = res.products.map((product: any) => {
+       this.products = res.products.map((product: ProductDTO) => {
       if (!product.imageUrl || product.imageUrl.includes('${')) {
         product.imageUrl = `${MyConfig.api_address}${MyConfig.ImagesPath}no-image.png`;
       } else if (!product.imageUrl.startsWith('http')) {
@@ -147,6 +148,7 @@ onPageSizeChange(event: Event): void {
   this.loadProducts();
 }
   addProduct(): void {
+    this.submitted = true;
     if (this.productForm.invalid) {
      
       return;
@@ -194,6 +196,7 @@ onPageSizeChange(event: Event): void {
 
 
   updateProduct(): void {
+    this.submitted = true;
     if (this.productForm.invalid || !this.selectedProduct) {
       return;
     }
@@ -223,7 +226,7 @@ this.snackBar.showMessage('Changes successfully saved!','success')
       }
     });
   }
-
+get f() { return this.productForm.controls; }
 deleteProduct(id: number): void {
   const dialogRef = this.dialog.open(MyDialogConfirmComponent, {
     width: '350px',

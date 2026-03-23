@@ -1,25 +1,38 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace RS1_2024_25.API.Services
 {
     public class TokenBlacklistService
     {
-        private readonly IMemoryCache _cache;
+        private readonly IDistributedCache _cache;
 
-        public TokenBlacklistService(IMemoryCache cache)
+        public TokenBlacklistService(IDistributedCache cache)
         {
             _cache = cache;
         }
 
-        public void BlacklistToken(string token, DateTime expiry)
+        public async void BlacklistToken(string token, DateTime expiry)
         {
             var timeUntilExpiry = expiry - DateTime.UtcNow;
-            _cache.Set($"blacklist_{token}", true, timeUntilExpiry);
+            if (timeUntilExpiry.TotalSeconds <= 0) return;
+
+            var options=new DistributedCacheEntryOptions
+            {
+                
+                AbsoluteExpirationRelativeToNow= timeUntilExpiry
+
+            };
+
+            await _cache.SetStringAsync($"blacklist_{token}", "true", options);
+
+
         }
 
-        public bool IsBlacklisted(string token)
+        public async Task<bool> IsBlacklistedAsync(string token)
         {
-            return _cache.TryGetValue($"blacklist_{token}", out _);
+            var result = await _cache.GetStringAsync($"blacklist_{token}");
+            return result != null;
         }
     }
 }

@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Data\Models\NewFolder\" />
     <Folder Include="Data\Models\SharedTables\" />
     <Folder Include="Data\NewFolder\" />
   </ItemGroup>

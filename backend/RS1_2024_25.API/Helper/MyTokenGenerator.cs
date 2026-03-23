@@ -14,20 +14,23 @@ public class MyTokenGenerator
         _config = config;
     }
 
-    public string GenerateToken(User user, IList<string> roles)
+    public (string Token, DateTime Expiration)  GenerateToken(User user, IList<string> roles)
     {
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Email, user.Email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+        };                                                            
 
         foreach (var role in roles)
         {
             claims.Add(new Claim(ClaimTypes.Role, role));
         }
 
+        var expiryMinutes=_config.GetValue<int>("Jwt:ExpiryMinutes");
+        var expiration = DateTime.UtcNow.AddMinutes(expiryMinutes);
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -35,10 +38,12 @@ public class MyTokenGenerator
             issuer: _config["Jwt:Issuer"],
             audience: _config["Jwt:Audience"],
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(3),
+            expires:expiration,
             signingCredentials: creds
         );
 
-        return new JwtSecurityTokenHandler().WriteToken(token);
+        var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+        return (tokenString, expiration);
     }
 }

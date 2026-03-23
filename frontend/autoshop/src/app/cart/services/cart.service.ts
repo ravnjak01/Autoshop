@@ -6,11 +6,28 @@ import { CartResponseDTO } from '../models/cart-response.dto';
 import { CurrencyPipe } from '@angular/common';
 import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 import { MyConfig } from '../../my-config';
+
+  export interface AddressDTO {
+  country: string;
+  city: string;
+  street: string;
+  postalCode: string;
+  telephoneNumber: string;
+}
+
+export interface CheckoutDTO {
+  userId: string;
+  adresa: AddressDTO; 
+  paymentMethod: string;
+}
+
+
+//DOSAO DO MIDDLEWARE ;TAKO NESTo GRESka, konzistento upravljane greskama
+
 @Injectable({
   providedIn: 'root',
   
 })
-
 
 export class CartService {
   private cartTotalSubject = new BehaviorSubject<number>(0);
@@ -55,8 +72,8 @@ addToCart(productId: number, quantity: number = 1): Observable<CartItemDTO> {
 }
 
   
-  removeFromCart(itemId: number): Observable<any> {
-    return this.http.delete(
+  removeFromCart(itemId: number): Observable<void> {
+    return this.http.delete<void>(
       `${this.baseUrl}/remove/${itemId}`,
       { withCredentials: true }
     ).pipe(
@@ -100,8 +117,8 @@ getCartItems(): Observable<CartItemDTO[]> {
   );
 }
  
-  clearCart(): Observable<any> {
-    return this.http.delete(
+  clearCart(): Observable<void> {
+    return this.http.delete<void>(
       `${this.baseUrl}/clear`,
       { withCredentials: true }
     ).pipe(
@@ -111,14 +128,16 @@ getCartItems(): Observable<CartItemDTO[]> {
   }
 
 
+
+
  getCartItemCount(): Observable<number> {
     return this.getCart().pipe(
       map(cart => cart.itemCount)
     );
 }
 
-  checkout(data:any): Observable<any> {
-    return this.http.post(
+  checkout(data:CheckoutDTO): Observable<void> {
+    return this.http.post<void>(
        `${MyConfig.api_address}/api/Checkout/checkout`,
       data,
       { 
@@ -131,13 +150,13 @@ getCartItems(): Observable<CartItemDTO[]> {
   
   
 
-  saveForLater(productId: number): Observable<any> {
-  return this.http.post(`${this.baseUrl}/save-for-later/${productId}`, {}, { withCredentials: true })
+  saveForLater(productId: number): Observable<void> {
+  return this.http.post<void>(`${this.baseUrl}/save-for-later/${productId}`, {}, { withCredentials: true })
     .pipe(tap(() => this.loadCart()));
 }
 
-moveToCart(productId: number): Observable<any> {
-  return this.http.post(`${this.baseUrl}/move-to-cart/${productId}`, {}, { withCredentials: true })
+moveToCart(productId: number): Observable<void> {
+  return this.http.post<void>(`${this.baseUrl}/move-to-cart/${productId}`, {}, { withCredentials: true })
     .pipe(tap(() => this.loadCart()));
 }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -11,6 +12,8 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogAddForAdministration;
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
 
+    
+    [Authorize(Roles = "Admin")]
     [Route("blog-post")]
     public class BlogAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<BlogPostUpdateOrInsertRequest>
@@ -35,7 +38,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 
             if(string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Content))
             {
-                throw new ArgumentNullException("Tile or Content is null");
+                throw new ArgumentException("Tile or Content is null");
             }
             // Kreiranje ili ažuriranje blog posta
             if (blog == null)
@@ -46,7 +49,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                     Content = request.Content,
                     AuthorId = userId,
                     IsPublished = request.IsPublished,
-                    PublishedDate = request.IsPublished ? DateTime.Now : null,
+                    PublishedDate = request.IsPublished ? DateTime.UtcNow : null,
                     Image = image,
                     Active = request.Active
                 };
@@ -60,7 +63,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 }
                 else if(!blog.IsPublished && request.IsPublished)
                 {
-                    blog.PublishedDate = DateTime.Now;
+                    blog.PublishedDate = DateTime.UtcNow;
                 }
                 blog.Title = request.Title;
                 blog.Content = request.Content;

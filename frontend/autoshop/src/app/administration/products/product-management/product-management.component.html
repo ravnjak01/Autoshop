@@ -2,48 +2,83 @@
   <h2>Managing products</h2>
 
   <div class="product-form">
-    <h3>{{ isEditing ? 'Edit product' : 'Add new product' }}</h3>
+  <h3>{{ isEditing ? 'Edit product' : 'Add new product' }}</h3>
 
-    <form [formGroup]="productForm" (ngSubmit)="isEditing ? updateProduct() : addProduct()">
+  <form [formGroup]="productForm" (ngSubmit)="isEditing ? updateProduct() : addProduct()">
 
-      <div class="form-row">
-        <div class="form-group"><label>Product name <span class="required-asterisk">*</span></label>
-          <input type="text" formControlName="name" placeholder="Enter product name" /></div>
-        <div class="form-group"><label>SKU <span class="required-asterisk">*</span></label>
-          <input type="text" formControlName="sku" placeholder="Enter SKU" /></div>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group"><label>Price (KM)<span class="required-asterisk">*</span></label>
-          <input type="number" formControlName="price" placeholder="Enter price" /></div>
-        <div class="form-group"><label>Stock quantity <span class="required-asterisk">*</span></label>
-          <input type="number" formControlName="stockQuantity" placeholder="Enter  quantity" /></div>
-      </div>
-
-      <div class="form-group full-width">
-        <label>Description</label>
-        <textarea formControlName="description" placeholder="Enter product description"></textarea>
-      </div>
-
-      <div class="form-row">
-        <div class="form-group"><label>ID of category<span class="required-asterisk">*</span></label>
-          <input type="number" formControlName="categoryId" placeholder="Enter  ID of category" /></div>
-        <div class="form-group"><label>Brend<span class="required-asterisk">*</span></label>
-          <input type="text" formControlName="brend" placeholder="Enter brend" /></div>
-      </div>
-      
-      <div class="form-group image-input-group full-width">
-        <label for="imageUrl">Image URL</label>
-        <div class="input-with-button">
-            <input id="imageUrl" type="text" formControlName="imageUrl" placeholder="Choose an image" />
-            <button type="button" (click)="openImageModal()" class="btn btn-secondary btn-sm">
-              Choose an image
-            </button>
-        </div>
-        <div *ngIf="productForm.get('imageUrl')?.invalid && productForm.get('imageUrl')?.touched" class="error-message">
-          Image URL is required.
+    <div class="form-row">
+      <div class="form-group">
+        <label>Product name <span class="required-asterisk">*</span></label>
+        <input type="text" formControlName="name" placeholder="Enter product name" [class.is-invalid]="f['name'].invalid && (f['name'].touched || submitted)" />
+        <div *ngIf="f['name'].invalid && (f['name'].touched || submitted)" class="error-message">
+          Product name is required.
         </div>
       </div>
+
+      <div class="form-group">
+        <label>SKU <span class="required-asterisk">*</span></label>
+        <input type="text" formControlName="sku" placeholder="Enter SKU" [class.is-invalid]="f['sku'].invalid && (f['sku'].touched || submitted)" />
+        <div *ngIf="f['sku'].invalid && (f['sku'].touched || submitted)" class="error-message">
+          SKU is required.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Price (KM)<span class="required-asterisk">*</span></label>
+        <input type="number" formControlName="price" placeholder="Enter price" [class.is-invalid]="f['price'].invalid && (f['price'].touched || submitted)" />
+        <div *ngIf="f['price'].invalid && (f['price'].touched || submitted)" class="error-message">
+          <span *ngIf="f['price'].errors?.['required']">Price is required.</span>
+          <span *ngIf="f['price'].errors?.['min']">Price must be greater than 0.</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Stock quantity <span class="required-asterisk">*</span></label>
+        <input type="number" formControlName="stockQuantity" placeholder="Enter quantity" [class.is-invalid]="f['stockQuantity'].invalid && (f['stockQuantity'].touched || submitted)" />
+        <div *ngIf="f['stockQuantity'].invalid && (f['stockQuantity'].touched || submitted)" class="error-message">
+          Stock quantity is required.
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group full-width">
+      <label>Description</label>
+      <textarea formControlName="description" placeholder="Enter product description"></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>ID of category<span class="required-asterisk">*</span></label>
+        <input type="number" formControlName="categoryId" placeholder="Enter ID of category" [class.is-invalid]="f['categoryId'].invalid && (f['categoryId'].touched || submitted)" />
+        <div *ngIf="f['categoryId'].invalid && (f['categoryId'].touched || submitted)" class="error-message">
+          Category is required.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Brend<span class="required-asterisk">*</span></label>
+        <input type="text" formControlName="brend" placeholder="Enter brend" [class.is-invalid]="f['brend'].invalid && (f['brend'].touched || submitted)" />
+        <div *ngIf="f['brend'].invalid && (f['brend'].touched || submitted)" class="error-message">
+          Brand is required.
+        </div>
+      </div>
+    </div>
+    
+    <div class="form-group image-input-group full-width">
+      <label for="imageUrl">Image URL <span class="required-asterisk">*</span></label>
+      <div class="input-with-button">
+          <input id="imageUrl" type="text" formControlName="imageUrl" placeholder="Choose an image" [class.is-invalid]="f['imageUrl'].invalid && (f['imageUrl'].touched || submitted)" />
+          <button type="button" (click)="openImageModal()" class="btn btn-secondary btn-sm">
+            Choose an image
+          </button>
+      </div>
+      <div *ngIf="f['imageUrl'].invalid && (f['imageUrl'].touched || submitted)" class="error-message">
+        Image URL is required.
+      </div>
+    </div>
+    
 
       <div *ngIf="productForm.get('imageUrl')?.value" class="selected-image-preview full-width">
         <img

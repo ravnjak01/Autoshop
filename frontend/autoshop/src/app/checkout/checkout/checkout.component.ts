@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
@@ -9,7 +9,7 @@ import { CartService } from '../../cart/services/cart.service';
 import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 import { EMPTY, map, Observable, switchMap, take } from 'rxjs';
 import { CartItemDTO } from '../../cart/models/cart-item.dto';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-checkout',
@@ -28,7 +28,8 @@ export class CheckoutComponent implements OnInit {
   finalTotal$!: Observable<number>;
 
   showConfirmModal = false;
-
+  isSubmitting = false;
+   private destroyRef = inject(DestroyRef);
   constructor(
     private fb: FormBuilder,
     private router: Router,
@@ -72,17 +73,20 @@ export class CheckoutComponent implements OnInit {
   }
 
   placeOrder() {
+    if (this.isSubmitting) return;
     this.showConfirmModal = false;
 
     this.finalTotal$.pipe(
       take(1),
       switchMap(finalTotal =>
         this.authService.getCurrentUserId().pipe(
+          take(1),
           map(userId => ({ userId, finalTotal }))
         )
       ),
       switchMap(({ userId, finalTotal }) => {
         if (!userId) {
+          this.isSubmitting = false;
           this.router.navigate(['/login']);
           return EMPTY;
         }
@@ -102,15 +106,22 @@ export class CheckoutComponent implements OnInit {
         };
 
         return this.cartService.checkout(checkoutData);
-      })
+      }),
+      takeUntilDestroyed(this.destroyRef)
     ).subscribe({
       next: () => {
         this.snackbar.showMessage('Your order has been successfully created!', 'success');
         this.checkoutForm.reset();
-        this.cartService.clearCart().subscribe();
-        setTimeout(() => this.router.navigate(['/home']), 2500);
+        this.cartService.loadCart();  
+        setTimeout(() => {
+        this.isSubmitting = false; 
+        this.router.navigate(['/home']);
+      }, 2500);
       },
-      error: () => this.snackbar.showMessage('Failed to place order', 'error')
+      error: (err) => {
+      this.isSubmitting = false; 
+      this.snackbar.showMessage('Failed to place order', 'error');
+    }
     });
   }
 }

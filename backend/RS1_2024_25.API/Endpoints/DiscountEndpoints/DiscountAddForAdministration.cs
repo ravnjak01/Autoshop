@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -11,6 +12,7 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountAddForAdministr
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
+    [Authorize(Roles = "Admin")]
 
     [Route("discount-post")]
     public class DiscountAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
@@ -34,7 +36,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 
             if (request.EndDate < request.StartDate)
             {
-                throw new Exception("End date must be grater than start date");
+                throw new ArgumentException("End date must be greater than start date");
             }
 
             // Kreiranje ili ažuriranje blog posta

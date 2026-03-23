@@ -1,66 +1,83 @@
 import { Routes } from '@angular/router';
-import { AdministrationComponent } from './administration/components/administration.component';
-import { HomePageComponentAdministration } from './administration/home/components/home-page-component-administration.component';
-import { RegisterComponent } from './auth/register/register.component';
-import { LoginComponent } from './auth/login/login.component';
-import { ForgotPasswordComponent } from './auth/forgot-password/forgot-password';
-import { ResetPasswordComponent } from './auth/forgot-password/reset-password/reset-password.component';
 import { AuthGuard } from './core/guards/auth/auth.guard';
-import {  CartPageComponent } from './cart/components/cart-page/cart-page.component';
-import { CartSidebarComponent } from './cart/components/cart-sidebar/cart-sidebar.component';
-import { CheckoutComponent } from './checkout/checkout/checkout.component';
-import { ConfirmationModalComponent } from './confirmation-modal/confirmation-modal/confirmation-modal.component';
-import { ProductManagementComponent } from './administration/products/product-management/product-management.component';
-import { DiscountsComponent } from './administration/discount-management/components/discount/discount.component';
-import {BlogPostsComponent as BlogPostsComponentsAdministration} from './administration/blog-management/components/blogs/blog-posts.component' ;
-import {BlogPostsComponent} from './blog/components/blog-posts/blog-posts.component';
-import {BlogDetailsComponent} from './blog/components/blog-post/blog-post.component';
-import {HomePageComponent} from './home/components/home-page.component';
-import {FavoritesComponent} from './favorites/components/favorite.component';
 
-  export const appRoutes: Routes = [
+export const appRoutes: Routes = [
 
-    { path: '', component: HomePageComponent, pathMatch: 'full' },
-
-    { path: 'home', component: HomePageComponent },
-    {
-      path: 'administration',
-      component: AdministrationComponent,
-        canActivate: [AuthGuard],
-    data: { isAdmin: true },
-      children: [
-            //{ path: '', redirectTo: 'admin/home-page', pathMatch: 'full' },
-        { path: '', redirectTo: 'home', pathMatch: 'full' },
-        { path: 'home', component: HomePageComponentAdministration },
-        {    path: 'product-management',
-    component: ProductManagementComponent},
-        { path: 'admin/blog-posts', component: BlogPostsComponentsAdministration },
-          { path: 'admin/discount', component: DiscountsComponent},
-          { path: 'admin/home-page', component: HomePageComponentAdministration },
-
-      ]
-    },
-{
-      path: 'products',
-    loadComponent: () =>
-      import('./products/components/products.component').then(c => c.ProductsComponent)
-  },
-  {path: 'blogs', component: BlogPostsComponent},
-  { path: 'blog/:id', component: BlogDetailsComponent },
-  { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
-  { path: 'forgot-password', component: ForgotPasswordComponent },
-  { path: 'reset-password', component: ResetPasswordComponent },
-  { path: 'cart', component: CartPageComponent },
-  { path: 'cartSide', component: CartSidebarComponent },
+  { path: '', loadComponent: () => import('./home/components/home-page.component').then(c => c.HomePageComponent), pathMatch: 'full' },
+  { path: 'home', loadComponent: () => import('./home/components/home-page.component').then(c => c.HomePageComponent) },
 
   {
-  path: 'checkout',
-  component: CheckoutComponent,
-  canActivate: [AuthGuard]
+    path: 'administration',
+    loadComponent: () => import('./administration/components/administration.component').then(c => c.AdministrationComponent),
+    canActivate: [AuthGuard],
+    data: { isAdmin: true },
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      {
+        path: 'home',
+        loadComponent: () => import('./administration/home/components/home-page-component-administration.component').then(c => c.HomePageComponentAdministration)
+      },
+      {
+        path: 'product-management',
+        loadComponent: () => import('./administration/products/product-management/product-management.component').then(c => c.ProductManagementComponent)
+      },
+     {
+        path: 'blog-management', // localhost:4200/administration/blog-management
+        loadChildren: () => import('./administration/blog-management/blog-management.module').then(m => m.BlogManagementModule)
+      },
+     {
+        path: 'discount-management', 
+        loadChildren: () => import('./administration/discount-management/discount-managements.module').then(m => m.DiscountModule)
+      },
+    ]
+  },
+
+  {
+    path: 'products',
+    loadComponent: () => import('./products/components/products.component').then(c => c.ProductsComponent)
+  },
+ {
+  path: 'blogs',
+  loadChildren: () => import('./blog/blog.module').then(m => m.BlogModule)
 },
-{path:'confirmation-modal',component:ConfirmationModalComponent},
-{path:'favorites',component:FavoritesComponent},
+
+  {
+    path: 'login',
+    loadComponent: () => import('./auth/login/login.component').then(c => c.LoginComponent)
+  },  
+  {
+    path: 'register',
+    loadComponent: () => import('./auth/register/register.component').then(c => c.RegisterComponent)
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () => import('./auth/forgot-password/forgot-password').then(c => c.ForgotPasswordComponent)
+  },
+  {
+    path: 'reset-password',
+    loadComponent: () => import('./auth/forgot-password/reset-password/reset-password.component').then(c => c.ResetPasswordComponent)
+  },
+  {
+    path: 'cart',
+    loadComponent: () => import('./cart/components/cart-page/cart-page.component').then(c => c.CartPageComponent)
+  },
+  {
+    path: 'cartSide',
+    loadComponent: () => import('./cart/components/cart-sidebar/cart-sidebar.component').then(c => c.CartSidebarComponent)
+  },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./checkout/checkout/checkout.component').then(c => c.CheckoutComponent),
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'confirmation-modal',
+    loadComponent: () => import('./confirmation-modal/confirmation-modal/confirmation-modal.component').then(c => c.ConfirmationModalComponent)
+  },
+  {
+    path: 'favorites',
+    loadComponent: () => import('./favorites/components/favorite.component').then(c => c.FavoritesComponent)
+  },
 
   { path: '**', redirectTo: 'home' },
 ];

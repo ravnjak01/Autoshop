@@ -35,7 +35,7 @@ public class CheckoutController : ControllerBase
 
         var strategy = _context.Database.CreateExecutionStrategy();
 
-        return await strategy.ExecuteAsync(async () =>
+        return await strategy.ExecuteAsync<IActionResult>(async () =>
         {
             using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
             try
@@ -52,12 +52,54 @@ public class CheckoutController : ControllerBase
                 if (!itemsToBuy.Any())
                     return BadRequest("Your active cart is empty. Move items from 'Saved for later' to proceed.");
 
+                var now = DateTime.UtcNow;
+                var globalDiscount = await _context.Discounts
+                                .Where(d => d.StartDate <= now && d.EndDate >= now)
+                                .OrderByDescending(d => d.DiscountPercentage)
+                                .Select(d => d.DiscountPercentage)
+                                .FirstOrDefaultAsync(cancellationToken);
+
+                var productIds = itemsToBuy.Select(i => i.ProductId).ToList();
+                var categoryIds = itemsToBuy.Select(i => i.Product.CategoryId).Distinct().ToList();
+
+                var categoryDiscounts = await _context.DiscountCategories
+                .Where(dc => categoryIds.Contains(dc.CategoryId))
+                .ToDictionaryAsync(dc => dc.CategoryId, dc => dc.Discount.DiscountPercentage, cancellationToken);
+
+                var productDiscounts = await _context.DiscountProducts
+                    .Where(dp => productIds.Contains(dp.ProductId))
+                    .ToDictionaryAsync(dp => dp.ProductId, dp => dp.Discount.DiscountPercentage, cancellationToken);
+
+                decimal finalOrderTotal = 0;
+                var orderItems = new List<OrderItem>();
+
                 foreach (var item in itemsToBuy)
                 {
                     if (!item.Product.Active)
                         return BadRequest($"Product {item.Product.Name} is no longer available.");
                     if (item.Product.StockQuantity < item.Quantity)
                         return BadRequest($"Insufficient stock for {item.Product.Name}.");
+
+                    decimal priceAfterGlobal = item.Product.Price - (item.Product.Price * globalDiscount / 100);
+
+                    decimal extraDiscountPercent = (categoryDiscounts.TryGetValue(item.Product.CategoryId, out var cd) ? cd : 0) +
+                                             (productDiscounts.TryGetValue(item.ProductId, out var pd) ? pd : 0);
+
+                    // Finalna jedinična cijena za ovu stavku
+                    decimal finalUnitPrice = priceAfterGlobal - (priceAfterGlobal * extraDiscountPercent / 100);
+
+                    finalOrderTotal += finalUnitPrice * item.Quantity;
+
+                    orderItems.Add(new OrderItem
+                    {
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        UnitPrice = finalUnitPrice 
+                    });
+
+                    item.Product.StockQuantity -= item.Quantity;
+
+
                 }
 
                 var existingAddress = await _context.Addresses
@@ -88,7 +130,7 @@ public class CheckoutController : ControllerBase
                     finalAddressId = newAddress.Id;
                 }
 
-          
+
                 var total = itemsToBuy.Sum(i => i.Product.Price * i.Quantity);
 
                 var order = new Order
@@ -96,21 +138,12 @@ public class CheckoutController : ControllerBase
                     UserId = userId,
                     AdresaId = finalAddressId,
                     CreatedAt = DateTime.UtcNow,
-                    Status = "Pending",
-                    Items = itemsToBuy.Select(i => new OrderItem
-                    {
-                        ProductId = i.ProductId,
-                        Quantity = i.Quantity,
-                        UnitPrice = i.Product.Price
-                    }).ToList(),
-                    TotalAmount = total
+                    Status = Status.Pending,
+                    Items = orderItems,
+                    TotalAmount = finalOrderTotal
                 };
 
                 _context.Orders.Add(order);
-
-                foreach (var item in itemsToBuy)
-                    item.Product.StockQuantity -= item.Quantity;
-
                 _context.CartItems.RemoveRange(itemsToBuy);
 
                 await _context.SaveChangesAsync(cancellationToken);
@@ -121,19 +154,19 @@ public class CheckoutController : ControllerBase
                     Message = "Order successfully created.",
                     OrderId = order.Id,
                     Total = order.TotalAmount,
-                    Status = order.Status
+                    Status = order.Status.ToString()
                 });
             }
             catch (OperationCanceledException)
             {
                 await transaction.RollbackAsync(cancellationToken);
-                return StatusCode(499, "Request cancelled.");
+                throw;
             }
             catch (Exception ex)
             {
-                if (transaction != null) await transaction.RollbackAsync(cancellationToken);
+                await transaction.RollbackAsync(CancellationToken.None);
                 _logger.LogError(ex, "Checkout failed for user {UserId}", userId);
-                return StatusCode(500, "An error occurred during checkout. Please try again.");
+                throw; 
             }
         });
     }

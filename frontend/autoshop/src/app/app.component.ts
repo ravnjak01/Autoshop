@@ -1,5 +1,5 @@
 
-import {Component} from '@angular/core';
+import {ChangeDetectorRef, Component} from '@angular/core';
 import { Router, NavigationEnd, RouterOutlet, RouterLink } from '@angular/router';
 import { MyAuthService } from './core/services/auth/my-auth.service';
 import { CommonModule } from '@angular/common';
@@ -18,6 +18,13 @@ import {MatProgressSpinner} from '@angular/material/progress-spinner';
 
 })
 export class AppComponent {
+
+
+
+ngAfterContentChecked() {
+  this.cdref.detectChanges();
+}
+
   loading$!: any;
 
    isCartSidebarOpen = false;
@@ -34,7 +41,7 @@ export class AppComponent {
    isCartOpen: boolean = false;
 cartItems: CartItemDTO[] = [];
 cartItemCount: number = 0;
-  constructor(private loadingService: LoadingService, private router: Router, public authService: MyAuthService,public cartService:CartService) {
+  constructor(private loadingService: LoadingService, private router: Router, public authService: MyAuthService,public cartService:CartService,private cdref: ChangeDetectorRef) {
 
     this.loading$ = this.loadingService.loading$;
 

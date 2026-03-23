@@ -3,9 +3,12 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using RS1_2024_25.API.Helper;
 using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountGetAll;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
+    [Authorize(Roles = "Admin")]
+
     [Route("discounts")]
     public class DiscountGetAll(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<DiscountGetAllRequest>

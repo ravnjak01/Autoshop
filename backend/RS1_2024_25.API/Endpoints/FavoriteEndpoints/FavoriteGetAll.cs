@@ -1,4 +1,5 @@
 ﻿using Duende.IdentityModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -9,6 +10,7 @@ using RS1_2024_25.API.Helper.Api;
 
 namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
 {
+    [Authorize]
     [Route("favorite")]
     public class FavoriteGetAll(ApplicationDbContext db, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<FavoriteGetAllRequest>

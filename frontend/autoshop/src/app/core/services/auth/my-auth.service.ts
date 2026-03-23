@@ -7,7 +7,27 @@ import {MySignalRService} from '../../../core/services/signalr/my-signal-r.servi
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { MyConfig } from '../../../my-config';
+import { jwtDecode } from 'jwt-decode';
+export interface LoginResponse {
+  token: string;
+  expiration?: string;  
+  username?: string;    
+  roles?: UserRole[];
+}
 
+
+export interface UserInfoDto{
+  id:string;
+  username:string;
+  email:string;
+  roles:UserRole[];
+}
+
+export enum UserRole {
+  Admin = 'Admin',
+  Manager = 'Manager',
+  Customer = 'Customer'
+}
 
 @Injectable({ providedIn: 'root' })
 export class MyAuthService {
@@ -24,7 +44,7 @@ export class MyAuthService {
 
   return {
     username,
-    roles: JSON.parse(rolesString) as string[]
+    roles: JSON.parse(rolesString) as UserRole[]
   };
 }
 
@@ -40,19 +60,39 @@ export class MyAuthService {
   private hasStoredLogin(): boolean {
     return   !!localStorage.getItem('jwtToken');
   }
-login(credentials: { username: string; password: string }): Observable<any> {
+login(credentials: { username: string; password: string }): Observable<LoginResponse> {
   return this.httpClient
-    .post<any>(`${this.apiUrl}/login`, credentials)
+    .post<LoginResponse>(`${this.apiUrl}/login`, credentials)
     .pipe(
-      tap((response) => {
+      tap((response: LoginResponse) => {
         if (response && response.token) {
+          // 1. Spasi token
           localStorage.setItem('jwtToken', response.token);
-          
-          if (response.roles) {
-            localStorage.setItem('userRoles', JSON.stringify(response.roles));
+          localStorage.setItem('userName', response.username || '');
+
+          // 2. Dekodiraj token da izvučeš role (ako nisu već u response.roles)
+          try {
+            const decoded: any = jwtDecode(response.token);
+            // .NET Identity obično stavlja role pod ovaj dugački URL ključ
+            const decodedRoles = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+            
+            // Provjeri jesu li role stigle u odgovoru ili ih uzimamo iz tokena
+            let rolesToStore: string[] = [];
+            
+            if (response.roles) {
+              rolesToStore = response.roles;
+            } else if (decodedRoles) {
+              // Ako je samo jedna rola, biće string, ako ih je više biće niz
+              rolesToStore = Array.isArray(decodedRoles) ? decodedRoles : [decodedRoles];
+            }
+
+            // 3. Spasi uloge u localStorage
+            localStorage.setItem('userRoles', JSON.stringify(rolesToStore));
+          } catch (error) {
+            console.error('Greška pri dekodiranju tokena:', error);
           }
-          
-        } else {
+
+          this.isLoggedInSubject.next(true); // Obavijesti ostatak aplikacije
         }
       })
     );
@@ -71,7 +111,7 @@ checkAuth(): Observable<boolean> {
   });
 
  return this.httpClient
-      .get<{ username: string; roles: string[] }>(`${this.userUrl}/me`, { headers })
+      .get<{ username: string; roles: UserRole[] }>(`${this.userUrl}/me`, { headers })
       .pipe(
         map((response) => {
           if (response && response.username) {
@@ -87,11 +127,21 @@ checkAuth(): Observable<boolean> {
       );
 }
   logout(): void {
-  
-      localStorage.clear();
 
-      this.isLoggedInSubject.next(false);
+    this.httpClient.post(`${this.apiUrl}/logout`, {}).subscribe({
+      next: () => {
+        localStorage.clear();
+           this.isLoggedInSubject.next(false);
       this.router.navigate(['/login']);
+      },
+      error: () => {
+        localStorage.clear();
+        this.isLoggedInSubject.next(false);
+  this.router.navigate(['/login']);
+      }
+    });
+
+   
     }
 
       forgotPassword(email: string) {
@@ -104,8 +154,8 @@ resetPassword(data: { email: string, token: string, newPassword: string }) {
   return this.httpClient.post(`${this.apiUrl}/reset-password`, data);
 }
 
-  register(data: { email: string, username:string,password: string }): Observable<any> {
-    return this.httpClient.post(`${this.apiUrl}/register`, data);
+  register(data: { email: string, username:string,password: string }): Observable<void> {
+    return this.httpClient.post<void>(`${this.apiUrl}/register`, data);
   }
   isLoggedIn(): boolean {
     return this.isLoggedInSubject.value;
@@ -115,14 +165,24 @@ resetPassword(data: { email: string, token: string, newPassword: string }) {
   const rolesString = localStorage.getItem('userRoles');
   if (!rolesString) return false;
 
-  const roles: string[] = JSON.parse(rolesString);
-  return roles.includes('Admin');
+  const roles: UserRole[] = JSON.parse(rolesString);
+  return roles.includes(UserRole.Admin);
 }
 isManager(): boolean {
-  return localStorage.getItem('userRole') === 'Manager';
+
+  const rolesString = localStorage.getItem('userRoles');
+  if (!rolesString) return false;
+
+  try {
+    const roles: UserRole[] = JSON.parse(rolesString);
+    return roles.includes(UserRole.Manager);
 }
-  getUserData(): Observable<any> {
-    return this.httpClient.get(`${this.apiUrl}/user`);
+catch(e){
+  return false;
+}
+}
+  getUserData(): Observable<UserInfoDto> {
+    return this.httpClient.get<UserInfoDto>(`${this.apiUrl}/user`);
   }
   
 
@@ -140,7 +200,7 @@ getCurrentUserId(): Observable<string | null> {
   });
 
   return this.httpClient
-        .get<{ id: string; username: string; email: string; roles: string[] }>(`${this.userUrl}/me`, { headers })
+        .get<{ id: string; username: string; email: string; roles: UserRole[] }>(`${this.userUrl}/me`, { headers })
        .pipe(
       tap(response => {
         if (response.id) {

@@ -62,7 +62,7 @@
     <h2>Products</h2>
 
     <!-- GRID PRODUKATA -->
-    <div class="product-grid">
+    <div class="product-grid" *ngIf="products && products.length > 0; else emptyState">
 
       <div *ngFor="let product of products" class="product-card">
 
@@ -153,8 +153,12 @@
         </div>
 
       </div>
-    </div>
-
+   
+   </div> <ng-template #emptyState>
+  <div class="no-products-message">
+    No products found.
+  </div>
+</ng-template>
   </section>
 
 </div>

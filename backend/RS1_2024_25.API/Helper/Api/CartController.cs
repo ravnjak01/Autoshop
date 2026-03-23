@@ -65,8 +65,9 @@ namespace RS1_2024_25.API.Controllers
             }
 
             var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == request.ProductId, cancellationToken);
-            if (product == null)
-                return NotFound("Product not found.");
+            if (product == null || !product.Active)
+                return NotFound("Product not available.");
+
 
             var existingItem = cart?.Items
                     .FirstOrDefault(i => i.ProductId == request.ProductId);
@@ -137,7 +138,7 @@ namespace RS1_2024_25.API.Controllers
                 cart = await _context.Carts
                     .Include(c => c.Items)
                     .ThenInclude(i => i.Product)
-                    .FirstOrDefaultAsync(c => c.GuestSessionId == sessionId);
+                    .FirstOrDefaultAsync(c => c.GuestSessionId == sessionId,cancellationToken);
             }
 
             if (cart == null || cart.Items == null || !cart.Items.Any())
@@ -193,9 +194,9 @@ namespace RS1_2024_25.API.Controllers
         }
 
 
-       
-      
-       
+
+
+        
         [HttpPost("save-for-later/{productId}")]
         public async Task<IActionResult> SaveForLater(int productId,CancellationToken cancellationToken)
         {
@@ -236,6 +237,8 @@ namespace RS1_2024_25.API.Controllers
 
             return Ok();
         }
+
+        [AllowAnonymous]
         [HttpPut("update/{itemId}")]
         public async Task<IActionResult> UpdateQuantity(int itemId, [FromBody] UpdateCartItemDTO request,CancellationToken cancellationToken)
         {
@@ -281,56 +284,44 @@ namespace RS1_2024_25.API.Controllers
                 Total = item.Product.Price * item.Quantity
             });
         }
+        // UKLONI try/catch iz ClearCart, ostavi samo logiku:
+        [AllowAnonymous]
         [HttpDelete("clear")]
         public async Task<IActionResult> ClearCart(CancellationToken cancellationToken)
         {
-            try
+            var userId = _userManager.GetUserId(User);
+            Cart? cart = null;
+
+            if (!string.IsNullOrEmpty(userId))
             {
-               
-                var userId = _userManager.GetUserId(User);
-                Cart? cart = null;
-
-                if (!string.IsNullOrEmpty(userId))
-                {
-                    
-                    cart = await _context.Carts
-                        .Include(c => c.Items)
-                        .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
-                }
-                else
-                {
-                    
-                    var guestSessionId = Request.Cookies["guest_session"];
-
-                    if (string.IsNullOrEmpty(guestSessionId))
-                    {
-                        return NotFound(new { Message = "No cart found." });
-                    }
-
-                    cart = await _context.Carts
-                        .Include(c => c.Items)
-                        .FirstOrDefaultAsync(c => c.GuestSessionId == guestSessionId);
-                }
-
-                if (cart == null)
-                    return NotFound(new { Message = "Cart not found." });
-
-               
-                if (cart.Items == null || !cart.Items.Any())
-                    return Ok(new { Message = "Cart is already empty." });
-
-                _context.CartItems.RemoveRange(cart.Items);
-                await _context.SaveChangesAsync(cancellationToken);
-
-                return Ok(new { Message = "Cart cleared successfully." });
+                cart = await _context.Carts
+                    .Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
             }
-            catch (Exception ex)
+            else
             {
+                var guestSessionId = Request.Cookies["guest_session"];
+                if (string.IsNullOrEmpty(guestSessionId))
+                    return NotFound(new { Message = "No cart found." });
 
-                return StatusCode(500, new { Message = "Error clearing cart." });
+                cart = await _context.Carts
+                    .Include(c => c.Items)
+                    .FirstOrDefaultAsync(c => c.GuestSessionId == guestSessionId);
             }
+
+            if (cart == null)
+                return NotFound(new { Message = "Cart not found." });
+
+            if (cart.Items == null || !cart.Items.Any())
+                return Ok(new { Message = "Cart is already empty." });
+
+            _context.CartItems.RemoveRange(cart.Items);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return Ok(new { Message = "Cart cleared successfully." });
         }
 
+        [AllowAnonymous]
         [HttpDelete("remove/{itemId}")]
         public async Task<IActionResult> RemoveFromCart(int itemId, CancellationToken cancellationToken)
         {

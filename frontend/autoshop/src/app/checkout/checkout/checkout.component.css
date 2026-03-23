@@ -192,6 +192,24 @@ button[disabled] {
   color: #777;
   margin-top: 10px;
 }
+.error-msg {
+  color: #e53935;
+  font-size: 0.78rem;
+  margin-top: 3px;
+  display: block;
+}
+
+input.invalid {
+  border-color: #e53935;
+  background-color: #fff5f5;
+}
+
+.empty-cart-msg {
+  padding: 20px 0;
+  text-align: center;
+  color: #888;
+  font-style: italic;
+}
 
 /* Responsivan dizajn */
 @media (max-width: 900px) {

@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { CartItemDTO } from '../../models/cart-item.dto'; 
 import { Router, RouterModule } from '@angular/router';
 import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-snackbar-helper.service';
-
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-cart',
   templateUrl: './cart-page.component.html',
@@ -18,21 +18,22 @@ import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-sn
   ]
 })
 export class CartPageComponent implements OnInit {
-isIncreaseDisabled(item:any):boolean {
-if(!item)
-{
-  return true;
-}
-if(!item.product)
-{
-  return true;
-}
+  private destroyRef = inject(DestroyRef);
 
-const quantity=Number(item.quantity ?? 0);
-const stock=Number(item.product.stockQuantity ?? 0);
+    isIncreaseDisabled(item:CartItemDTO):boolean {
+    if(!item)
+    {
+      return true;
+    }
+    if(!item.product)
+    {
+      return true;
+    }
 
-return quantity>=stock;
-}
+    const quantity=Number(item.quantity ?? 0);
+    const stock=Number(item.product.stockQuantity ?? 0);
+    return quantity>=stock;
+    }
    cartItems: CartItemDTO[] = [];
   isCartEmpty: boolean = false;
 savedForLaterItems: CartItemDTO[] = [];
@@ -44,7 +45,9 @@ savedForLaterItems: CartItemDTO[] = [];
     this.loadCart();
   }
 loadCart(): void {
-  this.cartService.getCart().subscribe({
+  this.cartService.getCart()
+  .pipe(takeUntilDestroyed(this.destroyRef))
+  .subscribe({
     next: (response) => {
       if (response && response.items) {
         this.cartItems = response.items;
@@ -70,11 +73,12 @@ loadCart(): void {
 
   if(newQuantity<stock){
     this.cartService.updateQuantity(item.id,newQuantity)
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe();
   }
   else
   {
-    this.snackbar.showMessage('Dostigli ste limit zaliha', 'error');
+    this.snackbar.showMessage('Not enough stock available', 'error');
   }
 
  
@@ -84,14 +88,15 @@ decreaseQuantity(item: CartItemDTO): void {
   if (item.quantity > 1) {
     const newQuantity = item.quantity - 1;
 
-    this.cartService.updateQuantity(item.id, newQuantity).subscribe({
+    this.cartService.updateQuantity(item.id, newQuantity)
+    .pipe(takeUntilDestroyed(this.destroyRef))
+    .subscribe({
       next: (updatedItem) => {
         item.quantity = updatedItem.quantity;
       }
     });
   } else {
-    
-    
+    this.snackbar.showMessage('Quantity cannot be less than 1', 'error');
   }
 }
 
@@ -111,13 +116,17 @@ removeItem(item: CartItemDTO): void {
     return;
   }
 
-  this.cartService.removeFromCart(itemId).subscribe({
+  this.cartService.removeFromCart(itemId)
+  
+  .pipe(takeUntilDestroyed(this.destroyRef))
+  .subscribe({
     next: () => {
       this.cartService.loadCart();
     
       this.cartItems = this.cartItems.filter(i => i.id !== itemId);
     },
     error: (err) => {
+      this.snackbar.showMessage('Failed to remove item from cart', 'error');
     }
   });
 }
@@ -125,7 +134,9 @@ removeItem(item: CartItemDTO): void {
 
 
 saveForLater(item: CartItemDTO): void {
-  this.cartService.saveForLater(item.productId).subscribe({
+  this.cartService.saveForLater(item.productId)
+  .pipe(takeUntilDestroyed(this.destroyRef))
+  .subscribe({
     next: () => {
       this.cartItems = this.cartItems.filter(i => i.productId !== item.productId);
       this.savedForLaterItems.push(item);
@@ -134,7 +145,9 @@ saveForLater(item: CartItemDTO): void {
 }
 
 moveToCart(item: CartItemDTO): void {
-  this.cartService.moveToCart(item.productId).subscribe({
+  this.cartService.moveToCart(item.productId)
+  .pipe(takeUntilDestroyed(this.destroyRef))
+  . subscribe({
     next: () => {
       this.savedForLaterItems = this.savedForLaterItems.filter(i => i.productId !== item.productId);
       this.cartItems.push(item);
