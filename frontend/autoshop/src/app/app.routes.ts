@@ -1,5 +1,8 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth/auth.guard';
+import { DiscountsComponent } from './administration/discount-management/components/discount/discount.component';
+import { BlogPostsComponent } from './administration/blog-management/components/blogs/blog-posts.component';
+import { BlogDetailsComponent } from './blog/components/blog-post/blog-post.component';
 
 export const appRoutes: Routes = [
 
@@ -21,6 +24,8 @@ export const appRoutes: Routes = [
         path: 'product-management',
         loadComponent: () => import('./administration/products/product-management/product-management.component').then(c => c.ProductManagementComponent)
       },
+
+      /*
      {
         path: 'blog-management', // localhost:4200/administration/blog-management
         loadChildren: () => import('./administration/blog-management/blog-management.module').then(m => m.BlogManagementModule)
@@ -29,6 +34,9 @@ export const appRoutes: Routes = [
         path: 'discount-management', 
         loadChildren: () => import('./administration/discount-management/discount-managements.module').then(m => m.DiscountModule)
       },
+      */
+        { path: 'admin/blog-posts', component: BlogPostsComponent },
+          { path: 'admin/discount', component: DiscountsComponent},
     ]
   },
 
@@ -36,11 +44,14 @@ export const appRoutes: Routes = [
     path: 'products',
     loadComponent: () => import('./products/components/products.component').then(c => c.ProductsComponent)
   },
+  /*
  {
   path: 'blogs',
   loadChildren: () => import('./blog/blog.module').then(m => m.BlogModule)
 },
-
+*/
+  {path: 'blogs', component: BlogPostsComponent},
+  { path: 'blog/:id', component: BlogDetailsComponent },
   {
     path: 'login',
     loadComponent: () => import('./auth/login/login.component').then(c => c.LoginComponent)

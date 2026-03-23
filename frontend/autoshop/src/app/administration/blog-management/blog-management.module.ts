@@ -1,32 +1,31 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Routes } from '@angular/router';  // ← dodaj RouterModule
 import { SharedModule } from '../../modules/shared/shared.module';
 
+// Komponente koje pripadaju ovom modulu (moraju biti deklarisane)
 import { BlogEditComponent } from './components/blog-posts-editing/blog-posts-editing.component';
-import { BlogPostComponent } from './components/blog/blog-post.component';
-import { BlogPostsComponent } from './components/blogs/blog-posts.component';
 import {
-  MatCell, MatCellDef, MatColumnDef,
-  MatHeaderCell, MatHeaderCellDef, MatHeaderRow,
-  MatHeaderRowDef, MatRow, MatRowDef, MatTable
+  MatCell, MatCellDef,
+  MatColumnDef,
+  MatHeaderCell,
+  MatHeaderCellDef,
+  MatHeaderRow, MatHeaderRowDef,
+  MatRow, MatRowDef,
+  MatTable
 } from '@angular/material/table';
-import { MatTooltip } from '@angular/material/tooltip';
+import {MatTooltip} from '@angular/material/tooltip';
+import {BlogPostComponent} from './components/blog/blog-post.component';
+import {BlogPostsComponent} from './components/blogs/blog-posts.component';
 
-const routes: Routes = [
-  { path: '', component: BlogPostsComponent },
-  { path: 'edit/:id', component: BlogEditComponent }
-];
 
 @NgModule({
-  declarations: [
-    BlogEditComponent,
-    BlogPostComponent,
+  declarations: [
+    BlogEditComponent,
+    BlogPostComponent,
     BlogPostsComponent
-  ],
+  ],
   imports: [
     CommonModule,
-    RouterModule.forChild(routes),  // ← ovo je ključno, ne forRoot!
     SharedModule,
     MatTable,
     MatHeaderCell,
@@ -39,12 +38,13 @@ const routes: Routes = [
     MatCellDef,
     MatHeaderRowDef,
     MatRowDef,
+    // SharedModule mora izvoziti MatDialogModule i CommonModule
   ],
-  exports: [
-    BlogEditComponent,
-    BlogPostComponent,
+  exports: [
+    BlogEditComponent,
+    BlogPostComponent,
     BlogPostsComponent,
-    RouterModule  // ← izvozi ako komponente koriste routerLink
-  ]
+
+  ]
 })
 export class BlogManagementModule { }

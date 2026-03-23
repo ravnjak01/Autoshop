@@ -9,6 +9,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
     [Authorize(Roles = "Admin")]
 
     [Route("delete-blog")]
+    [Authorize(Roles = "Admin")]
     public class BlogDeleteForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
     .WithRequest<int>
     .WithoutResult

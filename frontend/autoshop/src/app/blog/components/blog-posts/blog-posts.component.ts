@@ -42,7 +42,7 @@ export class BlogPostsComponent implements OnInit {
         ...this.blogs,
         ...response.blogs.map(blog => ({
           ...blog,
-          image: blog.image ? `data:image/jpeg;base64,${blog.image}` : null
+          image: blog.imageUrl ?? null
         }))
       ];
     });

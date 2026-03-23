@@ -8,6 +8,7 @@ import {
   DiscountCategoryRequest,
   DiscountCategorySaveService
 } from '../../services/discount-categories-save-endpoint.service';
+import {MySnackbarHelperService} from '../../../../modules/shared/snackbars/my-snackbar-helper.service';
 
 @Component({
   selector: 'app-discount-category-dialog',
@@ -25,7 +26,8 @@ export class DiscountCategoryDialogComponent implements OnInit {
     private dialogRef: MatDialogRef<DiscountCategoryDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { discountId: number, discountName: string },
     private discountCategoryGetAllService: DiscountCategoryGetAllService,
-    private discountCategorySaveService: DiscountCategorySaveService
+    private discountCategorySaveService: DiscountCategorySaveService,
+    private snackbar: MySnackbarHelperService
   ) {}
 
   ngOnInit(): void {
@@ -87,7 +89,14 @@ export class DiscountCategoryDialogComponent implements OnInit {
       categoryIds: this.selectedCategoryIds
     };
     this.discountCategorySaveService.handleAsync(request)
-      .subscribe(() => this.dialogRef.close(true));
+      .subscribe({
+        next: () => {
+          this.dialogRef.close(true);
+        },
+        error: (err) => {
+          this.snackbar.showMessage("Discount is not currently active!", 'error');
+        }
+      });
   }
 
   close(): void {

@@ -4,7 +4,6 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
 using Microsoft.AspNetCore.Identity;
 using RS1_2024_25.API.Data.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 {
@@ -15,11 +14,11 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
     {
         [HttpGet]
         public override async Task<ActionResult<ProductGetAllResponse>> HandleAsync(
-            [FromQuery] ProductGetAllRequest request,
-            CancellationToken cancellationToken = default)
+                 [FromQuery] ProductGetAllRequest request,
+                    CancellationToken cancellationToken = default)
         {
-            if(request.MinPrice.HasValue && request.MinPrice.Value >= 0 &&
-                request.MaxPrice.HasValue && request.MaxPrice.Value >= 0 && 
+            if (request.MinPrice.HasValue && request.MinPrice.Value >= 0 &&
+                request.MaxPrice.HasValue && request.MaxPrice.Value >= 0 &&
                 request.MaxPrice.Value < request.MinPrice.Value)
             {
                 return BadRequest("Max price must be greater than min price");
@@ -27,21 +26,8 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
 
             var now = DateTime.UtcNow;
 
-            var globalDiscount = await db.Discounts
-                .Where(d => d.StartDate <= now && d.EndDate >= now)
-                .OrderByDescending(d => d.DiscountPercentage)
-                .FirstOrDefaultAsync(cancellationToken);
-
-            var globalDiscountPercentage = globalDiscount?.DiscountPercentage ?? 0;
-
-            var promoCode = await db.DiscountCodes
-               .Where(d => d.ValidFrom <= now && d.ValidTo >= now)
-               .Select(d => d.Code)
-               .FirstOrDefaultAsync(cancellationToken);
-
             request.PageNumber = Math.Max(1, request.PageNumber);
             request.PageSize = Math.Clamp(request.PageSize, 1, 100);
-
 
             var isAdmin = User.IsInRole("Admin");
             var query = db.Products
@@ -54,7 +40,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 query = query.Where(p => p.Active && p.StockQuantity > 0);
             }
 
-
+            // --- Filtriranje ---
             if (!string.IsNullOrWhiteSpace(request.SearchQuery))
             {
                 var searchLower = request.SearchQuery.Trim().ToLower();
@@ -76,6 +62,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             if (request.MaxPrice.HasValue && request.MaxPrice.Value >= 0)
                 query = query.Where(p => p.Price <= request.MaxPrice.Value);
 
+            // --- Sortiranje ---
             query = (request.SortBy?.ToLower()) switch
             {
                 "priceasc" => query.OrderBy(p => p.Price).ThenBy(p => p.Name),
@@ -93,54 +80,79 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
             var httpContext = httpContextAccessor.HttpContext!;
             var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
-            var productIds = await query.Select(p => p.Id).ToListAsync(cancellationToken);
-            var categoryIds = await query.Select(p => p.CategoryId).Distinct().ToListAsync(cancellationToken);
+            // 1. Dohvatanje sirovih podataka za trenutnu stranicu
+            var rawProducts = await query
+                .Skip((request.PageNumber - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    p.Price,
+                    p.ImageUrl,
+                    p.Brend,
+                    p.CategoryId,
+                    CategoryName = p.Category != null ? p.Category.Name : null,
+                    IsFavorite = p.Favorites.Any(f => f.UserId == userId),
+                    p.StockQuantity,
+                    p.SKU
+                })
+                .ToListAsync(cancellationToken);
+
+            // 2. Priprema podataka za popuste
+            var productIds = rawProducts.Select(p => p.Id).ToList();
+            var categoryIds = rawProducts.Select(p => p.CategoryId).Distinct().ToList();
 
             var categoryDiscounts = await db.DiscountCategories
-                 .Where(dc => categoryIds.Contains(dc.CategoryId))
-                    .ToDictionaryAsync(dc => dc.CategoryId, dc => dc.Discount.DiscountPercentage, cancellationToken);
+                .Where(dc => categoryIds.Contains(dc.CategoryId)
+                    && dc.Discount.StartDate <= now
+                    && dc.Discount.EndDate >= now)
+                .GroupBy(dc => dc.CategoryId)
+                .Select(g => new
+                {
+                    CategoryId = g.Key,
+                    Discount = g.Max(x => x.Discount.DiscountPercentage)
+                })
+                .ToDictionaryAsync(x => x.CategoryId, x => x.Discount, cancellationToken);
 
             var productDiscounts = await db.DiscountProducts
-                .Where(dp => productIds.Contains(dp.ProductId))
-                .ToDictionaryAsync(dp => dp.ProductId, dp => dp.Discount.DiscountPercentage, cancellationToken);
-            var rawProducts = await query
-            .AsNoTracking()
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .Select(p => new
-            {
-                p.Id,
-                p.Name,
-                p.Price,
-                p.ImageUrl,
-                p.Brend,
-                p.CategoryId,
-                CategoryName = p.Category != null ? p.Category.Name : null,
-                IsFavorite = p.Favorites.Any(f => f.UserId == userId),
-                p.StockQuantity,
-                p.SKU
-            })
-            .ToListAsync(cancellationToken);
+                .Where(dp => productIds.Contains(dp.ProductId)
+                    && dp.Discount.StartDate <= now
+                    && dp.Discount.EndDate >= now)
+                .GroupBy(dp => dp.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    Discount = g.Max(x => x.Discount.DiscountPercentage)
+                })
+                .ToDictionaryAsync(x => x.ProductId, x => x.Discount, cancellationToken);
 
-            var products = rawProducts.Select(x => new ProductDto
+            // 3. Finalno mapiranje u DTO
+            var products = rawProducts.Select(x =>
             {
-                Id = x.Id,
-                Name = x.Name,
-                Price = x.Price,
-                ImageUrl = x.ImageUrl.StartsWith("http")
+                var categoryDiscount = categoryDiscounts.TryGetValue(x.CategoryId, out var cd) ? cd : 0;
+                var productDiscount = productDiscounts.TryGetValue(x.Id, out var pd) ? pd : 0;
+
+                // Uzimamo veći popust (ili ih saberi ako je to poslovna logika)
+                var finalDiscount = Math.Max(categoryDiscount, productDiscount);
+
+                return new ProductDto
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Price = x.Price,
+                    ImageUrl = (string.IsNullOrEmpty(x.ImageUrl) || x.ImageUrl.StartsWith("http"))
                         ? x.ImageUrl
-                        : $"{baseUrl.TrimEnd('/')}/{x.ImageUrl?.TrimStart('/')}",
-                Brend = x.Brend,
-                CategoryName = x.CategoryName,
-                IsFavorite = x.IsFavorite,
-                PriceAfterGlobalDiscount = x.Price - (x.Price * globalDiscountPercentage / 100),
-                BadgeDiscountPercentage =
-                      (categoryDiscounts.TryGetValue(x.CategoryId, out var cd) ? cd : 0) +
-                 (productDiscounts.TryGetValue(x.Id, out var pd) ? pd : 0),
-                SKU =x.SKU,
-                StockQuantity = x.StockQuantity
+                        : $"{baseUrl.TrimEnd('/')}/{x.ImageUrl.TrimStart('/')}",
+                    Brend = x.Brend,
+                    CategoryName = x.CategoryName,
+                    IsFavorite = x.IsFavorite,
+                    BadgeDiscountPercentage = finalDiscount,
+                    PriceAfterDiscount = x.Price - (x.Price * finalDiscount / 100),
+                    SKU = x.SKU,
+                    StockQuantity = x.StockQuantity
+                };
             }).ToList();
-
 
             return new ProductGetAllResponse
             {
@@ -150,9 +162,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
                 PageSize = request.PageSize,
                 TotalPages = (int)Math.Ceiling(totalCount / (double)request.PageSize),
                 HasNextPage = request.PageNumber < (int)Math.Ceiling(totalCount / (double)request.PageSize),
-                HasPreviousPage = request.PageNumber > 1,
-                PromoCode = promoCode,
-             
+                HasPreviousPage = request.PageNumber > 1
             };
         }
     }
@@ -177,7 +187,6 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public int TotalPages { get; set; }
         public bool HasNextPage { get; set; }
         public bool HasPreviousPage { get; set; }
-        public string? PromoCode { get; set; }
     }
 
     public class ProductDto
@@ -189,7 +198,7 @@ namespace RS1_2024_25.API.Endpoints.ProductEndpoints
         public string? Brend { get; set; }
         public string? CategoryName { get; set; }
         public bool IsFavorite { get; set; }
-        public decimal? PriceAfterGlobalDiscount { get; set; }
+        public decimal? PriceAfterDiscount { get; set; }
         public decimal? BadgeDiscountPercentage { get; set; }
         public string? SKU { get; set; }
         public int StockQuantity { get; set; }

@@ -15,6 +15,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
     [Authorize(Roles = "Admin")]
 
     [Route("discount-post")]
+    [Authorize(Roles = "Admin")]
     public class DiscountAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<DiscountPostUpdateOrInsertRequest>
         .WithoutResult

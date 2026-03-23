@@ -12,6 +12,7 @@ namespace RS1_2024_25.API.Endpoints.FavoriteEndpoints
 {
     [Authorize]
     [Route("favorite")]
+    [Authorize]
     public class FavoriteGetAll(ApplicationDbContext db, UserManager<User> userManager, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<FavoriteGetAllRequest>
         .WithResult<FavoriteGetAllResponse>

@@ -10,6 +10,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
     [Authorize(Roles = "Admin")]
 
     [Route("delete-discount")]
+    [Authorize(Roles = "Admin")]
     public class DiscountDeleteForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
     .WithRequest<int>
     .WithoutResult

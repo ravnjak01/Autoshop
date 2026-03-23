@@ -1,6 +1,8 @@
 ﻿namespace RS1_2024_25.API.Endpoints.DataSeedEndpoints;
 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Data.Models.ShoppingCart;
@@ -12,6 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Category = Data.Models.ShoppingCart.Category;
 
+[Authorize(Roles = "Admin")]
 [Route("data-seed")]
 public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironment env)
     : MyEndpointBaseAsync
@@ -23,27 +26,19 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
     {
         if (!env.IsDevelopment())
         {
-            
-            return "Error: This action is only allowed in Development environment.";
-
-
+            throw new UnauthorizedAccessException("Data seeding is allowed only in Development environment.");
         }
-        if (!db.BlogPosts.Any())
+
+        if (!await db.BlogPosts.AnyAsync(cancellationToken))
         {
-            // Kreiranje blogs
             var blogs = new List<BlogPost>
             {
                 new BlogPost()
                 {
                     Title = "I dalje najviše uvozimo dizele, zašto ih bh. vozači toliko vole?",
-                    Content = " Golf Dvojka je jedan od najvećih krivaca zašto bosanskohercegovački vozači najviše vjeruju polovnim dizelašima. Taj trend nikad nije sišao s kursa, čak i u nepogodno vrijeme za njihovu nabavku, ali i izuzetno skupo održavanje.\r\n\r\n\r\nKada kupuju polovni auto, bh. vozači u 80-90 posto slučajeva po \"defaultu\" ne misle ni o čemu drugo, nego o dizelu. Pretpostavimo da je druga odluka da to bude Volkswagen.\r\n\r\nVolkswagen Golf II je omasovio pristup dizelima kao svetoj kravi, zbog čega i danas mnogi od njih donose prvo odluku da kupovina polovnog vozila mora biti dizel. \r\n\r\nProsječan bh. kupac voli se uklopiti u budžet od 10-12 hiljada KM. Aktuelni euro 5 standard omogućava nabavku dizela za te novce, ali računajte da su to već 15 godina stari automobili. To potvrđuje i statistika prvi put registrovanih uvezenih automobila.",
+                    Content = " Golf Dvojka je jedan od najvećih krivaca zašto bosanskohercegovački vozači najviše vjeruju polovnim dizelašima...",
                     Image = await System.IO.File.ReadAllBytesAsync(
-                        Path.Combine(Directory.GetCurrentDirectory(), 
-                        "wwwroot", 
-                        "images", 
-                        "blogs", 
-                        "golf2.webp")
-                        ),
+                        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "blogs", "golf2.webp")),
                     PublishedDate = DateTime.UtcNow,
                     IsPublished = false,
                     Active = true
@@ -51,47 +46,37 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
                 new BlogPost()
                 {
                     Title = "Kako je propao Mercedesov taksi program? Radnički karakter više ne ide uz premium imidž",
-                    Content = "Podsjećamo da su fabrička Mercedesova taksi vozila sa ugrađenim taksimetrom i brojnim specifičnim prepravkama, koje su imale za cilj da ojačaju dijelove izložene ubrzanom habanju u uslovima taksi prevoza, sa proizvodne trake u Stuttgartu prvi put sišla 1896. godine. Bila je to pionirska ideja koju niko nije uspio da nadmaši do današnjih dana.\r\n\r\nMercedes taksi postao je obilježje prestiža, te najbolje moguće usluge u ovoj automobilskoj uslužnoj djelatnosti, ali i veoma dobra pokretna reklama za njemački brend. Zahvaljujući veoma kvalitetnim limuzinama proizvedenim između sedamdesetih i devedesetih godina prošlog vijeka Mercedes je dobio epitet nepoderivog i neuništivog, što se bilo dragocjeno nasljedstvo, ali i značajan kredit za modele iz 21. vijeka koji se nisu proslavili po ovom pitanju.",
+                    Content = "Podsjećamo da su fabrička Mercedesova taksi vozila...",
                     Image = await System.IO.File.ReadAllBytesAsync(
-                        Path.Combine(Directory.GetCurrentDirectory(),
-                        "wwwroot",
-                        "images",
-                        "blogs",
-                        "mercedes-taxi.jpg")
-                        ),
+                        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "blogs", "mercedes-taxi.jpg")),
                     PublishedDate = DateTime.UtcNow,
                     IsPublished = true,
                     Active = true
                 },
                 new BlogPost()
                 {
-                    Title = "Audi, BMW, Ford, Volkswagen: Prolazna kriza ili početak kraja njemačkog carstva ",
-                    Content = " Stub njemačke, ali i evropske ekonomije je pred kolapsom, jer njemačka autoindustrija prolazi kroz turbulentna vremena. BMW, Audi, Ford i Volkswagen, dugogodišnji stubovi sektora, suočavaju se s naglim padom profita i velikim izazovima koji ugrožavaju njihovu budućnost.\r\n\r\nVeličinu krize kroz koju prolazi industrija u Njemačkoj najbolje otkrivaju brojke, krize, štrajkovi i protesti posljednih mjeseci. Njemačko carstvo, čini se, nikada prije nije bilo ovako u paketu uzdrmano.\r\n\r\nBMW je zabilježio pad profita za 84 posto u trećem kvartalu 2024. godine. Ne zaostaje ni Audi, koji se bori s mnogo brutalnijim padom profita od 91 posto. Što se tiče Volkswagena, on se priprema za pokretanje drastičnog plana uštede od više od 10 milijardi eura i uz prijetnju štrajkovima. Slično je i kod Forda. Naime, evropska filijala američkog giganta planira otpustiti 4.000 radnika, uglavnom u Njemačkoj zbog drastičnog pada potražnje za električnim vozilima.",
+                    Title = "Audi, BMW, Ford, Volkswagen: Prolazna kriza ili početak kraja njemačkog carstva",
+                    Content = " Stub njemačke, ali i evropske ekonomije je pred kolapsom...",
                     PublishedDate = DateTime.UtcNow,
                     IsPublished = false,
                     Active = false
                 }
             };
 
-            db.AddRange(blogs);
+            await db.AddRangeAsync(blogs, cancellationToken);
             await db.SaveChangesAsync(cancellationToken);
-
         }
 
-        if (!db.BlogComments.Any())
+        if (!await db.BlogComments.AnyAsync(cancellationToken))
         {
-            // Dohvatamo sve postojeće Blog postove iz baze
-            var postovi = db.BlogPosts.ToList();
+            var postovi = await db.BlogPosts.ToListAsync(cancellationToken);
 
             if (postovi.Any())
             {
-                // Uzimamo ID prvog posta (umjesto 1)
                 var prviId = postovi[0].Id;
-
                 db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Odličan post!", CreatedAt = DateTime.UtcNow });
                 db.BlogComments.Add(new BlogComment { BlogPostId = prviId, Content = "Zanimljiv tekst, hvala!", CreatedAt = DateTime.UtcNow });
 
-                // Ako imamo barem dva posta, dodajemo komentar i na drugi (umjesto 2)
                 if (postovi.Count > 1)
                 {
                     var drugiId = postovi[1].Id;
@@ -99,17 +84,16 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
                 }
 
                 await db.SaveChangesAsync(cancellationToken);
-
             }
         }
-        if (!db.BlogRatings.Any())
+
+        if (!await db.BlogRatings.AnyAsync(cancellationToken))
         {
-            var postovi = db.BlogPosts.ToList();
+            var postovi = await db.BlogPosts.ToListAsync(cancellationToken);
 
             if (postovi.Any())
             {
                 var prviId = postovi[0].Id;
-
                 db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 5, CreatedAt = DateTime.UtcNow });
                 db.BlogRatings.Add(new BlogRating { BlogPostId = prviId, Rating = 4, CreatedAt = DateTime.UtcNow });
 
@@ -120,41 +104,37 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
                 }
 
                 await db.SaveChangesAsync(cancellationToken);
-
             }
         }
 
-        if (!db.Categories.Any())
+        if (!await db.Categories.AnyAsync(cancellationToken))
         {
             var categories = new List<Category>
-    {
-        new Category { Name = "Tires", Code = "CAT001" },
-        new Category { Name = "Batteris", Code = "CAT002" },
-        new Category { Name = "Equipment/Cosmetics", Code = "CAT003" },
-        new Category { Name = "Car Floor Mats", Code = "CAT004" },
-        new Category { Name = "Trunk Mats", Code = "CAT005" },
-        new Category { Name = "Alloy Wheels", Code = "CAT006" },
-        new Category { Name = "Oil and Fluids", Code = "CAT007" },
-        new Category { Name = "Suspension System", Code = "CAT008" },
-        new Category { Name = "Braking System", Code = "CAT009" },
-        new Category { Name = "Ignition System", Code = "CAT010" },
-        new Category { Name = "Transmission", Code = "CAT011" },
-        new Category { Name = "Filters", Code = "CAT012" },
-        new Category { Name = "Engine Parts", Code = "CAT013" }
-    };
+            {
+                new Category { Name = "Tires", Code = "CAT001" },
+                new Category { Name = "Batteris", Code = "CAT002" },
+                new Category { Name = "Equipment/Cosmetics", Code = "CAT003" },
+                new Category { Name = "Car Floor Mats", Code = "CAT004" },
+                new Category { Name = "Trunk Mats", Code = "CAT005" },
+                new Category { Name = "Alloy Wheels", Code = "CAT006" },
+                new Category { Name = "Oil and Fluids", Code = "CAT007" },
+                new Category { Name = "Suspension System", Code = "CAT008" },
+                new Category { Name = "Braking System", Code = "CAT009" },
+                new Category { Name = "Ignition System", Code = "CAT010" },
+                new Category { Name = "Transmission", Code = "CAT011" },
+                new Category { Name = "Filters", Code = "CAT012" },
+                new Category { Name = "Engine Parts", Code = "CAT013" }
+            };
 
-            db.Categories.AddRange(categories);
-           await db.SaveChangesAsync(cancellationToken);
+            await db.Categories.AddRangeAsync(categories, cancellationToken);
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        if (!db.Products.Any())
+        if (!await db.Products.AnyAsync(cancellationToken))
         {
+            var sveKat = await db.Categories.ToListAsync(cancellationToken);
 
-            var sveKat = db.Categories.ToList();
-
-            // 2. Umjesto ID-a, koristi First ili Find da nađeš CIJELI OBJEKAT
             var katAkumulatori = sveKat.FirstOrDefault(c => c.Code == "CAT002");
-            var katUlje = sveKat.FirstOrDefault(c => c.Code == "CAT007");
             var katGume = sveKat.FirstOrDefault(c => c.Code == "CAT001");
             var katOvjes = sveKat.FirstOrDefault(c => c.Code == "CAT008");
             var katPaljenje = sveKat.FirstOrDefault(c => c.Code == "CAT010");
@@ -164,186 +144,27 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
             var katDijeloviMotora = sveKat.FirstOrDefault(c => c.Code == "CAT013");
             var katOprema = sveKat.FirstOrDefault(c => c.Code == "CAT003");
             var katUljeTekucine = sveKat.FirstOrDefault(c => c.Code == "CAT007");
-            var katPatosnice = sveKat.FirstOrDefault(c => c.Code == "CAT004");
-            var katPodmetaci = sveKat.FirstOrDefault(c => c.Code == "CAT005");
-            var katFelge = sveKat.FirstOrDefault(c => c.Code == "CAT006");
 
+            await db.Products.AddRangeAsync( new List<Product> {
+                new Product { Name = "Car battery Exide Premium 77Ah", Code = "ACC-EX77", SKU = "EXIDE-77-P", Description = "High qualitiy battery capacitiy 77Ah i 760A starting current.", Price = 185.50m, StockQuantity = 15, Category = katAkumulatori, Brend = "Exide", ImageUrl = "/images/products/car_battery.jpg", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Castrol Edge 5W-30", Code = "COL-121", SKU = "OLE-5-P", Description = "Great synthetic motor oil.", Price = 50.00m, StockQuantity = 20, Category = katUljeTekucine, Brend = "Castrol", ImageUrl = "/images/products/castrol_oil.jpg", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Michelin Pilot Sport 5", Code = "TRE-I22", SKU = "TIRE-77-A", Description = "Tires of supberb performances.", Price = 250.00m, StockQuantity = 18, Category = katGume, Brend = "Michelin", ImageUrl = "/images/products/michelin_tire.jpg", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Bilstein B6 Amortizer", Code = "SUS-B6-01", SKU = "BIL-B6-VAF", Description = "High performance gas shock absorbers.", Price = 120.00m, StockQuantity = 8, Category = katOvjes, Brend = "Bilstein", ImageUrl = "/images/products/shock_absorbers.webp", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "NGK Iridium IX Svjećice", Code = "IGN-NGK-IX", SKU = "NGK-7092-B", Description = "Top quality iridium spark plugs.", Price = 15.50m, StockQuantity = 100, Category = katPaljenje, Brend = "NGK", ImageUrl = "/images/products/ngk.jpg", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Brembo Max Brake Discs", Code = "BRK-BM-05", SKU = "BRE-DISK-V1", Description = "High qualitiy ventilating discs.", Price = 145.00m, StockQuantity = 12, Category = katKocnice, Brend = "Brembo", ImageUrl = "/images/products/brembo_disk.jpg", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "ZF Gearbox Service Kit", Code = "GRB-ZF-8HP", SKU = "ZF-GA8HP-KIT", Description = "Original set for automatic transmission service.", Price = 350.00m, StockQuantity = 5, Category = katTransmisija, Brend = "ZF", ImageUrl = "/images/products/gearbox.webp", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Air Filter Mann-Filter", Code = "FLT-AIR-001", SKU = "MANN-C30005", Description = "Great air filter.", Price = 25.50m, StockQuantity = 45, Category = katFilteri, Brend = "Mann-Filter", ImageUrl = "/images/products/filter_zraka.jpg", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Elring Head Gasket", Code = "ENG-GASK-001", SKU = "ELR-735.450", Description = "High quality head gasket.", Price = 85.00m, StockQuantity = 12, Category = katDijeloviMotora, Brend = "Elring", ImageUrl = "/images/products/head_gasket.webp", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Sonax Ceramic Spray", Code = "KOZ-SNX-001", SKU = "SONAX-257-400", Description = "Ceramic coating in sprey.", Price = 35.00m, StockQuantity = 25, Category = katOprema, Brend = "Sonax", ImageUrl = "/images/products/sonax_sprej.jpg", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "AMC Cylinder Head", Code = "ENG-CH-908", SKU = "AMC-908711", Description = "New aluminium cylinder head.", Price = 1250.00m, StockQuantity = 2, Category = katDijeloviMotora, Brend = "AMC", ImageUrl = "/images/products/cylinder_head.webp", Active = true, CreatedAt = DateTime.UtcNow },
+                new Product { Name = "Antifreeze Febi G12++", Code = "LIQ-ANT-012", SKU = "FEBI-37400-5L", Description = "Cooling concentrate.", Price = 45.00m, StockQuantity = 30, Category = katUljeTekucine, Brend = "Febi Bilstein", ImageUrl = "/images/products/antifreeze.webp", Active = true, CreatedAt = DateTime.UtcNow }
 
-            db.Products.AddRange(
-                new Product
-                {
-                    Name = "Car battery Exide Premium 77Ah",
-                    Code = "ACC-EX77",
-                    SKU = "EXIDE-77-P",
-                    Description = "High qualitiy battery capacitiy 77Ah i 760A starting current.",
-                    Price = 185.50m,
-                    StockQuantity = 15,
-                    Category = katAkumulatori, 
-                    Brend = "Exide",
-                    ImageUrl = "/images/products/car_battery.jpg",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Castrol Edge 5W-30",
-                    Code = "COL-121",
-                    SKU = "OLE-5-P",
-                    Description = "Great synthetic motor oil.",
-                    Price = 50.00m,
-                    StockQuantity = 20,
-                    Category = katUljeTekucine, 
-                    Brend = "Castrol",
-                    ImageUrl = "/images/products/castrol_oil.jpg",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Michelin Pilot Sport 5",
-                    Code = "TRE-I22",
-                    SKU = "TIRE-77-A",
-                    Description = "Tires of supberb performances.",
-                    Price = 250.00m,
-                    StockQuantity = 18,
-                    Category= katGume,
-                    Brend = "Michelin",
-                    ImageUrl = "/images/products/michelin_tire.jpg",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Bilstein B6 Amortizer",
-                    Code = "SUS-B6-01",
-                    SKU = "BIL-B6-VAF",
-                    Description = "High performance gas shock absorbers.",
-                    Price = 120.00m,
-                    StockQuantity = 8,
-                    Category = katOvjes,
-                    Brend = "Bilstein",
-                    ImageUrl = "/images/products/shock_absorbers.webp",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "NGK Iridium IX Svjećice",
-                    Code = "IGN-NGK-IX",
-                    SKU = "NGK-7092-B",
-                    Description = "Top quality iridium spark plugs.",
-                    Price = 15.50m,
-                    StockQuantity = 100,
-                    Category = katPaljenje,
-                    Brend = "NGK",
-                    ImageUrl = "/images/products/ngk.jpg",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Brembo Max Brake Discs",
-                    Code = "BRK-BM-05",
-                    SKU = "BRE-DISK-V1",
-                    Description = "High qualitiy ventilating discs.",
-                    Price = 145.00m,
-                    StockQuantity = 12,
-                    Category = katKocnice,
-                    Brend = "Brembo",
-                    ImageUrl = "/images/products/brembo_disk.jpg",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "ZF Gearbox Service Kit",
-                    Code = "GRB-ZF-8HP",
-                    SKU = "ZF-GA8HP-KIT",
-                    Description = "Original set for automatic transmission service.",
-                    Price = 350.00m,
-                    StockQuantity = 5,
-                    Category = katTransmisija,
-                    Brend = "ZF",
-                    ImageUrl = "/images/products/gearbox.webp",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Air Filter  Mann-Filter",
-                    Code = "FLT-AIR-001",
-                    SKU = "MANN-C30005",
-                    Description = "Great air filter.",
-                    Price = 25.50m,
-                    StockQuantity = 45,
-                    Category = katFilteri,
-                    Brend = "Mann-Filter",
-                    ImageUrl = "/images/products/filter_zraka.jpg",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Elring Head Gasket",
-                    Code = "ENG-GASK-001",
-                    SKU = "ELR-735.450",
-                    Description = "High quality head gasket.",
-                    Price = 85.00m,
-                    StockQuantity = 12,
-                    Category = katDijeloviMotora,
-                    Brend = "Elring",
-                    ImageUrl = "/images/products/head_gasket.webp",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Sonax Ceramic Spray",
-                    Code = "KOZ-SNX-001",
-                    SKU = "SONAX-257-400",
-                    Description = "Ceramic coating in sprey.",
-                    Price = 35.00m,
-                    StockQuantity = 25,
-                    Category = katOprema,
-                    Brend = "Sonax",
-                    ImageUrl = "/images/products/sonax_sprej.jpg",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "AMC Cylinder Head",
-                    Code = "ENG-CH-908",
-                    SKU = "AMC-908711",
-                    Description = "New aluminium cylinder head.",
-                    Price = 1250.00m,
-                    StockQuantity = 2,
-                    Category = katDijeloviMotora,
-                    Brend = "AMC",
-                    ImageUrl = "/images/products/cylinder_head.webp",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                },
-                new Product
-                {
-                    Name = "Antifreeze Febi G12++",
-                    Code = "LIQ-ANT-012",
-                    SKU = "FEBI-37400-5L",
-                    Description = "Cooling concentrate.",
-                    Price = 45.00m,
-                    StockQuantity = 30,
-                    Category = katUljeTekucine,
-                    Brend = "Febi Bilstein",
-                    ImageUrl = "/images/products/antifreeze.webp",
-                    Active = true,
-                    CreatedAt = DateTime.UtcNow
-                }
-            );
-           await db.SaveChangesAsync(cancellationToken);
+                },cancellationToken);
+
+            await db.SaveChangesAsync(cancellationToken);
         }
 
-        // --- POPUSTI ---
-        if (!db.Discounts.Any())
+        if (!await db.Discounts.AnyAsync(cancellationToken))
         {
             var proljetnaAkcija = new Discount
             {
@@ -354,29 +175,23 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
             };
 
             db.Discounts.Add(proljetnaAkcija);
-            await db.SaveChangesAsync(cancellationToken); // Spasimo da dobijemo ID iz baze
+            await db.SaveChangesAsync(cancellationToken);
 
-            // --- PROIZVODI ZA POPUST ---
-            if (!db.DiscountProducts.Any())
+            if (!await db.DiscountProducts.AnyAsync(cancellationToken))
             {
-                // Uzmi prva dva proizvoda iz baze (koje si prethodno kreirao u istom HandleAsync)
-                var proizvodi = db.Products.Take(2).ToList();
-
+                var proizvodi = await db.Products.Take(2).ToListAsync(cancellationToken);
                 if (proizvodi.Count >= 2)
                 {
                     db.DiscountProducts.AddRange(
-                        // Koristiš objekat 'proljetnaAkcija' i 'proizvodi[0]' 
-                        // umjesto hardkodiranih 1 i 2
                         new DiscountProduct { Discount = proljetnaAkcija, Product = proizvodi[0] },
                         new DiscountProduct { Discount = proljetnaAkcija, Product = proizvodi[1] }
                     );
                 }
             }
 
-            // --- KATEGORIJE ZA POPUST ---
-            if (!db.DiscountCategories.Any())
+            if (!await db.DiscountCategories.AnyAsync(cancellationToken))
             {
-                var kategorije = db.Categories.Take(2).ToList();
+                var kategorije = await db.Categories.Take(2).ToListAsync(cancellationToken);
                 if (kategorije.Count >= 2)
                 {
                     db.DiscountCategories.AddRange(
@@ -386,22 +201,17 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
                 }
             }
 
-            // --- KODOVI ZA POPUST ---
-            if (!db.DiscountCodes.Any())
+            if (!await db.DiscountCodes.AnyAsync(cancellationToken))
             {
                 db.DiscountCodes.AddRange(
-                    new DiscountCode
-                    {
-                        Discount = proljetnaAkcija, // Opet koristimo referencu na objekat
-                        Code = "PROLJECE5",
-                        ValidFrom = DateTime.UtcNow,
-                        ValidTo = DateTime.UtcNow.AddDays(3)
-                    }
+                    new DiscountCode { Discount = proljetnaAkcija, Code = "PROLJECE5", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddDays(3) },
+                    new DiscountCode { Discount = proljetnaAkcija, Code = "AUTO10", ValidFrom = DateTime.UtcNow, ValidTo = DateTime.UtcNow.AddDays(5) }
                 );
             }
 
             await db.SaveChangesAsync(cancellationToken);
         }
+
         return "Data generation completed successfully.";
     }
 }

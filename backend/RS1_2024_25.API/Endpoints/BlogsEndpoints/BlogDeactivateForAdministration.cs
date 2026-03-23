@@ -10,6 +10,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
     [Authorize(Roles = "Admin")]
 
     [Route("deactivate-blog")]
+    [Authorize(Roles = "Admin")]
     public class BlogDeactivateForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
     .WithRequest<int>
     .WithoutResult

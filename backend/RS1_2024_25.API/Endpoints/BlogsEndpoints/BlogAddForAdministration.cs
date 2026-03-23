@@ -15,6 +15,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
     
     [Authorize(Roles = "Admin")]
     [Route("blog-post")]
+    [Authorize(Roles = "Admin")]
     public class BlogAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<BlogPostUpdateOrInsertRequest>
         .WithoutResult

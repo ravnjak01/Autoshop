@@ -17,7 +17,7 @@ export interface BlogPost{
   title: string;
   authorName: string | null;
   publishedDate: Date;
-  image: string | null;
+  imageUrl: string | null;
 }
 
 export interface BlogGetAllResponse {

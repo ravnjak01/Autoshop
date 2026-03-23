@@ -6,6 +6,7 @@ import {
   DiscountCodeUpdateService
 } from '../../../services/discount-code-add-edit-administration-endpoint.service';
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {MySnackbarHelperService} from '../../../../../modules/shared/snackbars/my-snackbar-helper.service';
 
 
 @Component({
@@ -22,7 +23,8 @@ export class DiscountCodeEditComponent implements OnInit {
     private fb: FormBuilder,
     private discountService: DiscountCodeUpdateService,
     private dialogRef: MatDialogRef<DiscountCodeEditComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { code?: any; discountId?: number }
+    @Inject(MAT_DIALOG_DATA) public data: { code?: any; discountId?: number },
+    private snackbar: MySnackbarHelperService,
   ) {
     this.codeForm = this.fb.group({
       id: [null],
@@ -70,7 +72,10 @@ export class DiscountCodeEditComponent implements OnInit {
     formData.append('validTo', new Date(raw.validTo).toISOString());
 
     this.discountService.handleAsync(formData).subscribe({
-      next: () => this.dialogRef.close('updated')
+      next: () => this.dialogRef.close('updated'),
+      error: (err) => {
+        this.snackbar.showMessage("Discount is not currently active!", 'error');
+      }
     });
   }
 
