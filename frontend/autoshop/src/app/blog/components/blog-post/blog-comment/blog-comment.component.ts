@@ -9,6 +9,7 @@ import {
   BlogCommentAddEndpointService,
   BlogCommentRequest
 } from '../../../services/blog-endpoints/blog-comment-add-endpoint.service';
+import {MyAuthService} from '../../../../core/services/auth/my-auth.service';
 
 @Component({
   selector: 'app-blog-comments',
@@ -19,25 +20,51 @@ import {
 export class BlogCommentsComponent implements OnInit {
   @Input() blogPostId!: number;
   comments: BlogCommentDto[] = [];
+  totalCount: number = 0;
   newCommentContent: string = '';
+
+  page: number = 1;
+  pageSize: number = 5;
+
+  isUserLoggedIn = false;
 
   constructor(
     private commentGetService: BlogCommentGetByBlogIdService,
     private commentAddService: BlogCommentAddEndpointService,
-  ) {}
+    public authService: MyAuthService
+  ) {
+    this.authService.isLoggedIn$.subscribe((loggedIn) => {
+      this.isUserLoggedIn = loggedIn;
+    });
+  }
 
   ngOnInit() {
     this.loadComments();
   }
 
-  loadComments() {
-    this.commentGetService.handleAsync(this.blogPostId).subscribe(
+  loadComments(append: boolean = false) {
+    this.commentGetService.handleAsync({
+      blogId: this.blogPostId,
+      page: this.page,
+      pageSize: this.pageSize
+    }).subscribe(
       (response: BlogCommentsByBlogIdResponse) => {
-        this.comments = response.comments;
+
+        if (append) {
+          this.comments = [...this.comments, ...response.comments];
+        } else {
+          this.comments = response.comments;
+        }
+
+        this.totalCount = response.totalCount;
       },
-      (error) => {
-      }
+      (error) => {}
     );
+  }
+
+  loadMore() {
+    this.page++;
+    this.loadComments(true);
   }
 
   addComment() {
@@ -56,6 +83,7 @@ export class BlogCommentsComponent implements OnInit {
 
     this.commentAddService.handleAsync(formData).subscribe(
       () => {
+        this.page = 1;
         this.loadComments();
         this.newCommentContent = '';
       },

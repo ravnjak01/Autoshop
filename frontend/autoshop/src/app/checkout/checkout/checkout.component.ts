@@ -7,9 +7,10 @@ import { MyAuthService } from '../../core/services/auth/my-auth.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal/confirmation-modal.component';
 import { CartService } from '../../cart/services/cart.service';
 import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
-import { EMPTY, map, Observable, switchMap, take } from 'rxjs';
+import {BehaviorSubject, combineLatest, EMPTY, map, Observable, switchMap, take} from 'rxjs';
 import { CartItemDTO } from '../../cart/models/cart-item.dto';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {PromoCodeValidateService} from '../services/promo-endpoint/promo-code-validation-endpoint.service';
 
 @Component({
   selector: 'app-checkout',
@@ -25,23 +26,48 @@ export class CheckoutComponent implements OnInit {
   cartItems$!: Observable<CartItemDTO[]>;
   subtotal$!: Observable<number>;
   vatAmount$!: Observable<number>;
+  discountAmount$!: Observable<number>;
   finalTotal$!: Observable<number>;
 
   showConfirmModal = false;
   isSubmitting = false;
    private destroyRef = inject(DestroyRef);
+
+  promoResponseMessage: string = '';
+  isApplyingPromo: boolean = false;
+
+  private discountPercentage$ = new BehaviorSubject<number>(0);
+
+  discountPercentage: number = 0;
+
+  appliedPromoCode: string | null = null;
+
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private authService: MyAuthService,
     private cartService: CartService,
-    private snackbar: MySnackbarHelperService
+    private snackbar: MySnackbarHelperService,
+    private promoCodeService: PromoCodeValidateService
   ) {
 
      this.cartItems$ = this.cartService.cartItems$;
     this.subtotal$ = this.cartService.cartTotal$;
     this.vatAmount$ = this.subtotal$.pipe(map(subtotal => subtotal * 0.17));
-    this.finalTotal$ = this.subtotal$.pipe(map(subtotal => subtotal + this.shippingFee));
+    this.discountAmount$ = combineLatest([
+      this.subtotal$,
+      this.discountPercentage$
+    ]).pipe(
+      map(([subtotal, discount]) => subtotal * discount / 100)
+    );
+
+    this.finalTotal$ = combineLatest([
+      this.subtotal$,
+      this.discountAmount$
+    ]).pipe(
+      map(([subtotal, discountAmount]) => subtotal - discountAmount + this.shippingFee)
+    );
+
 
     this.checkoutForm = this.fb.group({
       firstName: ['', Validators.required],
@@ -52,6 +78,7 @@ export class CheckoutComponent implements OnInit {
       city: ['', Validators.required],
       postalCode: ['', Validators.required],
       country: ['', Validators.required],
+      promoCode: ['']
     });
   }
 
@@ -60,7 +87,47 @@ export class CheckoutComponent implements OnInit {
   }
 
   getItemTotal(item: CartItemDTO): number {
-    return item.price * item.quantity;
+    const price = item.priceAfterDiscount ?? item.price;
+    return price * item.quantity;
+  }
+
+  applyPromoCode() {
+
+    const code = this.checkoutForm.get('promoCode')?.value;
+
+    if (!code || code.trim() === '') {
+      this.promoResponseMessage = 'Please enter promo code.';
+      return;
+    }
+
+    this.isApplyingPromo = true;
+
+    this.promoCodeService.handleAsync({ code })
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (res) => {
+          this.isApplyingPromo = false;
+
+          this.promoResponseMessage = res.message;
+
+          if (res.isValid && res.discountPercentage) {
+            this.discountPercentage = res.discountPercentage;
+            this.discountPercentage$.next(res.discountPercentage);
+
+            this.appliedPromoCode = code;
+          } else {
+            this.discountPercentage = 0;
+            this.discountPercentage$.next(0);
+
+            this.appliedPromoCode = null;
+          }
+        },
+        error: () => {
+          this.isApplyingPromo = false;
+          this.promoResponseMessage = 'Error applying promo code.';
+          this.appliedPromoCode = null;
+        }
+      });
   }
 
   onSubmit() {
@@ -102,7 +169,8 @@ export class CheckoutComponent implements OnInit {
             userId
           },
           paymentMethod: 'Cash',
-          totalAmount: finalTotal
+          totalAmount: finalTotal,
+          promoCode: this.appliedPromoCode
         };
 
         return this.cartService.checkout(checkoutData);
@@ -112,14 +180,14 @@ export class CheckoutComponent implements OnInit {
       next: () => {
         this.snackbar.showMessage('Your order has been successfully created!', 'success');
         this.checkoutForm.reset();
-        this.cartService.loadCart();  
+        this.cartService.loadCart();
         setTimeout(() => {
-        this.isSubmitting = false; 
+        this.isSubmitting = false;
         this.router.navigate(['/home']);
       }, 2500);
       },
       error: (err) => {
-      this.isSubmitting = false; 
+      this.isSubmitting = false;
       this.snackbar.showMessage('Failed to place order', 'error');
     }
     });

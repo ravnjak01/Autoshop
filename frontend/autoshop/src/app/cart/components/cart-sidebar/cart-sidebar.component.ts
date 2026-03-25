@@ -21,7 +21,7 @@ totalPrice: string|number = 0;
 cartItems: CartItemDTO[] = [];
  @Output() closeSidebar = new EventEmitter<void>();
 goToCart() {
- this.closeSidebar.emit();  
+ this.closeSidebar.emit();
   this.router.navigate(['/cart']);
 }
 
@@ -31,12 +31,12 @@ goToCart() {
 
    ngOnInit() {
 
-  
+
   this.cartService.cartItems$.subscribe(items => {
 
     this.cartItems = items;
   });
-  
+
   this.cartService.loadCart();
 }
 
@@ -70,7 +70,8 @@ goToCart() {
     return 0;
   }
     return this.cartItems.reduce((total, item) => {
-      return total + (item.price * item.quantity);
+      const price = item.priceAfterDiscount ?? item.price;
+      return total + (price * item.quantity);
     }, 0);
   }
 
@@ -85,18 +86,18 @@ goToCart() {
   }
 
 
- 
+
 
 increaseQuantity(item: CartItemDTO): void {
   if(item.quantity>=item.stockQuantity)
   {
-    return; 
+    return;
   }
   const newQuantity = item.quantity + 1;
 
   this.cartService.updateQuantity(item.id!, newQuantity).subscribe({
     next: (updatedItem) => {
-      item.quantity = updatedItem.quantity; 
+      item.quantity = updatedItem.quantity;
     },
     error: (err) => {
       this.snackbar.showMessage('Failed to update quantity', 'error');
@@ -113,9 +114,9 @@ decreaseQuantity(item: CartItemDTO): void {
       },
     });
   } else {
-    
+
     this.snackbar.showMessage('Quantity cannot be less than 1', 'error');
-    
+
   }
 }
 

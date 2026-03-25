@@ -26,10 +26,10 @@
 .cart-item {
     display: flex; /* Fleksibilni raspored za sliku, detalje i dugme */
     align-items: center; /* Centriranje po vertikali */
-    padding-bottom: 15px; 
+    padding-bottom: 15px;
     margin-bottom: 15px;
     /* Djelomična horizontalna linija ispod stavke - prilagoditi boju */
-    border-bottom: 1px solid #e0e0e0; 
+    border-bottom: 1px solid #e0e0e0;
 }
 
 /* Slika proizvoda */
@@ -58,9 +58,9 @@
 }
 
 /* Količina i cijena - moraju biti u istom redu za simulaciju slike */
-/* Primjećeno: tvoj HTML ima 3 odvojena spana: name, quantity, price. 
+/* Primjećeno: tvoj HTML ima 3 odvojena spana: name, quantity, price.
    Na slici: ime proizvoda (gore), količina x cijena (dolje desno).
-   Simulirat ćemo taj raspored. Pošto je tvoj HTML za cijenu i količinu razdvojen, 
+   Simulirat ćemo taj raspored. Pošto je tvoj HTML za cijenu i količinu razdvojen,
    koristimo ga za pozicioniranje, ali morat ćemo sakriti 'Količina' tekst. */
 
 .cart-item-quantity {
@@ -114,7 +114,7 @@
     padding-bottom: 15px;
     margin-top: 15px;
     /* Deblja linija iznad ukupne sume, kao na slici */
-    border-top: 2px solid #e0e0e0; 
+    border-top: 2px solid #e0e0e0;
     font-size: 16px;
     font-weight: bold;
 }
@@ -148,7 +148,7 @@
 /* Dugme "Vidi korpu" (lijevo) - pretpostavljam da je ovo u tvom HTML-u `clear-cart-button` */
 .clear-cart-button {
     /* Simulira tamno plavu boju */
-    background-color: #1a237e; 
+    background-color: #1a237e;
     color: white;
 }
 
@@ -172,7 +172,7 @@
 .clear-cart-button {
     background-color: white;
     color: #1a237e;
-    border: 2px solid #1a237e; 
+    border: 2px solid #1a237e;
 }
 .clear-cart-button:hover {
     background-color: #f0f0f0;
@@ -183,27 +183,27 @@
     display: flex;
     align-items: center; /* Vertikalno centriranje elemenata */
     /* Dodajemo mali razmak od ostalih elemenata u detaljima stavke */
-    margin-top: 5px; 
+    margin-top: 5px;
     margin-bottom: 5px;
 }
 
 /* Stilovi za dugmad (+) i (-) */
 .quantity-btn {
     /* Dimenzije dugmeta - kvadratni oblik */
-    width: 25px; 
+    width: 25px;
     height: 25px;
     /* Uklapanje u stil sidebar-a: bijela pozadina, sivi obrub */
-    background-color: #ffffff; 
+    background-color: #ffffff;
     border: 1px solid #e0e0e0;
     color: #333333;
     cursor: pointer;
-    font-size: 16px; 
+    font-size: 16px;
     font-weight: bold;
     padding: 0;
     line-height: 1;
     text-align: center;
     /* Uklanjanje zaobljenosti unutar niza dugme-input-dugme */
-    border-radius: 0; 
+    border-radius: 0;
     /* Tranzicija za bolji vizualni efekat */
     transition: background-color 0.2s, border-color 0.2s;
 }
@@ -228,16 +228,16 @@
 /* Stilovi za polje za unos količine */
 .quantity-input {
     /* Uklapanje u visinu dugmadi */
-    height: 25px; 
+    height: 25px;
     width: 35px; /* Manja širina, jer ne treba puno prostora */
     text-align: center;
     border: 1px solid #e0e0e0;
     /* Uklanja obrub s lijeve i desne strane da se 'spoji' s dugmadima */
-    border-left: none; 
+    border-left: none;
     border-right: none;
     padding: 0;
     /* Font nasljeđuje stilove sidebar-a */
-    font-family: inherit; 
+    font-family: inherit;
     color: #333333;
     box-sizing: border-box; /* Važno za ispravno mjerenje širine/visine */
 }
@@ -262,9 +262,9 @@
     display: flex; /* Osigurava da su gumbi i broj u jednom redu */
     align-items: center; /* Vertikalno centriranje */
     /* Mala margina da se odvoji od ostalih detalja proizvoda */
-    margin-top: 5px; 
-    margin-bottom: 5px; 
-    
+    margin-top: 5px;
+    margin-bottom: 5px;
+
     /* Postavljanje veličine i boje fonta za prikazani broj */
     font-size: 14px;
     color: #333333;
@@ -273,22 +273,22 @@
 /* Stilovi za dugmad (+ i -) */
 .quantity-button {
     /* Uklanjanje defaultnih stilova */
-    background-color: #ffffff; 
+    background-color: #ffffff;
     border: 1px solid #e0e0e0;
     color: #333333;
-    
+
     /* Veličina i oblik gumba */
-    width: 25px; 
+    width: 25px;
     height: 25px;
     padding: 0;
     cursor: pointer;
-    font-size: 16px; 
+    font-size: 16px;
     font-weight: bold;
     line-height: 1;
     text-align: center;
-    
+
     /* Zaobljenost samo na krajevima, sredina ostaje ravna */
-    border-radius: 4px; 
+    border-radius: 4px;
     transition: background-color 0.2s, border-color 0.2s;
 }
 
@@ -324,15 +324,29 @@
 .cart-item-quantity {
     /* Osigurava da se broj nalazi točno između dugmadi */
     display: inline-block;
-    width: 30px; 
+    width: 30px;
     height: 25px;
     line-height: 25px; /* Vertikalno centriranje broja */
     text-align: center;
     font-weight: bold;
-    
+
     /* Spajanje vizualnog obruba sa dugmadima */
     border-top: 1px solid #e0e0e0;
     border-bottom: 1px solid #e0e0e0;
     /* Uklanjanje lijeve i desne linije da se stopi s dugmadima */
     padding: 0;
+}
+
+.cart-item-price .original-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 5px;
+  font-size: 13px;
+}
+
+/* Cijena nakon popusta */
+.cart-item-price .discounted-price {
+  font-weight: bold;
+  color: #d9534f; /* crvena za isticanje popusta */
+  font-size: 14px;
 }

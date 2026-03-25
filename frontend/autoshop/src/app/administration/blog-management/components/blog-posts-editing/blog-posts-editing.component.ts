@@ -59,7 +59,7 @@ export class BlogEditComponent implements OnInit {
         });
 
         // Set image field for display
-        this.imageUrl = `data:image/jpeg;base64,${blog.image}`; // Set image URL to the new variable
+        this.imageUrl = blog.image ?? null;
       }
     });
   }

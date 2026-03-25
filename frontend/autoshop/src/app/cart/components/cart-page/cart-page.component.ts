@@ -2,7 +2,7 @@ import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { CartService } from '../../services/cart.service';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
-import { CartItemDTO } from '../../models/cart-item.dto'; 
+import { CartItemDTO } from '../../models/cart-item.dto';
 import { Router, RouterModule } from '@angular/router';
 import { MySnackbarHelperService } from '../../../modules/shared/snackbars/my-snackbar-helper.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -40,7 +40,7 @@ savedForLaterItems: CartItemDTO[] = [];
 
 
   constructor(public cartService: CartService,private router:Router,private snackbar:MySnackbarHelperService) {}
- 
+
   ngOnInit(): void {
     this.loadCart();
   }
@@ -56,7 +56,7 @@ loadCart(): void {
 
         this.savedForLaterItems=response.savedItems || [];
       }
-      
+
       this.isCartEmpty = this.cartItems.length === 0;
     },
     error: (err) => {
@@ -81,7 +81,7 @@ loadCart(): void {
     this.snackbar.showMessage('Not enough stock available', 'error');
   }
 
- 
+
 }
 
 decreaseQuantity(item: CartItemDTO): void {
@@ -102,27 +102,30 @@ decreaseQuantity(item: CartItemDTO): void {
 
 
  getTotal(): number {
-    return this.cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+   return this.cartItems.reduce((total, item) => {
+     const price = item.priceAfterDiscount ?? item.price;
+     return total + (price * item.quantity);
+   }, 0);
   }
 
   goToCheckout(): void {
     this.router.navigate(['/checkout']);
   }
-  
+
 removeItem(item: CartItemDTO): void {
   const itemId = item.id;
-  
+
   if (!itemId) {
     return;
   }
 
   this.cartService.removeFromCart(itemId)
-  
+
   .pipe(takeUntilDestroyed(this.destroyRef))
   .subscribe({
     next: () => {
       this.cartService.loadCart();
-    
+
       this.cartItems = this.cartItems.filter(i => i.id !== itemId);
     },
     error: (err) => {

@@ -301,3 +301,68 @@ input:focus::placeholder {
 }
 
 }
+
+/* wrapper */
+.promo-code-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+/* input + button u jednom redu */
+.promo-code-section input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+/* focus efekt */
+.promo-code-section input:focus {
+  border-color: #000;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* button */
+.promo-code-section button {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #000;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* hover */
+.promo-code-section button:hover {
+  background-color: #222;
+}
+
+/* disabled */
+.promo-code-section button:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+/* response label */
+.promo-response-msg {
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+/* success stanje */
+.promo-response-msg.success {
+  color: #2e7d32; /* zelena */
+}
+
+/* error stanje */
+.promo-response-msg.error {
+  color: #c62828; /* crvena */
+}

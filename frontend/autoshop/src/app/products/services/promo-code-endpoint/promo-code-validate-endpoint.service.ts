@@ -3,7 +3,7 @@ import {MyBaseEndpointAsyncWithoutRequest} from '../../../core/helper/my-base-en
 import {MyConfig} from '../../../my-config';
 import {HttpClient} from '@angular/common/http';
 
-export interface PromoCodeValidateResponse {
+export interface PromoCodeResponse {
   isValid: boolean;
   promoCode: string;
   discountPercentage?: number;
@@ -13,13 +13,13 @@ export interface PromoCodeValidateResponse {
 @Injectable({
   providedIn: 'root'
 })
-export class PromoCodeService  implements MyBaseEndpointAsyncWithoutRequest<PromoCodeValidateResponse>{
+export class PromoCodeService  implements MyBaseEndpointAsyncWithoutRequest<PromoCodeResponse>{
   private apiUrl = `${MyConfig.api_address}/promo-code`;
 
   constructor(private httpClient: HttpClient) {
   }
 
   handleAsync() {
-    return this.httpClient.get<PromoCodeValidateResponse>(`${this.apiUrl}`);
+    return this.httpClient.get<PromoCodeResponse>(`${this.apiUrl}`);
   }
 }

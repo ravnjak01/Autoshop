@@ -1,14 +1,14 @@
 <div class="checkout-page-content">
-  
+
   <form [formGroup]="checkoutForm" (ngSubmit)="onSubmit()" class="data-form" id="data-form-id">
     <div class="checkout-section data-section">
       <h3 class="section-title dark-bg">Personal details</h3>
-      
+
       <div class="form-row">
         <div class="form-group half-width">
           <input id="firstName" formControlName="firstName" type="text" placeholder="Name"
             [class.invalid]="checkoutForm.get('firstName')?.invalid && checkoutForm.get('firstName')?.touched" />
-          <span class="error-msg" 
+          <span class="error-msg"
             *ngIf="checkoutForm.get('firstName')?.invalid && checkoutForm.get('firstName')?.touched">
             First name is required.
           </span>
@@ -16,7 +16,7 @@
         <div class="form-group half-width">
           <input id="lastName" formControlName="lastName" type="text" placeholder="Surname"
             [class.invalid]="checkoutForm.get('lastName')?.invalid && checkoutForm.get('lastName')?.touched" />
-          <span class="error-msg" 
+          <span class="error-msg"
             *ngIf="checkoutForm.get('lastName')?.invalid && checkoutForm.get('lastName')?.touched">
             Last name is required.
           </span>
@@ -26,7 +26,7 @@
       <div class="form-group fixed-country">
         <input formControlName="country" type="text" placeholder="Country"
           [class.invalid]="checkoutForm.get('country')?.invalid && checkoutForm.get('country')?.touched" />
-        <span class="error-msg" 
+        <span class="error-msg"
           *ngIf="checkoutForm.get('country')?.invalid && checkoutForm.get('country')?.touched">
           Country is required.
         </span>
@@ -35,7 +35,7 @@
       <div class="form-group">
         <input id="city" formControlName="city" type="text" placeholder="City"
           [class.invalid]="checkoutForm.get('city')?.invalid && checkoutForm.get('city')?.touched" />
-        <span class="error-msg" 
+        <span class="error-msg"
           *ngIf="checkoutForm.get('city')?.invalid && checkoutForm.get('city')?.touched">
           City is required.
         </span>
@@ -44,13 +44,13 @@
       <div class="form-group">
         <input id="postalCode" formControlName="postalCode" type="text" placeholder="Postal code"
           [class.invalid]="checkoutForm.get('postalCode')?.invalid && checkoutForm.get('postalCode')?.touched" />
-        <span class="error-msg" 
+        <span class="error-msg"
           *ngIf="checkoutForm.get('postalCode')?.invalid && checkoutForm.get('postalCode')?.touched">
           Postal code is required.
         </span>
         <input id="street" formControlName="street" type="text" placeholder="Street and number"
           [class.invalid]="checkoutForm.get('street')?.invalid && checkoutForm.get('street')?.touched" />
-        <span class="error-msg" 
+        <span class="error-msg"
           *ngIf="checkoutForm.get('street')?.invalid && checkoutForm.get('street')?.touched">
           Street and number are required.
         </span>
@@ -59,7 +59,7 @@
       <div class="form-group">
         <input id="phone" formControlName="phone" type="text" placeholder="Phone"
           [class.invalid]="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched" />
-        <span class="error-msg" 
+        <span class="error-msg"
           *ngIf="checkoutForm.get('phone')?.invalid && checkoutForm.get('phone')?.touched">
           Phone number is required.
         </span>
@@ -68,39 +68,72 @@
       <div class="form-group">
         <input id="email" formControlName="email" type="email" placeholder="Email address"
           [class.invalid]="checkoutForm.get('email')?.invalid && checkoutForm.get('email')?.touched" />
-        <span class="error-msg" 
+        <span class="error-msg"
           *ngIf="checkoutForm.get('email')?.errors?.['required'] && checkoutForm.get('email')?.touched">
           Email is required.
         </span>
-        <span class="error-msg" 
+        <span class="error-msg"
           *ngIf="checkoutForm.get('email')?.errors?.['email'] && checkoutForm.get('email')?.touched">
           Please enter a valid email address.
         </span>
       </div>
     </div>
 
+    <div class="form-group promo-code-section">
+      <input
+        type="text"
+        placeholder="Promo code"
+        formControlName="promoCode"
+      />
+
+      <button
+        type="button"
+        (click)="applyPromoCode()"
+        >
+
+        {{ isApplyingPromo ? 'Applying...' : 'Apply' }}
+      </button>
+
+      <label
+        class="promo-response-msg"
+        *ngIf="promoResponseMessage"
+        [class.success]="discountPercentage > 0"
+        [class.error]="discountPercentage === 0">
+
+        {{ promoResponseMessage }}
+      </label>
+    </div>
+
     <div class="checkout-section details-section">
       <h3 class="section-title">Order details</h3>
-     
+
       <div class="order-summary-table">
         <div class="summary-row header-row">
           <strong>Product</strong>
           <strong>Total</strong>
         </div>
-        
+
         <ng-container *ngIf="cartItems$ | async as cartItems">
           <ng-container *ngIf="cartItems.length > 0; else emptyCart">
             <div class="summary-row product-item" *ngFor="let item of cartItems">
               <div class="product-info">
-                <img 
-                  *ngIf="item.imageUrl || item.product?.imageUrl" 
+                <img
+                  *ngIf="item.imageUrl || item.product?.imageUrl"
                   [src]="item.imageUrl"
-                  alt="{{ item.productName }}" 
-                  class="checkout-product-image" 
+                  alt="{{ item.productName }}"
+                  class="checkout-product-image"
                 />
                 <span>{{ item.productName }} × {{ item.quantity }}</span>
               </div>
               <span>{{ getItemTotal(item) | number:'1.2-2' | currency }}</span>
+            </div>
+            <div class="summary-row promo-code-row" *ngIf="appliedPromoCode && discountPercentage > 0">
+              <div class="product-info">
+                <span>Promo code "{{ appliedPromoCode }}" ({{ discountPercentage }}% off)</span>
+              </div>
+              <span>
+                -{{ discountAmount$ | async | number:'1.2-2' | currency }}
+              </span>
             </div>
           </ng-container>
 
@@ -113,14 +146,14 @@
 
         <div class="summary-row shipping-row">
           <strong>Delivery within 24 hours</strong>
-          <span>{{ shippingFee | currency }}</span> 
+          <span>{{ shippingFee | currency }}</span>
         </div>
       </div>
-      
+
       <div class="total-row-highlight">
         <strong>Total</strong>
         <div class="total-amount-box">
-          <span class="final-total">{{ finalTotal$ | async | currency }}</span> 
+          <span class="final-total">{{ finalTotal$ | async | currency }}</span>
           <p class="vat-info">(includes {{ vatAmount$ | async | currency }} VAT)</p>
         </div>
       </div>
@@ -128,7 +161,7 @@
       <div class="payment-options">
         <h4>Pay on delivery</h4>
       </div>
-      
+
       <div class="submit-area">
         <button type="submit" [disabled]="isSubmitting || checkoutForm.invalid">
           {{ isSubmitting ? 'Processing...' : 'Place Order' }}
