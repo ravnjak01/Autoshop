@@ -1,7 +1,7 @@
 <div class="blog-comments">
 
   <!-- ADD COMMENT -->
-  <div class="comment-box">
+  <div class="comment-box" *ngIf="authService.isLoggedIn()">
     <h3 class="comment-title">Leave a comment</h3>
 
     <textarea
@@ -39,6 +39,12 @@
       No comments yet. Be the first one 🙂
     </div>
 
+    <button
+      *ngIf="comments.length < totalCount"
+      (click)="loadMore()"
+      class="load-more-btn">
+      Load more
+    </button>
   </div>
 
 </div>

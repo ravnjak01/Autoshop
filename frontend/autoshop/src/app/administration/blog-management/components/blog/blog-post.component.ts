@@ -26,10 +26,8 @@ export class BlogPostComponent implements OnInit {
   loadBlogData(): void {
     this.blogGetByIdService.handleAsync(this.data.blogId).subscribe({
       next: (blog) => {
-        this.blog = blog; // Populate the blog object with the response
-        this.imageUrl = blog.image
-          ? `data:image/jpeg;base64,${blog.image}`
-          : null; // Set the image URL if available
+        this.blog = blog;
+        this.imageUrl = blog.image ?? null
       },
     });
   }

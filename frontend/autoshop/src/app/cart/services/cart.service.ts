@@ -17,8 +17,9 @@ import { MyConfig } from '../../my-config';
 
 export interface CheckoutDTO {
   userId: string;
-  adresa: AddressDTO; 
+  adresa: AddressDTO;
   paymentMethod: string;
+  promoCode?: string | null;
 }
 
 
@@ -26,7 +27,7 @@ export interface CheckoutDTO {
 
 @Injectable({
   providedIn: 'root',
-  
+
 })
 
 export class CartService {
@@ -42,7 +43,7 @@ export class CartService {
 loadCart(): void {
   this.getCart().subscribe({
     next: (cartResponse) => {
-      
+
       const items=cartResponse?.items || [];
       this.cartItemsSubject.next(items);
       this.cartTotalSubject.next(cartResponse?.total || 0);
@@ -60,18 +61,18 @@ addToCart(productId: number, quantity: number = 1): Observable<CartItemDTO> {
       { withCredentials: true }
     ).pipe(
      tap((response) => {
-      
+
       const name=response.productName;
-  
+
   this.snackbar.showMessage(`Product added to the cart`,'success');
 
       this.loadCart();
      })
-     
+
     );
 }
 
-  
+
   removeFromCart(itemId: number): Observable<void> {
     return this.http.delete<void>(
       `${this.baseUrl}/remove/${itemId}`,
@@ -97,12 +98,12 @@ updateQuantity(itemId: number, quantity: number): Observable<CartItemDTO> {
     })
   );
 }
-  
+
 getCart(): Observable<CartResponseDTO> {
   return this.http.get<CartResponseDTO>(`${this.baseUrl}/my-cart`, {withCredentials: true})
     .pipe(
       map((response) => {
-       
+
         if (!response) {
           return { items: [], itemCount: 0, total: 0 ,savedItems : []};
         }
@@ -116,7 +117,7 @@ getCartItems(): Observable<CartItemDTO[]> {
     map(cart => cart.items)
   );
 }
- 
+
   clearCart(): Observable<void> {
     return this.http.delete<void>(
       `${this.baseUrl}/clear`,
@@ -140,15 +141,15 @@ getCartItems(): Observable<CartItemDTO[]> {
     return this.http.post<void>(
        `${MyConfig.api_address}/api/Checkout/checkout`,
       data,
-      { 
+      {
         withCredentials: true,
         headers: { 'Content-Type': 'application/json' }
       }
     );
   }
-  
-  
-  
+
+
+
 
   saveForLater(productId: number): Observable<void> {
   return this.http.post<void>(`${this.baseUrl}/save-for-later/${productId}`, {}, { withCredentials: true })

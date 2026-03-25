@@ -4,28 +4,34 @@
   <!-- Lista proizvoda -->
   <ul class="cart-items">
     <li class="cart-item" *ngFor="let item of cartItems">
-      <img 
-      *ngIf="item.imageUrl" 
+      <img
+      *ngIf="item.imageUrl"
      [src]="item.imageUrl"
-     [alt]="item.productName" 
+     [alt]="item.productName"
      class="cart-item-image"
       />
       <div class="cart-item-details">
         <span class="cart-item-name">{{ item.productName }}</span>
+        <span class="discount-badge" *ngIf="item.badgeDiscountPercentage && item.badgeDiscountPercentage > 0">
+          -{{ item.badgeDiscountPercentage }}%
+        </span>
         <div class="quantity-controls">
           <button  type="button"
-            class="quantity-button decrease" 
+            class="quantity-button decrease"
             (click)="decreaseQuantity(item)"
             [disabled]="item.stockQuantity === 1"
           >-</button>
           <span class="cart-item-quantity">{{ item.quantity }}</span>
-          <button  type="button" 
-            class="quantity-button increase" 
+          <button  type="button"
+            class="quantity-button increase"
             (click)="increaseQuantity(item)"
               [disabled]="item.quantity >= item.stockQuantity">
           +</button>
         </div>
-        <span class="cart-item-price">{{ item.quantity }} x {{ item.price | currency:'USD' }}</span>
+        <span class="cart-item-price">
+          {{ item.quantity }} x
+          {{ item.priceAfterDiscount ?? item.price | currency:'USD' }}
+        </span>
       </div>
       <button type="button" class="remove-item-button" (click)="removeItem(item)">X</button>
     </li>

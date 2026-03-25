@@ -2,12 +2,8 @@
 
   <h2 class="blog-title">{{ blog.title }}</h2>
 
-  <div class="image-container" *ngIf="blog.image">
-    <img
-      [src]="'data:image/jpeg;base64,' + blog.image"
-      alt="Blog Image"
-      class="blog-image"
-    >
+  <div class="image-container" *ngIf="imageUrl">
+    <img [src]="imageUrl" alt="Blog image" style="width: 100%; margin-top: 10px;">
   </div>
 
   <div class="content">
@@ -22,7 +18,7 @@
   </div>
 
   <div class="rating-container">
-    <div class="star-rating">
+    <div class="star-rating" *ngIf="authService.isLoggedIn()">
       <span
         *ngFor="let star of stars; let i = index"
         (click)="ratePost(i + 1)"

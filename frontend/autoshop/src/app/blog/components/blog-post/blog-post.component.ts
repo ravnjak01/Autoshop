@@ -1,14 +1,13 @@
 
 import { Component, OnInit } from '@angular/core';
-import {
-  BlogGetByIdForAdministrationService
-} from '../../../administration/blog-management/services/blog-get-id-for-administration.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BlogRatingGetByBlogIdService } from '../../services/blog-endpoints/blog-rating-get-endpoint.service';
 import {
   BlogRatingAddEndpointService,
   BlogRatingRequest
 } from '../../services/blog-endpoints/blog-rating-add-endpoint.service';
+import {BlogGetByIdService} from '../../services/blog-endpoints/blog-get-id.service';
+import {MyAuthService} from '../../../core/services/auth/my-auth.service';
 
 @Component({
   selector: 'app-blog-post-details',
@@ -25,14 +24,21 @@ export class BlogDetailsComponent implements OnInit {
   stars: boolean[] = [false, false, false, false, false];
   currentRating: number = 0;
 
+  isUserLoggedIn = false;
+
   constructor(
     private route: ActivatedRoute,
     public router: Router,
-    private blogGetByIdService: BlogGetByIdForAdministrationService,
+    private blogGetByIdService: BlogGetByIdService,
     private blogRatingService: BlogRatingGetByBlogIdService,
-    private ratingAddService: BlogRatingAddEndpointService
+    private ratingAddService: BlogRatingAddEndpointService,
+    public authService: MyAuthService
   ) {
     this.blogId = 0;
+
+    this.authService.isLoggedIn$.subscribe((loggedIn) => {
+      this.isUserLoggedIn = loggedIn;
+    });
   }
 
   ngOnInit(): void {
@@ -46,9 +52,8 @@ export class BlogDetailsComponent implements OnInit {
     this.blogGetByIdService.handleAsync(this.blogId).subscribe({
       next: (blog) => {
         this.blog = blog; // Populate the blog object with the response
-        this.imageUrl = blog.image
-          ? `data:image/jpeg;base64,${blog.image}`
-          : null; // Set the image URL if available
+        this.imageUrl = blog.image ?? null
+
       }
     });
 

@@ -15,14 +15,14 @@ import {
 } from '@angular/material/table';
 import {MatTooltip} from '@angular/material/tooltip';
 import {BlogPostComponent} from './components/blog/blog-post.component';
-import {BlogPostsComponent} from './components/blogs/blog-posts.component';
+import {BlogPostsComponentAdministration} from './components/blogs/blog-posts-component-administration.component';
 
 
 @NgModule({
   declarations: [
     BlogEditComponent,
     BlogPostComponent,
-    BlogPostsComponent
+    BlogPostsComponentAdministration
   ],
   imports: [
     CommonModule,
@@ -43,7 +43,7 @@ import {BlogPostsComponent} from './components/blogs/blog-posts.component';
   exports: [
     BlogEditComponent,
     BlogPostComponent,
-    BlogPostsComponent,
+    BlogPostsComponentAdministration,
 
   ]
 })

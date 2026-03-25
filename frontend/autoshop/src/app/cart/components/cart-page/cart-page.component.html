@@ -30,7 +30,11 @@
     <img [src]="item.imageUrl" alt="{{ item.productName }}" />
     <div class="details">
       <p class="name">{{ item.productName }}</p>
-      <p class="price">{{ item.price | currency:'BAM' }}</p>
+      <p class="price cart-item-price">
+        <span class="discounted-price">
+          {{ item.priceAfterDiscount ? item.priceAfterDiscount : item.price | currency:'USD' }}
+        </span>
+      </p>
       <div class="actions">
         <button mat-raised-button color="accent" (click)="moveToCart(item)">Add back to cart</button>
         <button mat-button color="warn" (click)="removeItem(item)">Remove</button>

@@ -3,7 +3,7 @@ import { ProductDTO } from "./product.dto";
 
 
 export interface CartItemDTO {
-   id: number;           
+   id: number;
   productId: number;
   productName: string;
   price: number;
@@ -12,6 +12,8 @@ export interface CartItemDTO {
   total: number;
   product:ProductDTO;
   imageUrl:string;
+  priceAfterDiscount?: number | null;
+  badgeDiscountPercentage?: number | null;
 }
 
 

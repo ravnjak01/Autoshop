@@ -17,12 +17,12 @@ import {BlogPublishEndpointService} from '../../services/blog-publish-endpoint.s
 import {BlogPostComponent} from '../blog/blog-post.component';
 @Component({
   selector: 'app-blog-posts',
-  templateUrl: './blog-posts.component.html',
-  styleUrls: ['./blog-posts.component.css'],
+  templateUrl: './blog-posts-component-administration.component.html',
+  styleUrls: ['./blog-posts-component-administration.component.css'],
   standalone: false,
 
 })
-export class BlogPostsComponent implements OnInit, AfterViewInit {
+export class BlogPostsComponentAdministration implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = ['title', 'authorName', 'publishedTime', 'isPublished', 'active', 'actions'];
   dataSource = new MatTableDataSource<BlogsGetAllForAdministrationResponse>();
