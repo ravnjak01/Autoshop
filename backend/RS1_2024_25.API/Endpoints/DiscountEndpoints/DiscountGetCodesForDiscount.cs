@@ -7,8 +7,6 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountGetCodesForDisc
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
-    [Authorize(Roles = "Admin")]
-
     [Route("discount-codes")]
     [Authorize(Roles = "Admin")]
     public class DiscountGetCodesForDiscount(ApplicationDbContext db) : MyEndpointBaseAsync

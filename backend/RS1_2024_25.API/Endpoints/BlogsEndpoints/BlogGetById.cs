@@ -1,21 +1,19 @@
-﻿using Duende.IdentityModel;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
-using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetByIdForAdministration;
+using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetById;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
-    [Route("/administration/blogpost")]
-    [Authorize(Roles = "Admin")]
-    public class BlogGetByIdForAdministration(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
+    [Route("/blogpost")]
+    public class BlogGetById(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<int>
-        .WithResult<BlogsGetByIdForAdministrationResponse>
+        .WithResult<BlogsGetByIdResponse>
     {
         [HttpGet("{id}")]
-        public override async Task<BlogsGetByIdForAdministrationResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
+        public override async Task<BlogsGetByIdResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
         {
             var blog = await db.BlogPosts.Include(b=> b.Author).SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
 
@@ -25,7 +23,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             var httpContext = httpContextAccessor.HttpContext!;
             var baseUrl = $"{httpContext.Request.Scheme}://{httpContext.Request.Host}";
 
-            return new BlogsGetByIdForAdministrationResponse()
+            return new BlogsGetByIdResponse()
             {
                 ID = blog.Id,
                 Title = blog.Title,
@@ -40,7 +38,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             };
         }
 
-        public class BlogsGetByIdForAdministrationResponse
+        public class BlogsGetByIdResponse
         {
             public required int ID { get; set; }
             public required string Title { get; set; }

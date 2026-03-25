@@ -151,37 +151,89 @@ namespace RS1_2024_25.API.Controllers
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
 
+            var now = DateTime.UtcNow;
+
+            var productIds = cart.Items.Select(i => i.ProductId).ToList();
+            var categoryIds = cart.Items.Select(i => i.Product.CategoryId).Distinct().ToList();
+
+            var categoryDiscounts = await _context.DiscountCategories
+                .Where(dc => categoryIds.Contains(dc.CategoryId)
+                    && dc.Discount.StartDate <= now
+                    && dc.Discount.EndDate >= now)
+                .GroupBy(dc => dc.CategoryId)
+                .Select(g => new
+                {
+                    CategoryId = g.Key,
+                    Discount = g.Max(x => x.Discount.DiscountPercentage)
+                })
+                .ToDictionaryAsync(x => x.CategoryId, x => x.Discount, cancellationToken);
+
+            var productDiscounts = await _context.DiscountProducts
+                .Where(dp => productIds.Contains(dp.ProductId)
+                    && dp.Discount.StartDate <= now
+                    && dp.Discount.EndDate >= now)
+                .GroupBy(dp => dp.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    Discount = g.Max(x => x.Discount.DiscountPercentage)
+                })
+                .ToDictionaryAsync(x => x.ProductId, x => x.Discount, cancellationToken);
 
             var items = cart.Items
-                    .Where(i => !i.SavedForLater) 
-                     .Select(i => new CartItemDTO
-             {
-             Id = i.Id,
-             ProductId = i.ProductId,
-             ProductName = i.Product.Name,
-             Quantity = i.Quantity,
-             Price = i.Product.Price,
-             StockQuantity = i.Product.StockQuantity,
-             imageUrl = i.Product.ImageUrl.StartsWith("http")
-                          ? i.Product.ImageUrl
-                          : $"{baseUrl}{i.Product.ImageUrl}",
-             Total = i.Product.Price * i.Quantity
-         }).ToList();
+                .Where(i => !i.SavedForLater)
+                .Select(i =>
+                {
+                    var categoryDiscount = categoryDiscounts.TryGetValue(i.Product.CategoryId, out var cd) ? cd : 0;
+                    var productDiscount = productDiscounts.TryGetValue(i.ProductId, out var pd) ? pd : 0;
+
+                    var finalDiscount = Math.Max(categoryDiscount, productDiscount);
+
+                    var priceAfterDiscount = i.Product.Price - (i.Product.Price * finalDiscount / 100);
+
+                    return new CartItemDTO
+                    {
+                        Id = i.Id,
+                        ProductId = i.ProductId,
+                        ProductName = i.Product.Name,
+                        Quantity = i.Quantity,
+                        Price = i.Product.Price,
+                        PriceAfterDiscount = priceAfterDiscount,
+                        StockQuantity = i.Product.StockQuantity,
+                        imageUrl = i.Product.ImageUrl.StartsWith("http")
+                            ? i.Product.ImageUrl
+                            : $"{baseUrl}{i.Product.ImageUrl}",
+                        Total = priceAfterDiscount * i.Quantity,
+                        BadgeDiscountPercentage = finalDiscount
+                    };
+                }).ToList();
+
 
             var savedItems = cart.Items
-              .Where(i => i.SavedForLater)
-               .Select(i => new CartItemDTO
-                  {
-                      Id = i.Id,
-                      ProductId = i.ProductId,
-                      ProductName = i.Product.Name,
-                      Quantity = i.Quantity,
-                      Price = i.Product.Price,
-                      imageUrl = i.Product.ImageUrl.StartsWith("http")
-                                 ? i.Product.ImageUrl
-                                 : $"{baseUrl}{i.Product.ImageUrl}",
-                      Total = i.Product.Price * i.Quantity
-                  }).ToList();
+                .Where(i => i.SavedForLater)
+                .Select(i =>
+                {
+                    var categoryDiscount = categoryDiscounts.TryGetValue(i.Product.CategoryId, out var cd) ? cd : 0;
+                    var productDiscount = productDiscounts.TryGetValue(i.ProductId, out var pd) ? pd : 0;
+
+                    var finalDiscount = Math.Max(categoryDiscount, productDiscount);
+                    var priceAfterDiscount = i.Product.Price - (i.Product.Price * finalDiscount / 100);
+
+                    return new CartItemDTO
+                    {
+                        Id = i.Id,
+                        ProductId = i.ProductId,
+                        ProductName = i.Product.Name,
+                        Quantity = i.Quantity,
+                        Price = i.Product.Price,
+                        PriceAfterDiscount = priceAfterDiscount,
+                        imageUrl = i.Product.ImageUrl.StartsWith("http")
+                            ? i.Product.ImageUrl
+                            : $"{baseUrl}{i.Product.ImageUrl}",
+                        Total = priceAfterDiscount * i.Quantity,
+                        BadgeDiscountPercentage = finalDiscount
+                    };
+                }).ToList();
 
 
             return Ok(new CartResponseDTO
@@ -270,6 +322,30 @@ namespace RS1_2024_25.API.Controllers
                 return BadRequest($"In stock we have {item.Product.StockQuantity} pieces.");
 
             item.Quantity = request.Quantity;
+
+            var now = DateTime.UtcNow;
+
+            var categoryDiscount = await _context.DiscountCategories
+                .Where(dc => dc.CategoryId == item.Product.CategoryId
+                    && dc.Discount.StartDate <= now
+                    && dc.Discount.EndDate >= now)
+                .OrderByDescending(dc => dc.Discount.DiscountPercentage)
+                .Select(dc => dc.Discount.DiscountPercentage)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var productDiscount = await _context.DiscountProducts
+                .Where(dp => dp.ProductId == item.ProductId
+                    && dp.Discount.StartDate <= now
+                    && dp.Discount.EndDate >= now)
+                .OrderByDescending(dp => dp.Discount.DiscountPercentage)
+                .Select(dp => dp.Discount.DiscountPercentage)
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var finalDiscount = Math.Max(categoryDiscount, productDiscount);
+
+            decimal priceAfterDiscount = item.Product.Price * (1 - finalDiscount / 100m);
+
+
             await _context.SaveChangesAsync(cancellationToken);
 
             return Ok(new CartItemDTO
@@ -278,10 +354,12 @@ namespace RS1_2024_25.API.Controllers
                 ProductId = item.ProductId,
                 ProductName = item.Product.Name,
                 Price = item.Product.Price,
+                PriceAfterDiscount = priceAfterDiscount, 
                 StockQuantity = item.Product.StockQuantity,
                 Quantity = item.Quantity,
                 imageUrl = item.Product.ImageUrl,
-                Total = item.Product.Price * item.Quantity
+                Total = item.Product.Price * item.Quantity,
+                BadgeDiscountPercentage = finalDiscount
             });
         }
         // UKLONI try/catch iz ClearCart, ostavi samo logiku:
@@ -362,35 +440,57 @@ namespace RS1_2024_25.API.Controllers
             var remainingItems = await _context.CartItems
                 .Where(i => i.CartId == cart.Id)
                 .Include(i => i.Product)
-                .Select(i => new CartItemDTO
+                .ToListAsync(cancellationToken);
+
+            var now = DateTime.UtcNow;
+
+            var itemsDto = new List<CartItemDTO>();
+            foreach (var i in remainingItems)
+            {
+                var categoryDiscount = await _context.DiscountCategories
+                    .Where(dc => dc.CategoryId == i.Product.CategoryId
+                        && dc.Discount.StartDate <= now
+                        && dc.Discount.EndDate >= now)
+                    .OrderByDescending(dc => dc.Discount.DiscountPercentage)
+                    .Select(dc => dc.Discount.DiscountPercentage)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                var productDiscount = await _context.DiscountProducts
+                    .Where(dp => dp.ProductId == i.ProductId
+                        && dp.Discount.StartDate <= now
+                        && dp.Discount.EndDate >= now)
+                    .OrderByDescending(dp => dp.Discount.DiscountPercentage)
+                    .Select(dp => dp.Discount.DiscountPercentage)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                var finalDiscount = Math.Max(categoryDiscount, productDiscount);
+
+                var priceAfterDiscount = i.Product.Price * (1 - finalDiscount / 100m);
+
+                itemsDto.Add(new CartItemDTO
                 {
                     Id = i.Id,
                     ProductId = i.ProductId,
                     ProductName = i.Product.Name,
                     Quantity = i.Quantity,
                     Price = i.Product.Price,
+                    BadgeDiscountPercentage = finalDiscount,
+                    PriceAfterDiscount = priceAfterDiscount,
                     StockQuantity = i.Product.StockQuantity,
                     imageUrl = i.Product.ImageUrl,
                     Total = i.Product.Price * i.Quantity
-                })
-                .ToListAsync(cancellationToken);
+                });
+            }
 
             return Ok(new CartResponseDTO
             {
-                Items = remainingItems,
-                ItemCount = remainingItems.Sum(x => x.Quantity),
-                Total = remainingItems.Sum(x => x.Total),
+                Items = itemsDto,
+                ItemCount = itemsDto.Sum(x => x.Quantity),
+                Total = itemsDto.Sum(x => x.Total),
               
             });
         }
-
-
-
-
     }
-
-
-
 }
 
 

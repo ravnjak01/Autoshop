@@ -10,8 +10,6 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountCodeAddOrUpdate
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
-    [Authorize(Roles = "Admin")]
-
     [Route("discount-code-post")]
     [Authorize(Roles = "Admin")]
     public class DiscountCodeAddOrUpdateForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
@@ -29,10 +27,9 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                 throw new Exception("Discount not found.");
             }
 
-            var now = DateTime.Now;
-            if (discount.StartDate > now || discount.EndDate < now)
+            if (request.ValidFrom < discount.StartDate || request.ValidTo > discount.EndDate)
             {
-                throw new Exception("Discount is not currently active.");
+                throw new ArgumentException("Discount code validity must be within discount campaign period.");
             }
 
             var discountCode = await db.DiscountCodes

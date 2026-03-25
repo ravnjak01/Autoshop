@@ -1,27 +1,25 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Helper.Api;
-using static RS1_2024_25.API.Endpoints.DiscountEndpoints.PromoCodeValidateEndpoint;
+using static RS1_2024_25.API.Endpoints.DiscountEndpoints.GetPromoCode;
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
     [Route("promo-code")]
-    [Authorize] 
-    public class PromoCodeValidateEndpoint(ApplicationDbContext db, UserManager<User> userManager)
+    public class GetPromoCode(ApplicationDbContext db, UserManager<User> userManager)
         : MyEndpointBaseAsync
         .WithoutRequest
-        .WithResult<PromoCodeValidateResponse>
+        .WithResult<PromoCodeResponse>
     {
         [HttpGet]
-        public override async Task<PromoCodeValidateResponse> HandleAsync(CancellationToken cancellationToken = default)
+        public override async Task<PromoCodeResponse> HandleAsync(CancellationToken cancellationToken = default)
         {
             var userId = userManager.GetUserId(User);
 
-            var now = DateTime.Now;
+            var now = DateTime.UtcNow;
             var codes = await db.DiscountCodes
                         .Include(dc => dc.Discount)
                         .ToListAsync(cancellationToken); 
@@ -37,9 +35,9 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                 .FirstOrDefault();
 
             if (code == null)
-                return new PromoCodeValidateResponse { IsValid = false, Message = "Promo code does not exist." };
+                return new PromoCodeResponse { IsValid = false, Message = "Promo code does not exist." };
 
-            return new PromoCodeValidateResponse
+            return new PromoCodeResponse
             {
                 IsValid = true,
                 PromoCode = code.Code,
@@ -48,7 +46,7 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 
         }
 
-        public class PromoCodeValidateResponse
+        public class PromoCodeResponse
         {
             public bool IsValid { get; set; }
             public string? PromoCode { get; set; } 

@@ -6,6 +6,7 @@ namespace RS1_2024_25.API.Data.DTOs
     {
         public string UserId { get; set; }
         public AddressDTO Adresa { get; set; } 
-        public string PaymentMethod { get; set; } 
+        public string PaymentMethod { get; set; }
+        public string? PromoCode { get; set; }
     }
 }

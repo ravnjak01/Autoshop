@@ -10,8 +10,6 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountCategoriesSave;
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
-    [Authorize(Roles = "Admin")]
-
     [Route("discounts")]
     [Authorize(Roles = "Admin")]
     public class DiscountCategoriesSave(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
@@ -29,37 +27,36 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
                 throw new Exception("Discount not found.");
             }
 
-            var now = DateTime.Now;
-            if (discount.StartDate > now || discount.EndDate < now)
-            {
-                throw new Exception("Discount is not currently active.");
-            }
-
             var userId = userManager.GetUserId(User);
 
-            await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+            var strategy = db.Database.CreateExecutionStrategy();
 
-            var existingIds = await db.DiscountCategories
-                .Where(x => x.DiscountId == request.DiscountId)
-                .Select(x => x.CategoryId)
-                .ToListAsync(cancellationToken);
+            await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
-            var toAdd = request.CategoryIds.Except(existingIds)
-                .Select(catId => new DiscountCategory
-                {
-                    DiscountId = request.DiscountId,
-                    CategoryId = catId,
-                    LastModifiedUserId = userId
-                });
+                var existingIds = await db.DiscountCategories
+                    .Where(x => x.DiscountId == request.DiscountId)
+                    .Select(x => x.CategoryId)
+                    .ToListAsync(cancellationToken);
 
-            var toRemove = db.DiscountCategories
-                .Where(x => x.DiscountId == request.DiscountId && !request.CategoryIds.Contains(x.CategoryId));
+                var toAdd = request.CategoryIds.Except(existingIds)
+                    .Select(catId => new DiscountCategory
+                    {
+                        DiscountId = request.DiscountId,
+                        CategoryId = catId,
+                        LastModifiedUserId = userId
+                    });
 
-            db.DiscountCategories.RemoveRange(toRemove);
-            await db.DiscountCategories.AddRangeAsync(toAdd, cancellationToken);
+                var toRemove = db.DiscountCategories
+                    .Where(x => x.DiscountId == request.DiscountId && !request.CategoryIds.Contains(x.CategoryId));
 
-            await db.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+                db.DiscountCategories.RemoveRange(toRemove);
+                await db.DiscountCategories.AddRangeAsync(toAdd, cancellationToken);
+
+                await db.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+            });
         }
 
         public class DiscountCategoriesSaveRequest
