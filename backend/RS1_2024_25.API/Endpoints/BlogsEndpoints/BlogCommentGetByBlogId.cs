@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Helper.Api;
@@ -7,34 +6,56 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogCommentGetByBlogId;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
-    [Authorize]
     [Route("blog-comment")]
     public class BlogCommentGetByBlogId(ApplicationDbContext db) : MyEndpointBaseAsync
-        .WithRequest<int>
-        .WithResult<BlogCommentGetByBlogId.BlogCommentsByBlogIdResponse>
+        .WithRequest<BlogCommentsRequest>
+        .WithResult<BlogCommentsByBlogIdResponse>
     {
-        [HttpGet("{id}")]
-        public override async Task<BlogCommentsByBlogIdResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
+        [HttpGet]
+        public override async Task<BlogCommentsByBlogIdResponse> HandleAsync([FromQuery]BlogCommentsRequest request, CancellationToken cancellationToken = default)
         {
-            var comments = await db.BlogComments
-                                    .Include(c => c.User)
-                                    .Where(c => c.BlogPostId == id)
-                                    .ToListAsync();
+            var exists = await db.BlogPosts
+                .AnyAsync(x => x.Id == request.BlogId, cancellationToken);
 
-            List<BlogCommentDto> response = new List<BlogCommentDto>();
-            foreach (var c in comments)
+            if (!exists)
             {
-                response.Add(new BlogCommentDto
-                {
-                    Id = c.Id,
-                    BlogPostId = c.BlogPostId,
-                    Username = c.User?.UserName,
-                    Content = c.Content,
-                    CreatedAtAgo = GetTimeAgo(c.CreatedAt) 
-                });
+                throw new KeyNotFoundException("Blog not found");
             }
 
-            return new BlogCommentsByBlogIdResponse { Comments = response };
+            var query = db.BlogComments
+                .Include(c => c.User)
+                .Where(c => c.BlogPostId == request.BlogId);
+
+            var totalCount = await query.CountAsync(cancellationToken);
+
+            var commentsData = await query
+                .OrderByDescending(c => c.CreatedAt)
+                .Skip((request.Page - 1) * request.PageSize)
+                .Take(request.PageSize)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.BlogPostId,
+                    Username = c.User != null ? c.User.UserName : string.Empty,
+                    c.Content,
+                    c.CreatedAt
+                })
+                .ToListAsync(cancellationToken);
+
+            var comments = commentsData.Select(c => new BlogCommentDto
+            {
+                Id = c.Id,
+                BlogPostId = c.BlogPostId,
+                Username = c.Username,
+                Content = c.Content,
+                CreatedAtAgo = GetTimeAgo(c.CreatedAt)
+            }).ToList();
+
+            return new BlogCommentsByBlogIdResponse
+            {
+                Comments = comments,
+                TotalCount = totalCount
+            };
         }
 
         private string GetTimeAgo(DateTime createdAt)
@@ -57,6 +78,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         public class BlogCommentsByBlogIdResponse
         {
             public List<BlogCommentDto> Comments { get; set; } = new();
+            public int TotalCount { get; set; }
         }
 
         public class BlogCommentDto
@@ -66,6 +88,13 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public string? Username { get; set; }
             public string Content { get; set; }
             public string CreatedAtAgo { get; set; }
+        }
+
+        public class BlogCommentsRequest
+        {
+            public int BlogId { get; set; }
+            public int Page { get; set; } = 1;
+            public int PageSize { get; set; } = 10;
         }
     }
 }

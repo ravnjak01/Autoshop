@@ -37,8 +37,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
                 {
                     Title = "I dalje najviše uvozimo dizele, zašto ih bh. vozači toliko vole?",
                     Content = " Golf Dvojka je jedan od najvećih krivaca zašto bosanskohercegovački vozači najviše vjeruju polovnim dizelašima...",
-                    Image = await System.IO.File.ReadAllBytesAsync(
-                        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "blogs", "golf2.webp")),
+                    ImagePath = "/blogs/golf2.webp",
                     PublishedDate = DateTime.UtcNow,
                     IsPublished = false,
                     Active = true
@@ -47,8 +46,7 @@ public class DataSeedGenerateEndpoint(ApplicationDbContext db, IWebHostEnvironme
                 {
                     Title = "Kako je propao Mercedesov taksi program? Radnički karakter više ne ide uz premium imidž",
                     Content = "Podsjećamo da su fabrička Mercedesova taksi vozila...",
-                    Image = await System.IO.File.ReadAllBytesAsync(
-                        Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "blogs", "mercedes-taxi.jpg")),
+                    ImagePath = "/blogs/mercedes-taxi.jpg",
                     PublishedDate = DateTime.UtcNow,
                     IsPublished = true,
                     Active = true

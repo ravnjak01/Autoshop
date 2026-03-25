@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.AspNetCore.Authorization;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
@@ -8,8 +7,6 @@ using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogRatingGetByBlogId;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
-    [Authorize]
-
     [Route("blog-rating")]
     public class BlogRatingGetByBlogId(ApplicationDbContext db) : MyEndpointBaseAsync
         .WithRequest<int>
@@ -18,16 +15,21 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         [HttpGet("{id}")]
         public override async Task<BlogRatingByBlogIdResponse> HandleAsync(int id, CancellationToken cancellationToken = default)
         {
-            var blogPost = await db.BlogPosts.FindAsync(id);
-            if (blogPost == null)
+            var exists = await db.BlogPosts.AnyAsync(x => x.Id == id, cancellationToken);
+            if (!exists)
             {
                 throw new KeyNotFoundException("Blog not found");
             }
 
-            var ratings = await db.BlogRatings
-                                    .Where(r => r.BlogPostId == id)
-                                    .ToListAsync();
-            return new BlogRatingByBlogIdResponse  { AverageRating = ratings.Any() ? ratings.Average(r => r.Rating) : 0 };
+            var averageRating = await db.BlogRatings
+                .Where(r => r.BlogPostId == id)
+                .Select(r => (double?)r.Rating)
+                .AverageAsync(cancellationToken);
+
+            return new BlogRatingByBlogIdResponse
+            {
+                AverageRating = averageRating ?? 0
+            };
         }
 
         public class BlogRatingByBlogIdResponse 

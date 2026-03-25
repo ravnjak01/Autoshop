@@ -10,5 +10,7 @@
         public decimal Total { get; set; }
         public string? imageUrl { get; set; }
         public int StockQuantity { get; set; }
+        public decimal? PriceAfterDiscount { get; set; }
+        public decimal? BadgeDiscountPercentage { get; set; }
     }
 }

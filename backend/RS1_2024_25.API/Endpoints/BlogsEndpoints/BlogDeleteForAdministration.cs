@@ -6,8 +6,6 @@ using RS1_2024_25.API.Helper.Api;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
-    [Authorize(Roles = "Admin")]
-
     [Route("delete-blog")]
     [Authorize(Roles = "Admin")]
     public class BlogDeleteForAdministration(ApplicationDbContext db) : MyEndpointBaseAsync
@@ -25,6 +23,21 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 
             if (blog == null)
                 throw new KeyNotFoundException("Blog not found");
+
+            if (!string.IsNullOrEmpty(blog.ImagePath))
+            {
+                try
+                {
+                    var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", blog.ImagePath.TrimStart('/'));
+
+                    imagePath = Path.GetFullPath(imagePath);
+                    if (System.IO.File.Exists(imagePath))
+                        System.IO.File.Delete(imagePath);
+                }
+                catch
+                {
+                }
+            }
 
             db.Remove(blog);
             await db.SaveChangesAsync();

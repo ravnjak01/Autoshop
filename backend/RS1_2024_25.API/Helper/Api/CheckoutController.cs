@@ -53,12 +53,7 @@ public class CheckoutController : ControllerBase
                     return BadRequest("Your active cart is empty. Move items from 'Saved for later' to proceed.");
 
                 var now = DateTime.UtcNow;
-                var globalDiscount = await _context.Discounts
-                                .Where(d => d.StartDate <= now && d.EndDate >= now)
-                                .OrderByDescending(d => d.DiscountPercentage)
-                                .Select(d => d.DiscountPercentage)
-                                .FirstOrDefaultAsync(cancellationToken);
-
+                
                 var productIds = itemsToBuy.Select(i => i.ProductId).ToList();
                 var categoryIds = itemsToBuy.Select(i => i.Product.CategoryId).Distinct().ToList();
 
@@ -70,6 +65,27 @@ public class CheckoutController : ControllerBase
                     .Where(dp => productIds.Contains(dp.ProductId))
                     .ToDictionaryAsync(dp => dp.ProductId, dp => dp.Discount.DiscountPercentage, cancellationToken);
 
+                decimal promoDiscountPercent = 0;
+                if (!string.IsNullOrEmpty(dto.PromoCode))
+                {
+                    var promo = await _context.DiscountCodes
+                        .Include(p => p.Discount)
+                        .FirstOrDefaultAsync(p => p.Code == dto.PromoCode, cancellationToken);
+
+                    if (promo == null || promo.ValidFrom > now || promo.ValidTo < now)
+                    {
+                        return BadRequest("Invalid promo code.");
+                    }
+
+                    promoDiscountPercent = promo.Discount.DiscountPercentage;
+                }
+
+                decimal CalculateFinalUnitPrice(decimal basePrice, decimal categoryDisc, decimal productDisc)
+                {
+                    var finalDisc = Math.Max(categoryDisc, productDisc);
+                    return basePrice * (1 - finalDisc / 100);
+                }
+
                 decimal finalOrderTotal = 0;
                 var orderItems = new List<OrderItem>();
 
@@ -80,13 +96,10 @@ public class CheckoutController : ControllerBase
                     if (item.Product.StockQuantity < item.Quantity)
                         return BadRequest($"Insufficient stock for {item.Product.Name}.");
 
-                    decimal priceAfterGlobal = item.Product.Price - (item.Product.Price * globalDiscount / 100);
+                    var categoryDisc = categoryDiscounts.TryGetValue(item.Product.CategoryId, out var cd) ? cd : 0;
+                    var productDisc = productDiscounts.TryGetValue(item.ProductId, out var pd) ? pd : 0;
 
-                    decimal extraDiscountPercent = (categoryDiscounts.TryGetValue(item.Product.CategoryId, out var cd) ? cd : 0) +
-                                             (productDiscounts.TryGetValue(item.ProductId, out var pd) ? pd : 0);
-
-                    // Finalna jedinična cijena za ovu stavku
-                    decimal finalUnitPrice = priceAfterGlobal - (priceAfterGlobal * extraDiscountPercent / 100);
+                    var finalUnitPrice = CalculateFinalUnitPrice(item.Product.Price, categoryDisc, productDisc);
 
                     finalOrderTotal += finalUnitPrice * item.Quantity;
 
@@ -98,9 +111,15 @@ public class CheckoutController : ControllerBase
                     });
 
                     item.Product.StockQuantity -= item.Quantity;
-
-
                 }
+
+                if (promoDiscountPercent > 0)
+                {
+                    finalOrderTotal -= finalOrderTotal * promoDiscountPercent / 100;
+                }
+
+                decimal shippingFee = 10;
+                finalOrderTotal += shippingFee;
 
                 var existingAddress = await _context.Addresses
                     .FirstOrDefaultAsync(a => a.UserId == userId &&

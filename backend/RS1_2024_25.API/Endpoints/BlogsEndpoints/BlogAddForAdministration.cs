@@ -6,16 +6,12 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
-using RS1_2024_25.API.Services;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogAddForAdministration;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
-
-    
     [Authorize(Roles = "Admin")]
     [Route("blog-post")]
-    [Authorize(Roles = "Admin")]
     public class BlogAddForAdministration(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
         .WithRequest<BlogPostUpdateOrInsertRequest>
         .WithoutResult
@@ -28,20 +24,33 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 
             var userId = userManager.GetUserId(User);
 
-            byte[]? image = null;
+            string? imagePath = blog?.ImagePath;
+
             if (request.Image != null)
             {
-                using var memoryStream = new MemoryStream();
-                await request.Image.CopyToAsync(memoryStream);
-                image = memoryStream.ToArray();
+                const long maxFileSize = 5 * 1024 * 1024; // 5 MB
 
+                if (request.Image.Length > maxFileSize)
+                    throw new ArgumentException("The file is too large. Maximum allowed size is 5 MB.");
+
+                var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "blogs");
+                if (!Directory.Exists(uploadsFolder))
+                    Directory.CreateDirectory(uploadsFolder);
+
+                var fileName = $"{Guid.NewGuid()}_{request.Image.FileName}";
+                var filePath = Path.Combine(uploadsFolder, fileName);
+
+                await using var stream = new FileStream(filePath, FileMode.Create);
+                await request.Image.CopyToAsync(stream);
+
+                imagePath = $"/blogs/{fileName}";
             }
 
-            if(string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Content))
+            if (string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Content))
             {
-                throw new ArgumentException("Tile or Content is null");
+                throw new ArgumentException("Title or Content is null");
             }
-            // Kreiranje ili ažuriranje blog posta
+
             if (blog == null)
             {
                 blog = new BlogPost
@@ -51,7 +60,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                     AuthorId = userId,
                     IsPublished = request.IsPublished,
                     PublishedDate = request.IsPublished ? DateTime.UtcNow : null,
-                    Image = image,
+                    ImagePath = imagePath,
                     Active = request.Active
                 };
                 db.BlogPosts.Add(blog);
@@ -70,7 +79,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                 blog.Content = request.Content;
                 blog.AuthorId = userId;
                 blog.IsPublished = request.IsPublished;
-                blog.Image = image ?? blog.Image; 
+                blog.ImagePath = imagePath; 
                 blog.Active = request.Active;
                 db.BlogPosts.Update(blog); 
             }
@@ -82,7 +91,6 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
             public int? ID { get; set; } // Nullable to allow null for insert operations
             public required string Title { get; set; }
             public required string Content { get; set; }
-            //public string? Image { get; set;
             public IFormFile? Image { get; set; }
             public required bool IsPublished { get; set; }
             public required bool Active { get; set; }

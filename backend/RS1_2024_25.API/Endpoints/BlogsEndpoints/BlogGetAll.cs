@@ -1,16 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RS1_2024_25.API.Data;
-using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogGetAll;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
 {
-    [Authorize]
-
     [Route("blogposts")]
     public class BlogGetAll(ApplicationDbContext db, IHttpContextAccessor httpContextAccessor) : MyEndpointBaseAsync
         .WithRequest<BlogGetAllRequest>
@@ -51,7 +47,7 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
                         ? b.Author.LastName + " " + b.Author.FirstName
                         : string.Empty,
                     PublishedDate = b.PublishedDate,
-                    ImageUrl = b.Image != null
+                    ImageUrl = b.ImagePath != null
                         ? $"{baseUrl}/blogposts/{b.Id}/image"
                         : null
                 })
@@ -70,13 +66,20 @@ namespace RS1_2024_25.API.Endpoints.BlogsEndpoints
         {
             var blog = await db.BlogPosts
                 .Where(b => b.Id == id)
-                .Select(b => new { b.Image })
+                .Select(b => new { b.ImagePath })
                 .FirstOrDefaultAsync(cancellationToken);
 
-            if (blog?.Image == null)
+            if (blog?.ImagePath == null)
                 return NotFound();
 
-            return File(blog.Image, "image/jpeg");
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+            var filePath = Path.Combine(uploadsFolder, blog.ImagePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound();
+
+            var contentType = "image/jpeg";
+            return PhysicalFile(filePath, contentType);
         }
 
         public class BlogGetAllRequest

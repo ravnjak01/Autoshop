@@ -6,7 +6,6 @@ using RS1_2024_25.API.Data;
 using RS1_2024_25.API.Data.Models;
 using RS1_2024_25.API.Data.Models.Modul2_Basic;
 using RS1_2024_25.API.Helper.Api;
-using RS1_2024_25.API.Services;
 using static RS1_2024_25.API.Endpoints.BlogsEndpoints.BlogRatingAdd;
 
 namespace RS1_2024_25.API.Endpoints.BlogsEndpoints

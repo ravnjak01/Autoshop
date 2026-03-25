@@ -10,8 +10,6 @@ using static RS1_2024_25.API.Endpoints.DiscountEndpoints.DiscountProductsSave;
 
 namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 {
-    [Authorize(Roles = "Admin")]
-
     [Route("discounts")]
     [Authorize(Roles = "Admin")]
     public class DiscountProductsSave(ApplicationDbContext db, UserManager<User> userManager) : MyEndpointBaseAsync
@@ -29,29 +27,34 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
 
             var userId = userManager.GetUserId(User);
 
-            await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+            var strategy = db.Database.CreateExecutionStrategy();
 
-            var existingIds = await db.DiscountProducts
-                .Where(x => x.DiscountId == request.DiscountId)
-                .Select(x => x.ProductId)
-                .ToListAsync(cancellationToken);
+            await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
 
-            var toAdd = request.ProductIds.Except(existingIds)
-                .Select(prodId => new DiscountProduct
-                {
-                    DiscountId = request.DiscountId,
-                    ProductId = prodId,
-                    LastModifiedUserId = userId
-                });
+                var existingIds = await db.DiscountProducts
+                    .Where(x => x.DiscountId == request.DiscountId)
+                    .Select(x => x.ProductId)
+                    .ToListAsync(cancellationToken);
 
-            var toRemove = db.DiscountProducts
-                .Where(x => x.DiscountId == request.DiscountId && !request.ProductIds.Contains(x.ProductId));
+                var toAdd = request.ProductIds.Except(existingIds)
+                    .Select(prodId => new DiscountProduct
+                    {
+                        DiscountId = request.DiscountId,
+                        ProductId = prodId,
+                        LastModifiedUserId = userId
+                    });
 
-            db.DiscountProducts.RemoveRange(toRemove);
-            await db.DiscountProducts.AddRangeAsync(toAdd, cancellationToken);
+                var toRemove = db.DiscountProducts
+                    .Where(x => x.DiscountId == request.DiscountId && !request.ProductIds.Contains(x.ProductId));
 
-            await db.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+                db.DiscountProducts.RemoveRange(toRemove);
+                await db.DiscountProducts.AddRangeAsync(toAdd, cancellationToken);
+
+                await db.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+            });
         }
 
         public class DiscountProductsSaveRequest
