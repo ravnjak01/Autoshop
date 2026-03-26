@@ -2,13 +2,23 @@
 
 namespace RS1_2024_25.API.Data.Middleware
 {
-    public class GlobalExceptionHandlerMiddleware(RequestDelegate next,ILogger<GlobalExceptionHandlerMiddleware>logger)
+    public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
     {
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
                 await next(context);
+            }
+            catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+            {
+                logger.LogDebug("Request was cancelled by the client.");
+                context.Response.StatusCode = 499;
+            }
+            catch (TaskCanceledException) when (context.RequestAborted.IsCancellationRequested)
+            {
+                logger.LogDebug("Task was cancelled by the client.");
+                context.Response.StatusCode = 499;
             }
             catch (KeyNotFoundException ex)
             {
@@ -25,14 +35,11 @@ namespace RS1_2024_25.API.Data.Middleware
                 logger.LogWarning(ex, "Invalid argument");
                 await WriteProblemDetails(context, StatusCodes.Status400BadRequest, "Bad Request", ex.Message);
             }
-
             catch (Exception ex)
             {
                 logger.LogError(ex, "Unhandled exception");
                 await WriteProblemDetails(context, StatusCodes.Status500InternalServerError, "Server Error", "An unexpected error occurred.");
             }
-
-           
         }
 
         private static async Task WriteProblemDetails(HttpContext context, int statusCode, string title, string detail)
@@ -44,10 +51,8 @@ namespace RS1_2024_25.API.Data.Middleware
                 Detail = detail,
                 Instance = context.Request.Path
             };
-
             context.Response.StatusCode = statusCode;
             context.Response.ContentType = "application/problem+json";
-
             await context.Response.WriteAsJsonAsync(problem);
         }
     }

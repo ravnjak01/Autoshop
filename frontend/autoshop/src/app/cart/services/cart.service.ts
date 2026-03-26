@@ -23,7 +23,6 @@ export interface CheckoutDTO {
 }
 
 
-//DOSAO DO MIDDLEWARE ;TAKO NESTo GRESka, konzistento upravljane greskama
 
 @Injectable({
   providedIn: 'root',
@@ -54,21 +53,16 @@ loadCart(): void {
   });
 }
 
-addToCart(productId: number, quantity: number = 1): Observable<CartItemDTO> {
-    return this.http.post<CartItemDTO>(
+addToCart(productId: number, quantity: number = 1): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(
       `${this.baseUrl}/add-to-cart`,
       { productId, quantity },
       { withCredentials: true }
     ).pipe(
-     tap((response) => {
-
-      const name=response.productName;
-
-  this.snackbar.showMessage(`Product added to the cart`,'success');
-
-      this.loadCart();
-     })
-
+      tap(() => {
+        this.snackbar.showMessage(`Product added to the cart`, 'success');
+        this.loadCart();
+      })
     );
 }
 

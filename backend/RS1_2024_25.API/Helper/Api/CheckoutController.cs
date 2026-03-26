@@ -150,7 +150,6 @@ public class CheckoutController : ControllerBase
                 }
 
 
-                var total = itemsToBuy.Sum(i => i.Product.Price * i.Quantity);
 
                 var order = new Order
                 {

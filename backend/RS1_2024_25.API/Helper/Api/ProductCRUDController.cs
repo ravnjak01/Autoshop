@@ -15,10 +15,12 @@ namespace RS1_2024_25.API.Helper.Api
     public class ProductCRUDController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
+        private readonly IWebHostEnvironment _environment;
 
-        public ProductCRUDController(ApplicationDbContext context)
+        public ProductCRUDController(ApplicationDbContext context,IWebHostEnvironment environment)
         {
             _context = context;
+            _environment = environment;
         }
 
         [HttpGet("{id}")]
@@ -160,16 +162,22 @@ namespace RS1_2024_25.API.Helper.Api
         [AllowAnonymous]
         public IActionResult GetImages()
         {
-            string imageFolderPath = Path.Combine(Directory.GetCurrentDirectory(),"wwwroot", "images","products");
+            string imageFolderPath = Path.Combine(_environment.WebRootPath, "images", "products");
 
             if (!Directory.Exists(imageFolderPath))
-                return NotFound("Folder Images doesnt exist.");
+            {
+                Directory.CreateDirectory(imageFolderPath);
+            }
+
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
 
             var baseUrl = $"{Request.Scheme}://{Request.Host}";
 
             var files = Directory.GetFiles(imageFolderPath)
-               .Select(fileName => $"{baseUrl}/images/products/{Path.GetFileName(fileName)}")
-                .ToList();
+          .Where(file => allowedExtensions.Contains(Path.GetExtension(file).ToLower()))
+          .Select(fileName => $"{baseUrl}/images/products/{Path.GetFileName(fileName)}")
+          .ToList();
 
 
             return Ok(files);

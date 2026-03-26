@@ -196,6 +196,11 @@ export class ProductsComponent implements OnInit {
   }
 
   private loadPromoCodeInfo(): void {
+
+      if (!this.authService.isLoggedIn()) {
+    return;
+  }
+  
     this.promoCodeService.handleAsync().subscribe({
       next: (res) => {
         if(res.isValid) {

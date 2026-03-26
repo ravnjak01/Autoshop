@@ -12,7 +12,7 @@ namespace RS1_2024_25.API.Services
             _cache = cache;
         }
 
-        public async void BlacklistToken(string token, DateTime expiry)
+        public async Task BlacklistToken(string token, DateTime expiry)
         {
             var timeUntilExpiry = expiry - DateTime.UtcNow;
             if (timeUntilExpiry.TotalSeconds <= 0) return;

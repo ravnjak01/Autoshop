@@ -1,11 +1,19 @@
-﻿namespace RS1_2024_25.API.Data.DTOs
+﻿using System.ComponentModel.DataAnnotations;
+
+public class AddressDTO
 {
-    public class AddressDTO
-    {
-        public string Country { get; set; }
-        public string City { get; set; }
-        public string Street { get; set; }
-        public string PostalCode { get; set; }
-        public string TelephoneNumber { get; set; }
-    }
+    [Required(ErrorMessage = "Street is required.")]
+    public string Street { get; set; }
+
+    [Required(ErrorMessage = "City is required.")]
+    public string City { get; set; }
+
+    [Required(ErrorMessage = "Postal code is required.")]
+    public string PostalCode { get; set; }
+
+    [Required(ErrorMessage = "Country is required.")]
+    public string Country { get; set; }
+
+    [Required(ErrorMessage = "Phone is required.")]
+    public string TelephoneNumber { get; set; }
 }

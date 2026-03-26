@@ -277,12 +277,28 @@ namespace RS1_2024_25.API.Controllers
 
             var cart = await _context.Carts
                 .Include(c => c.Items)
+                .ThenInclude(p => p.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
 
             if (cart == null) return NotFound("Cart not found");
 
             var item = cart.Items.FirstOrDefault(i => i.ProductId == productId);
             if (item == null) return NotFound("Item not found");
+
+            var product = item.Product;
+
+            if (product == null || !product.Active)
+            {
+                return BadRequest(new { message = "This product isnt available anymore." });
+            }
+            if (product.StockQuantity < item.Quantity)
+            {
+                return BadRequest(new
+                {
+                    message = $"In stock available  {product.StockQuantity} pieces.",
+                    availableStock = product.StockQuantity
+                });
+            }
 
             item.SavedForLater = false;
             await _context.SaveChangesAsync(cancellationToken);
@@ -362,7 +378,6 @@ namespace RS1_2024_25.API.Controllers
                 BadgeDiscountPercentage = finalDiscount
             });
         }
-        // UKLONI try/catch iz ClearCart, ostavi samo logiku:
         [AllowAnonymous]
         [HttpDelete("clear")]
         public async Task<IActionResult> ClearCart(CancellationToken cancellationToken)

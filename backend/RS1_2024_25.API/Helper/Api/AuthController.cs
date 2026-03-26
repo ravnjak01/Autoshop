@@ -55,6 +55,20 @@ namespace RS1_2024_25.API.Helper.Api
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            var existingUserByEmail = await _userManager.FindByEmailAsync(model.Email);
+            var existingUserByUsername = await _userManager.FindByNameAsync(model.Username);
+
+
+            if (existingUserByEmail != null || existingUserByUsername != null)
+                if (existingUserByEmail != null)
+                {
+                    return BadRequest(new { message = "Email is already in use." });
+                }
+            if (existingUserByUsername != null)
+            {
+                return BadRequest(new { message = "Username is already taken." });
+            }
+
             var user = new User
             {
                 UserName = model.Username,
@@ -126,7 +140,7 @@ namespace RS1_2024_25.API.Helper.Api
         }
         [Authorize]
         [HttpPost("logout")]
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
             var authHeader = Request.Headers["Authorization"].ToString();
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
@@ -138,7 +152,7 @@ namespace RS1_2024_25.API.Helper.Api
                 return BadRequest(new { message = "Token is malformed and cannot be read" });
 
             var jwtToken = handler.ReadJwtToken(token);
-            _blacklistService.BlacklistToken(token, jwtToken.ValidTo);
+            await _blacklistService.BlacklistToken(token, jwtToken.ValidTo);
             return Ok(new { message = "Logged out successfully" });
         }
 

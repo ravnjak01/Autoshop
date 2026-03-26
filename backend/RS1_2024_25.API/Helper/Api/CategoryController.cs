@@ -24,7 +24,6 @@ namespace RS1_2024_25.API.Helper.Api
         public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
         {
             var categories = await _context.Categories
-                .Include(p=>p.Products)
                 .Select(c => new CategoryDTO
                 {
                     Id = c.Id,

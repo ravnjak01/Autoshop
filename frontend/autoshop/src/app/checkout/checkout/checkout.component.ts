@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { MyAuthService } from '../../core/services/auth/my-auth.service';
 import { ConfirmationModalComponent } from '../../confirmation-modal/confirmation-modal/confirmation-modal.component';
-import { CartService } from '../../cart/services/cart.service';
+import { CartService, CheckoutDTO } from '../../cart/services/cart.service';
 import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snackbar-helper.service';
 import {BehaviorSubject, combineLatest, EMPTY, map, Observable, switchMap, take} from 'rxjs';
 import { CartItemDTO } from '../../cart/models/cart-item.dto';
@@ -142,43 +142,36 @@ export class CheckoutComponent implements OnInit {
   placeOrder() {
     if (this.isSubmitting) return;
     this.showConfirmModal = false;
+    this.isSubmitting = true;
 
-    this.finalTotal$.pipe(
-      take(1),
-      switchMap(finalTotal =>
-        this.authService.getCurrentUserId().pipe(
-          take(1),
-          map(userId => ({ userId, finalTotal }))
-        )
-      ),
-      switchMap(({ userId, finalTotal }) => {
-        if (!userId) {
-          this.isSubmitting = false;
-          this.router.navigate(['/login']);
-          return EMPTY;
-        }
+    this.authService.getCurrentUserId().pipe(
+    take(1),
+    switchMap(userId => {
+      if (!userId) {
+        this.isSubmitting = false;
+        this.router.navigate(['/login']);
+        return EMPTY;
+      }
 
-        const checkoutData = {
-          userId,
-          adresa: {
-            country: this.checkoutForm.value.country,
-            city: this.checkoutForm.value.city,
-            street: this.checkoutForm.value.street,
-            postalCode: this.checkoutForm.value.postalCode,
-            telephoneNumber: this.checkoutForm.value.phone || '',
-            userId
-          },
-          paymentMethod: 'Cash',
-          totalAmount: finalTotal,
-          promoCode: this.appliedPromoCode
-        };
+        const checkoutData: CheckoutDTO = {
+        userId,
+        adresa: {
+  country: this.checkoutForm.value.country,
+  city: this.checkoutForm.value.city,
+  street: this.checkoutForm.value.street,
+  postalCode: this.checkoutForm.value.postalCode,
+  telephoneNumber: this.checkoutForm.value.phone
+},
+        paymentMethod: 'Cash',
+        promoCode: this.appliedPromoCode
+      };
 
         return this.cartService.checkout(checkoutData);
       }),
       takeUntilDestroyed(this.destroyRef)
     ).subscribe({
-      next: () => {
-        this.snackbar.showMessage('Your order has been successfully created!', 'success');
+      next: (response:any) => {
+        this.snackbar.showMessage(`Order created! Total: ${response.total} USD`, 'success');
         this.checkoutForm.reset();
         this.cartService.loadCart();
         setTimeout(() => {

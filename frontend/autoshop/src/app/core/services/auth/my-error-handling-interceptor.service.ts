@@ -28,6 +28,11 @@ export class MyErrorHandlingInterceptor implements HttpInterceptor {
 
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
+
+        if (error.status === 401 && req.url.includes('/logout')) {
+        return throwError(() => error);
+      }
+      
         this.handleError(error);
         return throwError(() => error);
       })

@@ -89,13 +89,6 @@ ngOnInit() {
 
 
 
-    addProductToCart(productId: number): void {
-    this.cartService.addToCart(productId, 1).subscribe({
-      next: (cartItem: CartItemDTO) => {
-        this.cartItems.push(cartItem);
-      },
-    });
-  }
 
 
 

@@ -66,27 +66,21 @@ login(credentials: { username: string; password: string }): Observable<LoginResp
     .pipe(
       tap((response: LoginResponse) => {
         if (response && response.token) {
-          // 1. Spasi token
           localStorage.setItem('jwtToken', response.token);
           localStorage.setItem('userName', response.username || '');
 
-          // 2. Dekodiraj token da izvučeš role (ako nisu već u response.roles)
           try {
             const decoded: any = jwtDecode(response.token);
-            // .NET Identity obično stavlja role pod ovaj dugački URL ključ
             const decodedRoles = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
             
-            // Provjeri jesu li role stigle u odgovoru ili ih uzimamo iz tokena
             let rolesToStore: string[] = [];
             
             if (response.roles) {
               rolesToStore = response.roles;
             } else if (decodedRoles) {
-              // Ako je samo jedna rola, biće string, ako ih je više biće niz
               rolesToStore = Array.isArray(decodedRoles) ? decodedRoles : [decodedRoles];
             }
 
-            // 3. Spasi uloge u localStorage
             localStorage.setItem('userRoles', JSON.stringify(rolesToStore));
           } catch (error) {
             console.error('Greška pri dekodiranju tokena:', error);
@@ -127,21 +121,19 @@ checkAuth(): Observable<boolean> {
       );
 }
   logout(): void {
+const token = this.getToken();
 
-    this.httpClient.post(`${this.apiUrl}/logout`, {}).subscribe({
-      next: () => {
-        localStorage.clear();
-           this.isLoggedInSubject.next(false);
-      this.router.navigate(['/login']);
-      },
-      error: () => {
-        localStorage.clear();
-        this.isLoggedInSubject.next(false);
-  this.router.navigate(['/login']);
-      }
-    });
+  const headers = token
+    ? new HttpHeaders({ Authorization: `Bearer ${token}` })
+    : new HttpHeaders();
 
-   
+ localStorage.clear();
+  this.isLoggedInSubject.next(false);
+
+    this.httpClient.post(`${this.apiUrl}/logout`, {}, { headers }).subscribe({
+    complete: () => this.router.navigate(['/login']),
+    error: () => this.router.navigate(['/login'])
+  });
     }
 
       forgotPassword(email: string) {

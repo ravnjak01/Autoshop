@@ -16,38 +16,6 @@ namespace RS1_2024_25.API.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public async Task<bool> RegisterUser(string username, string email, string password, string firstname,string lastname)
-        {
-
-            if (!IsValidEmail(email))
-            {
-                return false; 
-            }
-
-
-            var existingUserByEmail = await _userManager.FindByEmailAsync(email);
-            var existingUserByUsername = await _userManager.FindByNameAsync(username);
-
-
-            if (existingUserByEmail != null || existingUserByUsername != null)
-                return false;
-
-            var user = new User
-            {
-                UserName = username,
-                Email = email,
-                FirstName=firstname,
-                LastName = lastname,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            var result = await _userManager.CreateAsync(user, password);
-            foreach (var error in result.Errors)
-            {
-            }
-   
-            return result.Succeeded;
-        }
 
         public int GetPasswordStrengthScore(string password)
         {

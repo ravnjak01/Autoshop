@@ -117,17 +117,16 @@
               "
               class="old-price"
             >
-              {{ product.price }} KM
+              {{ product.price | currency:'USD':'symbol':'1.2-2' }}
             </span>
 
             <!-- NOVA CIJENA -->
             <span class="new-price">
-              {{
-                product.priceAfterGlobalDiscount != null &&
-                product.priceAfterGlobalDiscount < product.price
-                  ? product.priceAfterGlobalDiscount
-                  : product.price
-              }} KM
+              {{ 
+      (product.priceAfterGlobalDiscount != null && product.priceAfterGlobalDiscount < product.price
+        ? product.priceAfterGlobalDiscount
+        : product.price) | currency:'USD':'symbol':'1.2-2' 
+    }}
             </span>
 
           </p>
