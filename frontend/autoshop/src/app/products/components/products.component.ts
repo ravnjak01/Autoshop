@@ -12,7 +12,7 @@ import { MySnackbarHelperService } from '../../modules/shared/snackbars/my-snack
 import {FavoriteToggleEndpointService} from '../services/product-endpoints/favorites-toggle-endpoint.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { priceRangeValidator } from '../validators/price-range.validator';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'; 
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ProductDTO } from '../../cart/models/product.dto';
 import {PromoCodeService} from '../services/promo-code-endpoint/promo-code-validate-endpoint.service';
 
@@ -141,7 +141,7 @@ export class ProductsComponent implements OnInit {
 
   loadCategories(): void {
     this.categoriesGetAllService.handleAsync()
-     .pipe(takeUntilDestroyed(this.destroyRef)) 
+     .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe((response) => {
       this.categories = response.categories;
     });
@@ -171,7 +171,7 @@ export class ProductsComponent implements OnInit {
     };
 
     this.productsGetAllService.handleAsync(request)
-    .pipe(takeUntilDestroyed(this.destroyRef))  
+    .pipe(takeUntilDestroyed(this.destroyRef))
     .subscribe({
       next: (response: ProductGetAllResponse) => {
 
@@ -197,10 +197,6 @@ export class ProductsComponent implements OnInit {
 
   private loadPromoCodeInfo(): void {
 
-      if (!this.authService.isLoggedIn()) {
-    return;
-  }
-  
     this.promoCodeService.handleAsync().subscribe({
       next: (res) => {
         if(res.isValid) {
