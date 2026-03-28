@@ -20,19 +20,16 @@ namespace RS1_2024_25.API.Endpoints.DiscountEndpoints
             var userId = userManager.GetUserId(User);
 
             var now = DateTime.UtcNow;
-            var codes = await db.DiscountCodes
+            var code = await db.DiscountCodes
                         .Include(dc => dc.Discount)
-                        .ToListAsync(cancellationToken); 
-
-            var code = codes
-                .Where(dc => dc.IsActive
+                        .Where(dc => dc.IsActive
                                 && dc.ValidFrom <= now
                                 && dc.ValidTo >= now
                                 && dc.Discount != null
                                 && dc.Discount.StartDate <= now
                                 && dc.Discount.EndDate >= now)
-                .OrderByDescending(dc => dc.Discount.DiscountPercentage)
-                .FirstOrDefault();
+                        .OrderByDescending(dc => dc.Discount.DiscountPercentage)
+                        .FirstOrDefaultAsync(cancellationToken); 
 
             if (code == null)
                 return new PromoCodeResponse { IsValid = false, Message = "Promo code does not exist." };
