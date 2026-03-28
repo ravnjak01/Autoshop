@@ -13,9 +13,5 @@
 
         public string? LastModifiedUserId { get; set; }
         public User? LastModifiedUser { get; set; }
-
-        public bool IsActive =>
-            (!ValidFrom.HasValue || ValidFrom.Value <= DateTime.UtcNow) &&
-            (!ValidTo.HasValue || ValidTo.Value >= DateTime.UtcNow);
     }
 }
