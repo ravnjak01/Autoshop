@@ -27,14 +27,12 @@ namespace RS1_2024_25.API.Helper.Api
                 .Select(c => new CategoryDTO
                 {
                     Id = c.Id,
-                    Name = c.Name,
-                    Code = c.Code,
-                    Description = c.Description,
+                    Name = c.Name
                  
                 })
                 .ToListAsync(cancellationToken);
 
-            return Ok(categories);
+            return Ok(new { categories });
         }
     }
 }
