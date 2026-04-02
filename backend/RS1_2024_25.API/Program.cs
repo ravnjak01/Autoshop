@@ -62,7 +62,7 @@ public partial class Program
 
                 options.Events = new JwtBearerEvents
                 {
-                    OnMessageReceived2 = context =>
+                    OnMessageReceived = context =>
                     {
                         var accessToken = context.Request.Query["access_token"];
                         var path = context.HttpContext.Request.Path;
