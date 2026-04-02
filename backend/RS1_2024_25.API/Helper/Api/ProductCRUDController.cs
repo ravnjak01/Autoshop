@@ -183,6 +183,34 @@ namespace RS1_2024_25.API.Helper.Api
             return Ok(files);
         }
 
+        [HttpPost("upload-image")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadImage(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest("Nije odabran fajl.");
+            if (file.Length > 5 * 1024 * 1024)
+                return BadRequest("Fajl je prevelik. Maksimalno 5MB.");
+
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+            var ext = Path.GetExtension(file.FileName).ToLower();
+            if (!allowedExtensions.Contains(ext))
+                return BadRequest("Nepodržan format slike.");
+
+            var fileName = $"{Guid.NewGuid()}{ext}";
+            var folderPath = Path.Combine(_environment.WebRootPath, "images", "products");
+
+            if (!Directory.Exists(folderPath))
+                Directory.CreateDirectory(folderPath);
+
+            var filePath = Path.Combine(folderPath, fileName);
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await file.CopyToAsync(stream);
+
+            return Ok(new { ImageUrl = $"/images/products/{fileName}" });
+        }
+
     }
 
 }

@@ -63,4 +63,5 @@ export class ProductService {
 return this.http.get<string[]>(`${this.baseUrl}/images`, { withCredentials: true });
 
   }
+  
 }

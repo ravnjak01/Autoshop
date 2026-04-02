@@ -21,6 +21,10 @@ var blogsWithImages = await db.BlogPosts
     .Where(b => b.Image != null)
     .ToListAsync();
 
+var productsWithImages = await db.Products
+    .Where(p => p.Image != null)
+
+    .ToListAsync();
 var exeFolder = AppContext.BaseDirectory; 
 var solutionFolder = Directory.GetParent(exeFolder)!.Parent!.Parent!.Parent!.Parent!.FullName;
 
@@ -44,3 +48,23 @@ foreach (var blog in blogsWithImages)
 await db.SaveChangesAsync();
 
 Console.WriteLine("Migracija završena!");
+
+
+Console.WriteLine("Migracija starih slika proizvoda...");
+
+
+var productsFolder = Path.Combine(apiProjectFolder, "wwwroot", "images", "products");
+if (!Directory.Exists(productsFolder))
+    Directory.CreateDirectory(productsFolder);
+
+foreach (var product in productsWithImages)
+{
+    var fileName = $"{product.Id}_{Guid.NewGuid()}.jpg";
+    var filePath = Path.Combine(productsFolder, fileName);
+    await File.WriteAllBytesAsync(filePath, product.Image);
+    product.ImagePath = $"/images/products/{fileName}";
+    product.Image = null;
+}
+
+await db.SaveChangesAsync();
+Console.WriteLine("Migracija slika proizvoda završena!");
