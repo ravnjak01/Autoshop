@@ -75,11 +75,4 @@ export const environment = {
 
 ---
 
-## 📄 Autor
 
-Ime i prezime:
-Anesa Atlić Softić
-
-Godina studija: 3
-
-Predmet: Razvoj softvera I
