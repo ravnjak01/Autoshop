@@ -1,11 +1,11 @@
 
-# 📘 Autoshop
+#  Autoshop
 
 Ovo je web aplikacija razvijena pomoću **.NET Core Web API** za backend i **Angular** za frontend.  
 Aplikacija služi za kupovinu proizvoda za automobile (gume, akumulatori, kozmetika, itd.)
 
 
-## ⚙️ Tehnologije i preduvjeti
+##  Tehnologije i preduvjeti
 
 Prije pokretanja aplikacije potrebno je instalirati:
 
@@ -16,7 +16,7 @@ Prije pokretanja aplikacije potrebno je instalirati:
 
 ---
 
-## 🔧 Backend – Pokretanje API servera
+##  Backend – Pokretanje API servera
 
 ### 1. Pokretanje API - ja
 
@@ -37,7 +37,7 @@ svake dodane tabele sa http://localhost:7000/data-seed.
 Kada se doda neka nova migraciona skripta, to jeste ažurira se baza nije potrebno ručno uraditi 
 update baze, samo je potrebno pokrenuti API i update će se izvršiti.
 
-## 💻 Frontend – Angular aplikacija
+##  Frontend – Angular aplikacija
 
 ### 1. Instalacija zavisnosti
 ```bash
@@ -66,12 +66,8 @@ export const environment = {
 
 ---
 
-## 🔐 Test login podaci
+##  Test login podaci
 
-
-- Da li je aktivan 2FA za korisnike iz seed podataka
-- Da li se lozinke generišu automatski (random) ili statično.
-  Ako su statične, onda treba ih navesti.
 
 | Uloga     | Username      | Lozinka     |
 |-----------|---------------|--------------|
